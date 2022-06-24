@@ -1,7 +1,9 @@
+import Synth from "./Synth";
+
 function App() {
   return (
     <div className="App">
-      <div>Hello there!</div>
+      <Synth />
     </div>
   );
 }
