@@ -15,9 +15,11 @@ export default function Synth() {
 
   return (
     <>
-      <button onClick={() => setEnabled(true)}>Start</button>
-      {enabled && <Oscillator />}
-      {enabled && <Envelope />}
+      {!enabled && <button onClick={() => setEnabled(true)}>Start</button>}
+      {enabled && <Oscillator title="Osc 1" />}
+      {enabled && <Oscillator title="Osc 2" />}
+      {enabled && <Oscillator title="Osc 3" />}
+      {enabled && <Envelope title="Amp Envelope" amp={true} />}
     </>
   );
 }

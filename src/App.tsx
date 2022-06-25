@@ -1,11 +1,36 @@
+import { useEffect } from "react";
+import { Provider, useDispatch } from "react-redux";
+
+import styled from "styled-components";
+
+import { store } from "./store";
+import { initialize } from "./globalSlice";
 import Synth from "./Synth";
 
-function App() {
+const Main = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export default function ProviderApp() {
   return (
-    <div className="App">
-      <Synth />
-    </div>
+    <Provider store={store}>
+      <App />
+    </Provider>
   );
 }
 
-export default App;
+function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(initialize());
+  }, [dispatch]);
+
+  return (
+    <Main>
+      <Synth />
+    </Main>
+  );
+}
