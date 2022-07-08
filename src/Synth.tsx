@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Transport } from "tone";
 
+import MidiDeviceSelector from "./components/MidiDeviceSelector";
 import Oscillator from "./components/audio_modules/Oscillator";
 import Envelope from "./components/audio_modules/Envelope";
 
@@ -16,6 +17,7 @@ export default function Synth() {
   return (
     <>
       {!enabled && <button onClick={() => setEnabled(true)}>Start</button>}
+      <MidiDeviceSelector />
       {enabled && <Oscillator title="Osc 1" />}
       {enabled && <Oscillator title="Osc 2" />}
       {enabled && <Oscillator title="Osc 3" />}

@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import globalReducer from "./globalSlice";
+import globalReducer from "globalSlice";
+import midiDevicesReducer from "components/MidiDeviceSelector/midiDevicesSlice";
 
 export const store = configureStore({
   reducer: {
     global: globalReducer,
+    midiDevices: midiDevicesReducer,
   },
 });
 

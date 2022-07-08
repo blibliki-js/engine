@@ -43,22 +43,9 @@ export default function Envelope(props: EnvelopeProps) {
     envelope.setStage(stage, value);
   };
 
-  const trigger = () => {
-    envelope.triggerAttack();
-  };
-
-  const release = () => {
-    envelope.triggerRelease();
-  };
-
   return (
     <EnvelopeContainer>
       <Title>{title}</Title>
-
-      <div>
-        <button onClick={trigger}>Trigger</button>
-        <button onClick={release}>Release</button>
-      </div>
 
       <FaderContainer>
         <Fader

@@ -51,7 +51,7 @@ export default function Fader(props: FaderProps) {
         defaultValue={defaultValue}
         min={min || 0}
         max={max || 1}
-        step={step || 0.1}
+        step={step || 0.01}
         included={included}
         marks={marks}
         range={range}

@@ -20,6 +20,10 @@ export default class Note {
     return this.name.slice(-1) === "#";
   }
 
+  get fullName() {
+    return `${this.name}${this.octave}`;
+  }
+
   frequency(range: number = 0, coarse: number = 0) {
     let newOctave = this.octave + range;
     let coarseIndex = Notes.indexOf(this.name) + coarse;
@@ -36,6 +40,10 @@ export default class Note {
     const newName = Notes[nameIndex];
 
     return frequencyTable[`${newName}${newOctave}`];
+  }
+
+  valueOf() {
+    return this.fullName;
   }
 
   private fromString(string: string) {

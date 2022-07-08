@@ -1,4 +1,8 @@
 import Module from "./Module";
+import Oscillator from "./modules/Oscillator";
+import Envelope from "./modules/Envelope";
+import MidiDeviceManager from "Engine/MidiDeviceManager";
+import MidiEvent from "Engine/MidiEvent";
 
 class Engine {
   modules: { [Identifier: string]: Module };
@@ -36,6 +40,30 @@ class Engine {
     oscs.forEach((osc) => osc.connect(ampEnv));
     ampEnv.toDestination();
     console.log("connected");
+    this.registerMidiEvents(oscs as Oscillator[], ampEnv as Envelope);
+  }
+
+  private registerMidiEvents(oscs: Array<Oscillator>, ampEnv: Envelope) {
+    MidiDeviceManager.fetchDevices().then((devices) => {
+      const device = devices[1];
+      console.log(devices.map((d) => d.name));
+      device.connect();
+
+      device.onNote((midiEvent: MidiEvent) => {
+        const { note } = midiEvent;
+        if (!note) return;
+
+        switch (midiEvent.type) {
+          case "noteOn":
+            oscs.forEach((osc) => (osc.note = note));
+            ampEnv.triggerAttack(note);
+            break;
+          case "noteOff":
+            ampEnv.triggerRelease(note);
+            break;
+        }
+      });
+    });
   }
 }
 

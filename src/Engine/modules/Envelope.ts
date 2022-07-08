@@ -1,5 +1,6 @@
 import { AmplitudeEnvelope as Envelope, Time } from "tone";
 
+import Note from "Engine/Note";
 import Module, { ModuleType } from "../Module";
 
 export const enum EnvelopeStages {
@@ -15,6 +16,7 @@ const SUSTAIN_MAX_VALUE = 1;
 
 export default class EnvelopeModule extends Module {
   internalModule: Envelope;
+  activeNotes: Note[];
 
   constructor(name: string) {
     super({ name, type: ModuleType.Envelope });
@@ -25,6 +27,8 @@ export default class EnvelopeModule extends Module {
       sustain: SUSTAIN_MAX_VALUE,
       release: MIN_TIME,
     });
+
+    this.activeNotes = [];
   }
 
   setStage(stage: EnvelopeStages, value: number) {
@@ -36,11 +40,16 @@ export default class EnvelopeModule extends Module {
     return Time(this.internalModule[stage]).toSeconds() / this.maxTime(stage);
   }
 
-  triggerAttack() {
+  triggerAttack(note: Note) {
+    this.addNote(note);
     this.internalModule.triggerAttack();
   }
 
-  triggerRelease() {
+  triggerRelease(note: Note) {
+    this.removeNote(note);
+    console.log(this.activeNotes);
+    if (this.activeNotes.length) return;
+
     this.internalModule.triggerRelease();
   }
 
@@ -50,5 +59,15 @@ export default class EnvelopeModule extends Module {
 
   private maxTime(stage: EnvelopeStages): number {
     return stage === EnvelopeStages.Sustain ? SUSTAIN_MAX_VALUE : MAX_TIME;
+  }
+
+  private addNote(note: Note) {
+    this.activeNotes.push(note);
+  }
+
+  private removeNote(note: Note) {
+    this.activeNotes = this.activeNotes.filter(
+      (n) => n.fullName !== note.fullName
+    );
   }
 }
