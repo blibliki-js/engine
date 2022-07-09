@@ -16,7 +16,7 @@ export default class Oscillator extends Module {
   constructor(name: string) {
     super({ name, type: ModuleType.Oscillator });
 
-    this.internalModule = new Osc();
+    this.internalModule = new Osc().sync();
   }
 
   get note() {
@@ -26,6 +26,11 @@ export default class Oscillator extends Module {
   set note(value: Note) {
     this._note = value;
     this.updateFrequency();
+  }
+
+  setNoteAt(value: Note, time: number) {
+    this._note = value;
+    this.updateFrequency(time);
   }
 
   get fine() {
@@ -89,10 +94,15 @@ export default class Oscillator extends Module {
     this.internalModule.toDestination();
   }
 
-  private updateFrequency() {
-    this.internalModule.frequency.value = this.note.frequency(
-      this.range,
-      this.coarse
-    );
+  private updateFrequency(time?: number) {
+    const freq = this.note.frequency(this.range, this.coarse);
+
+    if (time) {
+      this.internalModule.restart(time);
+      this.internalModule.frequency.setValueAtTime(freq, time);
+    } else {
+      this.internalModule.restart();
+      this.internalModule.frequency.value = freq;
+    }
   }
 }

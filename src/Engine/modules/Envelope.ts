@@ -40,9 +40,9 @@ export default class EnvelopeModule extends Module {
     return Time(this.internalModule[stage]).toSeconds() / this.maxTime(stage);
   }
 
-  triggerAttack(note: Note) {
+  triggerAttack(note: Note, time: number) {
     this.addNote(note);
-    this.internalModule.triggerAttack();
+    this.internalModule.triggerAttack(time);
   }
 
   triggerRelease(note: Note) {

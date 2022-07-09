@@ -1,3 +1,5 @@
+import { now } from "tone";
+
 import Module from "./Module";
 import Oscillator from "./modules/Oscillator";
 import Envelope from "./modules/Envelope";
@@ -59,8 +61,9 @@ class Engine {
 
         switch (midiEvent.type) {
           case "noteOn":
-            oscs.forEach((osc) => (osc.note = note));
-            ampEnv.triggerAttack(note);
+            const time = now();
+            oscs.forEach((osc) => osc.setNoteAt(note, time));
+            ampEnv.triggerAttack(note, time);
             break;
           case "noteOff":
             ampEnv.triggerRelease(note);
