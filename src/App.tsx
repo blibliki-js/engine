@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
-
-import styled from "styled-components";
+import styled from "@emotion/styled";
+import { StyledEngineProvider } from "@mui/material/styles";
 
 import { store } from "./store";
 import { initialize } from "./globalSlice";
@@ -29,8 +29,10 @@ function App() {
   }, [dispatch]);
 
   return (
-    <Main>
-      <Synth />
-    </Main>
+    <StyledEngineProvider injectFirst>
+      <Main>
+        <Synth />
+      </Main>
+    </StyledEngineProvider>
   );
 }

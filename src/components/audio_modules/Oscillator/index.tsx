@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 import Engine from "Engine";
 import OscillatorModule from "Engine/modules/Oscillator";
 import Note from "Engine/Note";
 
-import Fader from "components/Fader";
+import Fader, { MarkProps } from "components/Fader";
 
 interface OscillatorProps {
   title: string;
@@ -15,7 +15,6 @@ interface OscillatorProps {
 const OscillatorContainer = styled.div`
   border: 1px solid;
   padding: 5px;
-  width: 200px;
 `;
 
 const FaderContainer = styled.div`
@@ -28,23 +27,21 @@ const Title = styled.div`
   margin-bottom: 5px;
 `;
 
-const WAVES: { [key: number]: string } = {
-  0: "sine",
-  1: "triangle",
-  2: "square",
-  3: "sawtooth",
-};
+const WAVES: MarkProps[] = [
+  { value: 0, label: "sine" },
+  { value: 1, label: "triangle" },
+  { value: 2, label: "square" },
+  { value: 3, label: "sawtooth" },
+];
 
-const RANGES: { [key: number]: string } = {
-  0: " ",
-  1: " ",
-  2: " ",
-  3: " ",
-};
+const RANGES: MarkProps[] = [
+  { value: 0, label: "" },
+  { value: 1, label: "" },
+  { value: 2, label: "" },
+  { value: 3, label: "" },
+];
 
-const Center: { [key: number]: string } = {
-  0: "-",
-};
+const Center: MarkProps[] = [{ value: 0, label: "-" }];
 
 export default function Oscillator(props: OscillatorProps) {
   const { title } = props;
@@ -81,7 +78,11 @@ export default function Oscillator(props: OscillatorProps) {
   useEffect(() => {
     if (!oscillator) return;
 
-    oscillator.wave = WAVES[wave];
+    const newWave = WAVES.find((w) => w.value === wave);
+
+    if (!newWave) return;
+
+    oscillator.wave = newWave.label;
   }, [oscillator, wave]);
 
   useEffect(() => {
@@ -97,21 +98,14 @@ export default function Oscillator(props: OscillatorProps) {
       <Title>{title}</Title>
 
       <FaderContainer>
-        <Fader
-          name="Octave"
-          marks={RANGES}
-          onChange={setRange}
-          defaultValue={range}
-          included={false}
-        />
+        <Fader name="Octave" marks={RANGES} onChange={setRange} value={range} />
         <Fader
           name="Coarse"
           marks={Center}
           min={-12}
           max={12}
           onChange={setCoarse}
-          defaultValue={coarse}
-          included={false}
+          value={coarse}
         />
         <Fader
           name="Fine"
@@ -119,16 +113,9 @@ export default function Oscillator(props: OscillatorProps) {
           min={-100}
           max={100}
           onChange={setFine}
-          defaultValue={fine}
-          included={false}
+          value={fine}
         />
-        <Fader
-          name="Wave"
-          marks={WAVES}
-          onChange={setWave}
-          defaultValue={wave}
-          included={false}
-        />
+        <Fader name="Wave" marks={WAVES} onChange={setWave} value={wave} />
       </FaderContainer>
     </OscillatorContainer>
   );

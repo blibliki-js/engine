@@ -1,39 +1,43 @@
-import styled from "styled-components";
-import Slider from "rc-slider";
-import "rc-slider/assets/index.css";
+import { Slider } from "@mui/material";
+import styled from "@emotion/styled";
 
 const StyledSlider = styled(Slider)`
   margin-bottom: 10px;
+  height: 100px;
 `;
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100px;
 `;
+
+export interface MarkProps {
+  value: number;
+  label: string;
+}
 
 interface FaderProps {
   name: String;
   onChange(values: any): void;
   defaultValue?: number | Array<number>;
-  marks?: { [key: number]: string };
+  value?: number | Array<number>;
+  marks?: MarkProps[];
   max?: number;
   min?: number;
   step?: number;
-  included?: boolean;
-  range?: boolean;
+  track?: false | "normal" | "inverted";
 }
 
 export default function Fader(props: FaderProps) {
   const {
     name,
     onChange,
+    value,
     defaultValue,
     marks,
-    included,
     min,
-    range = false,
+    track = false,
   } = props;
   let { max, step } = props;
 
@@ -43,18 +47,20 @@ export default function Fader(props: FaderProps) {
     step ??= 1;
   }
 
+  const internalOnChange = (_: any, newValue: any) => onChange(newValue);
+
   return (
     <Container>
       <StyledSlider
-        vertical={true}
-        onChange={onChange}
+        orientation="vertical"
+        onChange={internalOnChange}
+        value={value}
         defaultValue={defaultValue}
         min={min || 0}
         max={max || 1}
         step={step || 0.01}
-        included={included}
         marks={marks}
-        range={range}
+        track={track}
       />
       <div>{name}</div>
     </Container>

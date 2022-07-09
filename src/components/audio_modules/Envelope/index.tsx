@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 import Engine from "Engine";
 import EnvelopeModule, { EnvelopeStages } from "Engine/modules/Envelope";
@@ -51,22 +51,22 @@ export default function Envelope(props: EnvelopeProps) {
         <Fader
           name="A"
           onChange={onChange(EnvelopeStages.Attack)}
-          defaultValue={envelope.getStage(EnvelopeStages.Decay)}
+          value={envelope.getStage(EnvelopeStages.Decay)}
         />
         <Fader
           name="D"
           onChange={onChange(EnvelopeStages.Decay)}
-          defaultValue={envelope.getStage(EnvelopeStages.Decay)}
+          value={envelope.getStage(EnvelopeStages.Decay)}
         />
         <Fader
           name="S"
           onChange={onChange(EnvelopeStages.Sustain)}
-          defaultValue={envelope.getStage(EnvelopeStages.Sustain)}
+          value={envelope.getStage(EnvelopeStages.Sustain)}
         />
         <Fader
           name="R"
           onChange={onChange(EnvelopeStages.Release)}
-          defaultValue={envelope.getStage(EnvelopeStages.Release)}
+          value={envelope.getStage(EnvelopeStages.Release)}
         />
       </FaderContainer>
     </EnvelopeContainer>

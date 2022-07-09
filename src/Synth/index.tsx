@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Transport } from "tone";
+import styled from "styled-components";
 
 import MidiDeviceSelector from "./components/MidiDeviceSelector";
 import Envelope from "./components/audio_modules/Envelope";
