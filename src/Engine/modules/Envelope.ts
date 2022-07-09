@@ -11,7 +11,7 @@ export const enum EnvelopeStages {
 }
 
 const MAX_TIME = 2;
-const MIN_TIME = 0.00001;
+const MIN_TIME = 0.01;
 const SUSTAIN_MAX_VALUE = 1;
 
 export default class EnvelopeModule extends Module {
