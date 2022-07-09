@@ -47,7 +47,6 @@ export default class EnvelopeModule extends Module {
 
   triggerRelease(note: Note) {
     this.removeNote(note);
-    console.log(this.activeNotes);
     if (this.activeNotes.length) return;
 
     this.internalModule.triggerRelease();

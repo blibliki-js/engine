@@ -17,7 +17,6 @@ class Module {
   constructor(props: ModuleInterface) {
     Object.assign(this, props);
     this.id = uuidv4();
-    console.log(`id: ${this.id}, name: ${this.name}`);
   }
 
   connect(module: Module) {

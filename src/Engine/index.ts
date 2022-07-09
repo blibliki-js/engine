@@ -33,7 +33,6 @@ class Engine {
   }
 
   private applyRoutes() {
-    console.log(Object.values(this.modules).map((m) => m.name));
     const oscs = Object.values(this.modules).filter((m: Module) =>
       m.name.startsWith("Osc")
     );
@@ -52,7 +51,6 @@ class Engine {
   private registerMidiEvents(oscs: Array<Oscillator>, ampEnv: Envelope) {
     MidiDeviceManager.fetchDevices().then((devices) => {
       const device = devices[1];
-      console.log(devices.map((d) => d.name));
       device.connect();
 
       device.onNote((midiEvent: MidiEvent) => {
