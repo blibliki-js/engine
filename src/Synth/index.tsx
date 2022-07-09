@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Transport } from "tone";
+import { Transport, Context, setContext } from "tone";
 import styled from "styled-components";
 
 import MidiDeviceSelector from "./components/MidiDeviceSelector";
@@ -14,6 +14,8 @@ export default function Synth() {
   useEffect(() => {
     if (!enabled) return;
 
+    const context = new Context({ latencyHint: "interactive" });
+    setContext(context);
     Transport.start();
   }, [enabled]);
 
