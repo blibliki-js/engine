@@ -26,6 +26,10 @@ class Engine {
     this.applyRoutes();
   }
 
+  public getModuleByName(name: string): Module | undefined {
+    return Object.values(this.modules).find((modula) => modula.name === name);
+  }
+
   private applyRoutes() {
     console.log(Object.values(this.modules).map((m) => m.name));
     const oscs = Object.values(this.modules).filter((m: Module) =>

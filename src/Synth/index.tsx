@@ -5,6 +5,8 @@ import MidiDeviceSelector from "./components/MidiDeviceSelector";
 import Oscillator from "./components/audio_modules/Oscillator";
 import Envelope from "./components/audio_modules/Envelope";
 
+import Mixer from "./Mixer";
+
 export default function Synth() {
   const [enabled, setEnabled] = useState(false);
 
@@ -21,6 +23,7 @@ export default function Synth() {
       {enabled && <Oscillator title="Osc 1" />}
       {enabled && <Oscillator title="Osc 2" />}
       {enabled && <Oscillator title="Osc 3" />}
+      {enabled && <Mixer />}
       {enabled && <Envelope title="Amp Envelope" amp={true} />}
     </>
   );

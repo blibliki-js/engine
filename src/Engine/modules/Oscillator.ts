@@ -11,6 +11,7 @@ export default class Oscillator extends Module {
   private _coarse: number = 0;
   private _wave: string = "sine";
   private _range: number = 1;
+  private _volume: number = -100;
 
   constructor(name: string) {
     super({ name, type: ModuleType.Oscillator });
@@ -51,6 +52,16 @@ export default class Oscillator extends Module {
 
   set wave(value: string) {
     this.internalModule.type = value as ToneOscillatorType;
+  }
+
+  get volume() {
+    return this._volume;
+  }
+
+  set volume(value: number) {
+    this._volume = value;
+
+    this.internalModule.volume.value = this.volume;
   }
 
   get range() {
