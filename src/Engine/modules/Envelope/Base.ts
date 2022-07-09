@@ -1,7 +1,7 @@
-import { AmplitudeEnvelope as Envelope, Time } from "tone";
+import { Envelope, Time } from "tone";
 
 import Note from "Engine/Note";
-import Module, { ModuleType } from "../Module";
+import Module, { ModuleType } from "Engine/Module";
 
 export const enum EnvelopeStages {
   Attack = "attack",
@@ -18,10 +18,10 @@ export default class EnvelopeModule extends Module {
   internalModule: Envelope;
   activeNotes: Note[];
 
-  constructor(name: string) {
+  constructor(name: string, internalModule = Envelope) {
     super({ name, type: ModuleType.Envelope });
 
-    this.internalModule = new Envelope({
+    this.internalModule = new internalModule({
       attack: MIN_TIME,
       decay: MIN_TIME,
       sustain: SUSTAIN_MAX_VALUE,

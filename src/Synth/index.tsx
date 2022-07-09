@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Transport, Context, setContext } from "tone";
-import styled from "styled-components";
 
 import MidiDeviceSelector from "components/MidiDeviceSelector";
-import Envelope from "components/audio_modules/Envelope";
+import AmpEnvelope from "components/audio_modules/AmpEnvelope";
 
 import Oscillators from "./Oscillators";
 import Mixer from "./Mixer";
@@ -25,7 +24,7 @@ export default function Synth() {
       <MidiDeviceSelector />
       {enabled && <Oscillators />}
       {enabled && <Mixer />}
-      {enabled && <Envelope title="Amp Envelope" amp={true} />}
+      {enabled && <AmpEnvelope title="Amp Envelope" amp={true} />}
     </>
   );
 }

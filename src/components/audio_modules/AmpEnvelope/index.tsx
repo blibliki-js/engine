@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import EnvelopeModule, { EnvelopeStages } from "Engine/modules/Envelope";
+import {
+  AmpEnvelope as AmpEnvelopeModule,
+  EnvelopeStages,
+} from "Engine/modules/Envelope";
 
 import Fader from "components/Fader";
 
@@ -27,12 +30,12 @@ interface EnvelopeProps {
   amp?: boolean;
 }
 
-export default function Envelope(props: EnvelopeProps) {
+export default function AmpEnvelope(props: EnvelopeProps) {
   const { title, amp } = props;
-  const [envelope, setEnvelope] = useState<EnvelopeModule>();
+  const [envelope, setEnvelope] = useState<AmpEnvelopeModule>();
 
   useEffect(() => {
-    const env = new EnvelopeModule(title);
+    const env = new AmpEnvelopeModule(title);
     setEnvelope(env);
     Engine.registerModule(env);
   }, [amp, title]);

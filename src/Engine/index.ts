@@ -2,7 +2,7 @@ import { now } from "tone";
 
 import Module from "./Module";
 import Oscillator from "./modules/Oscillator";
-import Envelope from "./modules/Envelope";
+import { AmpEnvelope } from "./modules/Envelope";
 import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
 
@@ -45,10 +45,10 @@ class Engine {
     oscs.forEach((osc) => osc.connect(ampEnv));
     ampEnv.toDestination();
     console.log("connected");
-    this.registerMidiEvents(oscs as Oscillator[], ampEnv as Envelope);
+    this.registerMidiEvents(oscs as Oscillator[], ampEnv as AmpEnvelope);
   }
 
-  private registerMidiEvents(oscs: Array<Oscillator>, ampEnv: Envelope) {
+  private registerMidiEvents(oscs: Array<Oscillator>, ampEnv: AmpEnvelope) {
     MidiDeviceManager.fetchDevices().then((devices) => {
       const device = devices[1];
       device.connect();
