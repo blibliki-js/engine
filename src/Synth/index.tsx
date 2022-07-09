@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Transport, Context, setContext } from "tone";
 import styled from "styled-components";
 
-import MidiDeviceSelector from "./components/MidiDeviceSelector";
-import Envelope from "./components/audio_modules/Envelope";
+import MidiDeviceSelector from "components/MidiDeviceSelector";
+import Envelope from "components/audio_modules/Envelope";
 
 import Oscillators from "./Oscillators";
 import Mixer from "./Mixer";
