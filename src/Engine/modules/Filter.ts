@@ -2,15 +2,16 @@ import { Filter as InternalFilter } from "tone";
 
 import Module, { ModuleType } from "../Module";
 
-export default class Filter extends Module {
-  internalModule: InternalFilter;
+export default class Filter extends Module<InternalFilter> {
   private _cutoff: number;
   private _resonance: number;
 
-  constructor(name: string) {
-    super({ name, type: ModuleType.Filter });
-
-    this.internalModule = new InternalFilter({ type: "lowpass" });
+  constructor(name: string, code: string) {
+    super(new InternalFilter({ type: "lowpass" }), {
+      name,
+      code,
+      type: ModuleType.Filter,
+    });
   }
 
   get cutoff() {

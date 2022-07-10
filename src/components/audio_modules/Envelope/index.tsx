@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import EnvelopeModule, {
+import {
+  Envelope as EnvelopeModule,
   AmpEnvelope as AmpEnvelopeModule,
   FreqEnvelope as FreqEnvelopeModule,
   EnvelopeStages,
@@ -28,11 +29,12 @@ const FaderContainer = styled.div`
 
 interface EnvelopeProps {
   title: string;
+  code: string;
   type?: "base" | "amplitude" | "frequency";
 }
 
 export default function Envelope(props: EnvelopeProps) {
-  const { title, type = "base" } = props;
+  const { title, code, type = "base" } = props;
   const [envelope, setEnvelope] = useState<AmpEnvelopeModule>();
 
   const [attack, setAttack] = useState<number>(0.01);
@@ -55,10 +57,10 @@ export default function Envelope(props: EnvelopeProps) {
         break;
     }
 
-    const env = new envModule(title);
+    const env = new envModule(title, code);
     setEnvelope(env);
     Engine.registerModule(env);
-  }, [type, title]);
+  }, [type, title, code]);
 
   if (!envelope) return null;
 

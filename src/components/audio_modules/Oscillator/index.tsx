@@ -9,7 +9,7 @@ import Fader, { MarkProps } from "components/Fader";
 
 interface OscillatorProps {
   title: string;
-  amp?: boolean;
+  code: string;
 }
 
 const OscillatorContainer = styled.div`
@@ -44,7 +44,7 @@ const RANGES: MarkProps[] = [
 const Center: MarkProps[] = [{ value: 0, label: "-" }];
 
 export default function Oscillator(props: OscillatorProps) {
-  const { title } = props;
+  const { title, code } = props;
   const [oscillator, setOscillator] = useState<OscillatorModule>();
 
   const [note, setNote] = useState<Note>(new Note("C4"));
@@ -54,7 +54,7 @@ export default function Oscillator(props: OscillatorProps) {
   const [range, setRange] = useState<number>(1);
 
   useEffect(() => {
-    const osc = new OscillatorModule(title);
+    const osc = new OscillatorModule(title, code);
     osc.note = note;
 
     setOscillator(osc);

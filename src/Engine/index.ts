@@ -1,13 +1,16 @@
 import { now } from "tone";
 
-import Module from "./Module";
+import Module, { Connectable } from "./Module";
 import Oscillator from "./modules/Oscillator";
+import Filter from "./modules/Filter";
 import { AmpEnvelope, FreqEnvelope } from "./modules/Envelope";
 import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
 
 class Engine {
-  modules: { [Identifier: string]: Module };
+  modules: {
+    [Identifier: string]: Module<Connectable>;
+  };
 
   private static instance: Engine;
 
@@ -23,33 +26,35 @@ class Engine {
     return Engine.instance;
   }
 
-  public registerModule(modula: Module) {
+  public registerModule<InternalModule extends Connectable>(
+    modula: Module<InternalModule>
+  ) {
     this.modules[modula.id] ??= modula;
     this.applyRoutes();
   }
 
-  public getModuleByName(name: string): Module | undefined {
+  public getModuleByName(name: string): Module<Connectable> | undefined {
     return Object.values(this.modules).find((modula) => modula.name === name);
   }
 
   private applyRoutes() {
-    const oscs = Object.values(this.modules).filter((m: Module) =>
-      m.name.startsWith("Osc")
+    const oscs = Object.values(this.modules).filter((m: Module<Connectable>) =>
+      m.code.startsWith("osc")
     );
     const ampEnv = Object.values(this.modules).find(
-      (m: Module) => m.name === "Amp Envelope"
+      (m: Module<Connectable>) => m.code === "ampEnvelope"
     );
 
     const filter = Object.values(this.modules).find(
-      (m: Module) => m.name === "Filter"
+      (m: Module<Connectable>) => m.code === "filter"
     );
     const filterEnv = Object.values(this.modules).find(
-      (m: Module) => m.name === "Freq Envelope"
+      (m: Module<Connectable>) => m.code === "freqEnvelope"
     );
 
     if (oscs.length !== 3 || !ampEnv || !filter || !filterEnv) return;
 
-    filterEnv.connect(filter);
+    (filterEnv as FreqEnvelope).connectToFilter(filter as Filter);
 
     oscs.forEach((osc) => osc.chain(filter, ampEnv));
     ampEnv.toDestination();

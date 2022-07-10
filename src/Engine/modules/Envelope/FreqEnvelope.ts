@@ -1,20 +1,22 @@
-import { FrequencyEnvelope as Envelope } from "tone";
+import { FrequencyEnvelope } from "tone";
+
+import { ModuleType } from "Engine/Module";
+import Filter from "Engine/modules/Filter";
 
 import Base from "./Base";
-import Filter from "../Filter";
 
 export default class FreqEnvelope extends Base {
-  internalModule: Envelope;
+  constructor(name: string, code: string) {
+    super(name, code, ModuleType.FreqEnvelope);
 
-  constructor(name: string) {
-    super(name, Envelope);
+    if (!(this.internalModule instanceof FrequencyEnvelope)) return;
 
     this.internalModule.baseFrequency = "C4";
     this.internalModule.octaves = 6;
     this.internalModule.exponent = 2;
   }
 
-  connect(module: Filter) {
-    this.internalModule.connect(module.internalModule.frequency);
+  connectToFilter(filter: Filter) {
+    this.internalModule.connect(filter.internalModule.frequency);
   }
 }

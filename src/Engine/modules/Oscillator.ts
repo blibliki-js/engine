@@ -1,11 +1,9 @@
-import { Oscillator as Osc, ToneOscillatorType, InputNode } from "tone";
+import { Oscillator as Osc, ToneOscillatorType } from "tone";
 
 import Module, { ModuleType } from "../Module";
 import Note from "../Note";
 
-export default class Oscillator extends Module {
-  internalModule: Osc;
-
+export default class Oscillator extends Module<Osc> {
   private _note: Note;
   private _fine: number = 0;
   private _coarse: number = 0;
@@ -13,10 +11,10 @@ export default class Oscillator extends Module {
   private _range: number = 1;
   private _volume: number = -100;
 
-  constructor(name: string) {
-    super({ name, type: ModuleType.Oscillator });
+  constructor(name: string, code: string) {
+    super(new Osc(), { name, code, type: ModuleType.Oscillator });
 
-    this.internalModule = new Osc().sync();
+    this.internalModule.sync();
   }
 
   get note() {
@@ -80,20 +78,6 @@ export default class Oscillator extends Module {
 
   start() {
     this.internalModule.start();
-  }
-
-  connect(module: Module) {
-    this.internalModule.connect(module.internalModule);
-  }
-
-  chain(...modules: Module[]) {
-    this.internalModule.chain(
-      ...modules.map((m: Module) => m.internalModule as InputNode)
-    );
-  }
-
-  toDestination() {
-    this.internalModule.toDestination();
   }
 
   private updateFrequency(time?: number) {

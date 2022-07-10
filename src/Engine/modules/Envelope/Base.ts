@@ -1,4 +1,9 @@
-import { Envelope, Time } from "tone";
+import {
+  Envelope as Env,
+  AmplitudeEnvelope as AmpEnv,
+  FrequencyEnvelope as FreqEnv,
+  Time,
+} from "tone";
 
 import Note from "Engine/Note";
 import Module, { ModuleType } from "Engine/Module";
@@ -14,19 +19,34 @@ const MAX_TIME = 2;
 const MIN_TIME = 0.01;
 const SUSTAIN_MAX_VALUE = 1;
 
-export default class EnvelopeModule extends Module {
-  internalModule: Envelope;
+export default abstract class EnvelopeModule extends Module<
+  Env | AmpEnv | FreqEnv
+> {
   activeNotes: Note[];
 
-  constructor(name: string, internalModule = Envelope) {
-    super({ name, type: ModuleType.Envelope });
+  constructor(name: string, code: string, type: ModuleType) {
+    let internalModule;
 
-    this.internalModule = new internalModule({
-      attack: MIN_TIME,
-      decay: MIN_TIME,
-      sustain: SUSTAIN_MAX_VALUE,
-      release: MIN_TIME,
-    });
+    switch (type) {
+      case ModuleType.Envelope:
+        internalModule = Env;
+        break;
+      case ModuleType.AmpEnvelope:
+        internalModule = AmpEnv;
+        break;
+      case ModuleType.FreqEnvelope:
+        internalModule = FreqEnv;
+        break;
+      default:
+        throw Error("Unknown envelope type");
+    }
+
+    super(new internalModule(), { name, code, type });
+
+    this.internalModule.attack = MIN_TIME;
+    this.internalModule.decay = MIN_TIME;
+    this.internalModule.sustain = SUSTAIN_MAX_VALUE;
+    this.internalModule.release = MIN_TIME;
 
     this.activeNotes = [];
   }
@@ -69,5 +89,11 @@ export default class EnvelopeModule extends Module {
     this.activeNotes = this.activeNotes.filter(
       (n) => n.fullName !== note.fullName
     );
+  }
+}
+
+export class Envelope extends EnvelopeModule {
+  constructor(name: string, code: string) {
+    super(name, code, ModuleType.Envelope);
   }
 }

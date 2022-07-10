@@ -8,6 +8,7 @@ import Fader, { MarkProps } from "components/Fader";
 
 interface FilterProps {
   title: string;
+  code: string;
 }
 
 const FilterContainer = styled.div`
@@ -28,14 +29,14 @@ const Title = styled.div`
 const Center: MarkProps[] = [{ value: 2500, label: "-" }];
 
 export default function Filter(props: FilterProps) {
-  const { title } = props;
+  const { title, code } = props;
   const [filter, setFilter] = useState<FilterModule>();
 
   const [cutoff, setCutoff] = useState<number>(5000);
   const [resonance, setResonance] = useState<number>(0);
 
   useEffect(() => {
-    const f = new FilterModule(title);
+    const f = new FilterModule(title, code);
     setFilter(f);
     Engine.registerModule(f);
   }, []);

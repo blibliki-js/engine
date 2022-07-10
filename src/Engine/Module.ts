@@ -3,36 +3,50 @@ import { v4 as uuidv4 } from "uuid";
 export enum ModuleType {
   Oscillator = "oscillator",
   Envelope = "envelope",
+  AmpEnvelope = "ampEnvelope",
+  FreqEnvelope = "freqEnvelope",
   Filter = "filter",
 }
 
 interface ModuleInterface {
   name: string;
+  code: string;
   type: ModuleType;
 }
 
-class Module {
+class Module<InternalModule extends Connectable> implements ModuleInterface {
   id: string;
-  internalModule: any;
+  name: string;
+  code: string;
+  type: ModuleType;
+  internalModule: InternalModule;
 
-  constructor(props: ModuleInterface) {
+  constructor(internalModule: InternalModule, props: ModuleInterface) {
     Object.assign(this, props);
+
+    this.internalModule = internalModule;
     this.id = uuidv4();
   }
 
-  connect(module: Module) {
-    throw Error("Not implemented");
+  connect(module: Module<InternalModule>) {
+    this.internalModule.connect(module.internalModule);
   }
 
-  chain(...modules: Module[]) {
-    throw Error("Not implemented");
+  chain(...modules: Module<InternalModule>[]) {
+    this.internalModule.chain(
+      ...modules.map((m: Module<InternalModule>) => m.internalModule)
+    );
   }
 
   toDestination() {
-    throw Error("Not implemented");
+    this.internalModule.toDestination();
   }
 }
 
-interface Module extends ModuleInterface {}
+export interface Connectable {
+  connect: Function;
+  chain: Function;
+  toDestination: Function;
+}
 
 export default Module;
