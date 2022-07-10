@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 export enum ModuleType {
   Oscillator = "oscillator",
   Envelope = "envelope",
+  Filter = "filter",
 }
 
 interface ModuleInterface {
@@ -23,7 +24,7 @@ class Module {
     throw Error("Not implemented");
   }
 
-  chain(modules: [Module]) {
+  chain(...modules: Module[]) {
     throw Error("Not implemented");
   }
 

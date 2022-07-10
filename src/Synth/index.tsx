@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Transport, Context, setContext } from "tone";
 
 import MidiDeviceSelector from "components/MidiDeviceSelector";
-import AmpEnvelope from "components/audio_modules/AmpEnvelope";
 
 import Oscillators from "./Oscillators";
 import Mixer from "./Mixer";
+import EnvelopesAndFilter from "./EnvelopesAndFilter";
 
 export default function Synth() {
   const [enabled, setEnabled] = useState(false);
@@ -24,7 +24,7 @@ export default function Synth() {
       <MidiDeviceSelector />
       {enabled && <Oscillators />}
       {enabled && <Mixer />}
-      {enabled && <AmpEnvelope title="Amp Envelope" amp={true} />}
+      {enabled && <EnvelopesAndFilter />}
     </>
   );
 }

@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import {
+import EnvelopeModule, {
   AmpEnvelope as AmpEnvelopeModule,
+  FreqEnvelope as FreqEnvelopeModule,
   EnvelopeStages,
 } from "Engine/modules/Envelope";
 
@@ -27,23 +28,57 @@ const FaderContainer = styled.div`
 
 interface EnvelopeProps {
   title: string;
-  amp?: boolean;
+  type?: "base" | "amplitude" | "frequency";
 }
 
-export default function AmpEnvelope(props: EnvelopeProps) {
-  const { title, amp } = props;
+export default function Envelope(props: EnvelopeProps) {
+  const { title, type = "base" } = props;
   const [envelope, setEnvelope] = useState<AmpEnvelopeModule>();
 
+  const [attack, setAttack] = useState<number>(0.01);
+  const [decay, setDecay] = useState<number>(0.01);
+  const [sustain, setSustain] = useState<number>(1);
+  const [release, setRelease] = useState<number>(0.01);
+
   useEffect(() => {
-    const env = new AmpEnvelopeModule(title);
+    let envModule;
+
+    switch (type) {
+      case "base":
+        envModule = EnvelopeModule;
+        break;
+      case "amplitude":
+        envModule = AmpEnvelopeModule;
+        break;
+      case "frequency":
+        envModule = FreqEnvelopeModule;
+        break;
+    }
+
+    const env = new envModule(title);
     setEnvelope(env);
     Engine.registerModule(env);
-  }, [amp, title]);
+  }, [type, title]);
 
   if (!envelope) return null;
 
-  const onChange = (stage: EnvelopeStages) => (value: any) => {
+  const onChange = (stage: EnvelopeStages) => (value: number) => {
     envelope.setStage(stage, value);
+
+    switch (stage) {
+      case "attack":
+        setAttack(value);
+        break;
+      case "decay":
+        setDecay(value);
+        break;
+      case "sustain":
+        setSustain(value);
+        break;
+      case "release":
+        setRelease(value);
+        break;
+    }
   };
 
   return (
@@ -54,22 +89,22 @@ export default function AmpEnvelope(props: EnvelopeProps) {
         <Fader
           name="A"
           onChange={onChange(EnvelopeStages.Attack)}
-          value={envelope.getStage(EnvelopeStages.Decay)}
+          value={attack}
         />
         <Fader
           name="D"
           onChange={onChange(EnvelopeStages.Decay)}
-          value={envelope.getStage(EnvelopeStages.Decay)}
+          value={decay}
         />
         <Fader
           name="S"
           onChange={onChange(EnvelopeStages.Sustain)}
-          value={envelope.getStage(EnvelopeStages.Sustain)}
+          value={sustain}
         />
         <Fader
           name="R"
           onChange={onChange(EnvelopeStages.Release)}
-          value={envelope.getStage(EnvelopeStages.Release)}
+          value={release}
         />
       </FaderContainer>
     </EnvelopeContainer>

@@ -1,4 +1,4 @@
-import { Oscillator as Osc, ToneOscillatorType } from "tone";
+import { Oscillator as Osc, ToneOscillatorType, InputNode } from "tone";
 
 import Module, { ModuleType } from "../Module";
 import Note from "../Note";
@@ -86,8 +86,10 @@ export default class Oscillator extends Module {
     this.internalModule.connect(module.internalModule);
   }
 
-  chain(modules: [Module]) {
-    //this.internalModule.chain(modules.map((m: Module) => m.internalModule));
+  chain(...modules: Module[]) {
+    this.internalModule.chain(
+      ...modules.map((m: Module) => m.internalModule as InputNode)
+    );
   }
 
   toDestination() {

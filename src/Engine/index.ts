@@ -2,7 +2,7 @@ import { now } from "tone";
 
 import Module from "./Module";
 import Oscillator from "./modules/Oscillator";
-import { AmpEnvelope } from "./modules/Envelope";
+import { AmpEnvelope, FreqEnvelope } from "./modules/Envelope";
 import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
 
@@ -40,15 +40,32 @@ class Engine {
       (m: Module) => m.name === "Amp Envelope"
     );
 
-    if (oscs.length !== 3 || !ampEnv) return;
+    const filter = Object.values(this.modules).find(
+      (m: Module) => m.name === "Filter"
+    );
+    const filterEnv = Object.values(this.modules).find(
+      (m: Module) => m.name === "Freq Envelope"
+    );
 
-    oscs.forEach((osc) => osc.connect(ampEnv));
+    if (oscs.length !== 3 || !ampEnv || !filter || !filterEnv) return;
+
+    filterEnv.connect(filter);
+
+    oscs.forEach((osc) => osc.chain(filter, ampEnv));
     ampEnv.toDestination();
     console.log("connected");
-    this.registerMidiEvents(oscs as Oscillator[], ampEnv as AmpEnvelope);
+    this.registerMidiEvents(
+      oscs as Oscillator[],
+      ampEnv as AmpEnvelope,
+      filterEnv as FreqEnvelope
+    );
   }
 
-  private registerMidiEvents(oscs: Array<Oscillator>, ampEnv: AmpEnvelope) {
+  private registerMidiEvents(
+    oscs: Array<Oscillator>,
+    ampEnv: AmpEnvelope,
+    filterEnv: FreqEnvelope
+  ) {
     MidiDeviceManager.fetchDevices().then((devices) => {
       const device = devices[1];
       device.connect();
@@ -62,9 +79,11 @@ class Engine {
             const time = now();
             oscs.forEach((osc) => osc.setNoteAt(note, time));
             ampEnv.triggerAttack(note, time);
+            filterEnv.triggerAttack(note, time);
             break;
           case "noteOff":
             ampEnv.triggerRelease(note);
+            filterEnv.triggerRelease(note);
             break;
         }
       });

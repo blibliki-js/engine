@@ -41,6 +41,7 @@ export default class EnvelopeModule extends Module {
   }
 
   triggerAttack(note: Note, time: number) {
+    this.internalModule.triggerRelease();
     this.addNote(note);
     this.internalModule.triggerAttack(time);
   }
