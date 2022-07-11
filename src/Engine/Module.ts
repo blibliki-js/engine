@@ -15,11 +15,12 @@ interface ModuleInterface {
 }
 
 class Module<InternalModule extends Connectable> implements ModuleInterface {
+  protected internalModule: InternalModule;
+
   id: string;
   name: string;
   code: string;
   type: ModuleType;
-  internalModule: InternalModule;
 
   constructor(internalModule: InternalModule, props: ModuleInterface) {
     Object.assign(this, props);

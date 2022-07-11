@@ -27,6 +27,7 @@ const Title = styled.div`
 `;
 
 const Center: MarkProps[] = [{ value: 2500, label: "-" }];
+const AmountCenter: MarkProps[] = [{ value: 0, label: "-" }];
 
 export default function Filter(props: FilterProps) {
   const { title, code } = props;
@@ -34,6 +35,7 @@ export default function Filter(props: FilterProps) {
 
   const [cutoff, setCutoff] = useState<number>(5000);
   const [resonance, setResonance] = useState<number>(0);
+  const [envelopeAmount, setEnvelopeAmount] = useState<number>(0);
 
   useEffect(() => {
     const f = new FilterModule(title, code);
@@ -52,6 +54,12 @@ export default function Filter(props: FilterProps) {
 
     filter.resonance = resonance;
   }, [filter, resonance]);
+
+  useEffect(() => {
+    if (!filter) return;
+
+    filter.envelopeAmount = envelopeAmount;
+  }, [filter, envelopeAmount]);
 
   if (!filter) return null;
 
@@ -74,6 +82,15 @@ export default function Filter(props: FilterProps) {
           max={100}
           onChange={setResonance}
           value={resonance}
+        />
+        <Fader
+          name="Amount"
+          marks={AmountCenter}
+          min={-8}
+          max={8}
+          step={0.2}
+          onChange={setEnvelopeAmount}
+          value={envelopeAmount}
         />
       </FaderContainer>
     </FilterContainer>
