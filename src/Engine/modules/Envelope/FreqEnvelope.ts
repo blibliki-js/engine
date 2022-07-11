@@ -5,15 +5,13 @@ import Filter from "Engine/modules/Filter";
 
 import Base from "./Base";
 
-export default class FreqEnvelope extends Base {
+export default class FreqEnvelope extends Base<FrequencyEnvelope> {
   private _frequency: number;
   private _amount: number;
   filter: Filter;
 
   constructor(name: string, code: string) {
-    super(name, code, ModuleType.FreqEnvelope);
-
-    if (!(this.internalModule instanceof FrequencyEnvelope)) return;
+    super(name, code, ModuleType.FreqEnvelope, new FrequencyEnvelope());
 
     this.internalModule.octaves = 4;
   }
@@ -23,8 +21,6 @@ export default class FreqEnvelope extends Base {
   }
 
   set frequency(value: number) {
-    if (!(this.internalModule instanceof FrequencyEnvelope)) return;
-
     this._frequency = value;
     this.internalModule.baseFrequency = value;
   }
@@ -35,8 +31,6 @@ export default class FreqEnvelope extends Base {
 
   set amount(value: number) {
     this._amount = value;
-
-    if (!(this.internalModule instanceof FrequencyEnvelope)) return;
 
     this.internalModule.octaves = value;
   }

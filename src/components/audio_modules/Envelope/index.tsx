@@ -35,7 +35,7 @@ interface EnvelopeProps {
 
 export default function Envelope(props: EnvelopeProps) {
   const { title, code, type = "base" } = props;
-  const [envelope, setEnvelope] = useState<AmpEnvelopeModule>();
+  const [envelope, setEnvelope] = useState<EnvelopeModule>();
 
   const [attack, setAttack] = useState<number>(0.01);
   const [decay, setDecay] = useState<number>(0.01);
