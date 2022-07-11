@@ -1,4 +1,11 @@
-import { useEffect, ChangeEvent } from "react";
+import { useEffect } from "react";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  SelectChangeEvent,
+  MenuItem,
+} from "@mui/material";
 
 import MidiDevice from "Engine/MidiDevice";
 import { useAppSelector, useAppDispatch } from "hooks";
@@ -7,7 +14,7 @@ import { initialize, selectDevice } from "./midiDevicesSlice";
 
 export default function MidiDeviceSelector() {
   const dispatch = useAppDispatch();
-  const { selectedDeviceId, devices } = useAppSelector(
+  const { selectedDeviceId = "", devices } = useAppSelector(
     (state) => state.midiDevices
   );
 
@@ -15,40 +22,26 @@ export default function MidiDeviceSelector() {
     dispatch(initialize());
   }, [dispatch]);
 
-  const onChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  const onChange = (event: SelectChangeEvent) => {
     dispatch(selectDevice(event.target.value));
   };
 
   return (
-    <select
-      className="drop-control"
-      onChange={onChange}
-      value={selectedDeviceId}
-    >
-      <Devices devices={devices} />
-    </select>
-  );
-}
-
-interface DevicesProps {
-  devices: MidiDevice[];
-}
-
-function Devices(props: DevicesProps) {
-  const { devices } = props;
-
-  const devicesWithPrompt = [
-    ["", "Select midi"],
-    ...devices.map((d) => [d.id, d.name]),
-  ];
-
-  return (
-    <>
-      {devicesWithPrompt.map(([id, name]) => (
-        <option key={id} value={id}>
-          {name}
-        </option>
-      ))}
-    </>
+    <FormControl fullWidth>
+      <InputLabel id="demo-simple-select-label">MIDI device</InputLabel>
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={selectedDeviceId}
+        label="select MIDI devide"
+        onChange={onChange}
+      >
+        {devices.map((device) => (
+          <MenuItem key={device.id} value={device.id}>
+            {device.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 }

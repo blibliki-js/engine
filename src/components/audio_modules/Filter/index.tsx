@@ -26,7 +26,6 @@ const Title = styled.div`
   margin-bottom: 5px;
 `;
 
-const Center: MarkProps[] = [{ value: 2500, label: "-" }];
 const AmountCenter: MarkProps[] = [{ value: 0, label: "-" }];
 
 export default function Filter(props: FilterProps) {
@@ -69,15 +68,14 @@ export default function Filter(props: FilterProps) {
 
       <FaderContainer>
         <Fader
-          name="Cutoff"
-          marks={Center}
+          name="Hz"
           min={0}
           max={5000}
           onChange={setCutoff}
           value={cutoff}
         />
         <Fader
-          name="Resonance"
+          name="Q"
           min={0}
           max={100}
           onChange={setResonance}
