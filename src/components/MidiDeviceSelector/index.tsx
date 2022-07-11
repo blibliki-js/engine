@@ -7,7 +7,6 @@ import {
   MenuItem,
 } from "@mui/material";
 
-import MidiDevice from "Engine/MidiDevice";
 import { useAppSelector, useAppDispatch } from "hooks";
 
 import { initialize, selectDevice } from "./midiDevicesSlice";
