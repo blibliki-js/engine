@@ -2,7 +2,12 @@ import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import EnvelopeModule, { EnvelopeStages } from "Engine/modules/Envelope";
+import {
+  Envelope as EnvelopeModule,
+  AmpEnvelope as AmpEnvelopeModule,
+  FreqEnvelope as FreqEnvelopeModule,
+  EnvelopeStages,
+} from "Engine/modules/Envelope";
 
 import Fader from "components/Fader";
 
@@ -24,23 +29,58 @@ const FaderContainer = styled.div`
 
 interface EnvelopeProps {
   title: string;
-  amp?: boolean;
+  code: string;
+  type?: "base" | "amplitude" | "frequency";
 }
 
 export default function Envelope(props: EnvelopeProps) {
-  const { title, amp } = props;
+  const { title, code, type = "base" } = props;
   const [envelope, setEnvelope] = useState<EnvelopeModule>();
 
+  const [attack, setAttack] = useState<number>(0.01);
+  const [decay, setDecay] = useState<number>(0.01);
+  const [sustain, setSustain] = useState<number>(1);
+  const [release, setRelease] = useState<number>(0.01);
+
   useEffect(() => {
-    const env = new EnvelopeModule(title);
+    let envModule;
+
+    switch (type) {
+      case "base":
+        envModule = EnvelopeModule;
+        break;
+      case "amplitude":
+        envModule = AmpEnvelopeModule;
+        break;
+      case "frequency":
+        envModule = FreqEnvelopeModule;
+        break;
+    }
+
+    const env = new envModule(title, code);
     setEnvelope(env);
     Engine.registerModule(env);
-  }, [amp, title]);
+  }, [type, title, code]);
 
   if (!envelope) return null;
 
-  const onChange = (stage: EnvelopeStages) => (value: any) => {
+  const onChange = (stage: EnvelopeStages) => (value: number) => {
     envelope.setStage(stage, value);
+
+    switch (stage) {
+      case "attack":
+        setAttack(value);
+        break;
+      case "decay":
+        setDecay(value);
+        break;
+      case "sustain":
+        setSustain(value);
+        break;
+      case "release":
+        setRelease(value);
+        break;
+    }
   };
 
   return (
@@ -51,22 +91,22 @@ export default function Envelope(props: EnvelopeProps) {
         <Fader
           name="A"
           onChange={onChange(EnvelopeStages.Attack)}
-          value={envelope.getStage(EnvelopeStages.Decay)}
+          value={attack}
         />
         <Fader
           name="D"
           onChange={onChange(EnvelopeStages.Decay)}
-          value={envelope.getStage(EnvelopeStages.Decay)}
+          value={decay}
         />
         <Fader
           name="S"
           onChange={onChange(EnvelopeStages.Sustain)}
-          value={envelope.getStage(EnvelopeStages.Sustain)}
+          value={sustain}
         />
         <Fader
           name="R"
           onChange={onChange(EnvelopeStages.Release)}
-          value={envelope.getStage(EnvelopeStages.Release)}
+          value={release}
         />
       </FaderContainer>
     </EnvelopeContainer>

@@ -3,13 +3,12 @@ import styled from "@emotion/styled";
 
 import Engine from "Engine";
 import OscillatorModule from "Engine/modules/Oscillator";
-import Note from "Engine/Note";
 
 import Fader, { MarkProps } from "components/Fader";
 
 interface OscillatorProps {
   title: string;
-  amp?: boolean;
+  code: string;
 }
 
 const OscillatorContainer = styled.div`
@@ -44,18 +43,16 @@ const RANGES: MarkProps[] = [
 const Center: MarkProps[] = [{ value: 0, label: "-" }];
 
 export default function Oscillator(props: OscillatorProps) {
-  const { title } = props;
+  const { title, code } = props;
   const [oscillator, setOscillator] = useState<OscillatorModule>();
 
-  const [note, setNote] = useState<Note>(new Note("C4"));
   const [coarse, setCoarse] = useState<number>(0);
   const [fine, setFine] = useState<number>(0);
   const [wave, setWave] = useState<number>(1);
   const [range, setRange] = useState<number>(1);
 
   useEffect(() => {
-    const osc = new OscillatorModule(title);
-    osc.note = note;
+    const osc = new OscillatorModule(title, code);
 
     setOscillator(osc);
     Engine.registerModule(osc);

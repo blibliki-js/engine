@@ -1,7 +1,7 @@
-import { AmplitudeEnvelope as Envelope, Time } from "tone";
+import { Envelope as Env, Time } from "tone";
 
 import Note from "Engine/Note";
-import Module, { ModuleType } from "../Module";
+import Module, { ModuleType } from "Engine/Module";
 
 export const enum EnvelopeStages {
   Attack = "attack",
@@ -14,19 +14,23 @@ const MAX_TIME = 2;
 const MIN_TIME = 0.01;
 const SUSTAIN_MAX_VALUE = 1;
 
-export default class EnvelopeModule extends Module {
-  internalModule: Envelope;
+export default abstract class EnvelopeModule<
+  EnvelopeLike extends Env
+> extends Module<EnvelopeLike> {
   activeNotes: Note[];
 
-  constructor(name: string) {
-    super({ name, type: ModuleType.Envelope });
+  constructor(
+    name: string,
+    code: string,
+    type: ModuleType,
+    internalModule: EnvelopeLike
+  ) {
+    super(internalModule, { name, code, type });
 
-    this.internalModule = new Envelope({
-      attack: MIN_TIME,
-      decay: MIN_TIME,
-      sustain: SUSTAIN_MAX_VALUE,
-      release: MIN_TIME,
-    });
+    this.internalModule.attack = MIN_TIME;
+    this.internalModule.decay = MIN_TIME;
+    this.internalModule.sustain = SUSTAIN_MAX_VALUE;
+    this.internalModule.release = MIN_TIME;
 
     this.activeNotes = [];
   }
@@ -41,13 +45,13 @@ export default class EnvelopeModule extends Module {
   }
 
   triggerAttack(note: Note, time: number) {
+    this.internalModule.triggerRelease();
     this.addNote(note);
     this.internalModule.triggerAttack(time);
   }
 
   triggerRelease(note: Note) {
     this.removeNote(note);
-    console.log(this.activeNotes);
     if (this.activeNotes.length) return;
 
     this.internalModule.triggerRelease();
@@ -69,5 +73,11 @@ export default class EnvelopeModule extends Module {
     this.activeNotes = this.activeNotes.filter(
       (n) => n.fullName !== note.fullName
     );
+  }
+}
+
+export class Envelope extends EnvelopeModule<Env> {
+  constructor(name: string, code: string) {
+    super(name, code, ModuleType.Envelope, new Env());
   }
 }
