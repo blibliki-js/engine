@@ -14,6 +14,7 @@ export default class Oscillator extends Module<Osc> {
   constructor(name: string, code: string) {
     super(new Osc(), { name, code, type: ModuleType.Oscillator });
 
+    this.note = new Note("C3");
     this.internalModule.sync();
   }
 
