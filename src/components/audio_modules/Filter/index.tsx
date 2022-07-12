@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import FilterModule from "Engine/modules/Filter";
+import { Filter as FilterModule } from "Engine/Module";
 
 import Fader, { MarkProps } from "components/Fader";
 

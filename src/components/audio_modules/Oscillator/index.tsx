@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import OscillatorModule from "Engine/modules/Oscillator";
+import { Oscillator as OscillatorModule } from "Engine/Module";
 
 import Fader, { MarkProps } from "components/Fader";
 

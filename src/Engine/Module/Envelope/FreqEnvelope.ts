@@ -1,7 +1,7 @@
 import { FrequencyEnvelope } from "tone";
 
-import { ModuleType } from "Engine/Module";
-import Filter from "Engine/modules/Filter";
+import { ModuleType } from "../Base";
+import Filter from "../Filter";
 
 import Base from "./Base";
 

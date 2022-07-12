@@ -8,6 +8,12 @@ export enum ModuleType {
   Filter = "filter",
 }
 
+export interface Connectable {
+  connect: Function;
+  chain: Function;
+  toDestination: Function;
+}
+
 interface ModuleInterface {
   name: string;
   code: string;
@@ -42,12 +48,6 @@ class Module<InternalModule extends Connectable> implements ModuleInterface {
   toDestination() {
     this.internalModule.toDestination();
   }
-}
-
-export interface Connectable {
-  connect: Function;
-  chain: Function;
-  toDestination: Function;
 }
 
 export default Module;

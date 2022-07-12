@@ -1,7 +1,7 @@
 import { Filter as InternalFilter } from "tone";
 
-import { FreqEnvelope } from "Engine/modules/Envelope";
-import Module, { ModuleType } from "../Module";
+import { FreqEnvelope } from "./Envelope";
+import Module, { ModuleType } from "./Base";
 
 export default class Filter extends Module<InternalFilter> {
   private _cutoff: number;

@@ -7,7 +7,7 @@ import {
   AmpEnvelope as AmpEnvelopeModule,
   FreqEnvelope as FreqEnvelopeModule,
   EnvelopeStages,
-} from "Engine/modules/Envelope";
+} from "Engine/Module";
 
 import Fader from "components/Fader";
 

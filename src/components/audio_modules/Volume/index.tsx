@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import Oscillator from "Engine/modules/Oscillator";
+import { Oscillator } from "Engine/Module";
 import Fader from "components/Fader";
 
 interface VolumeProps {

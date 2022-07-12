@@ -1,9 +1,12 @@
 import { now } from "tone";
 
-import Module, { Connectable } from "./Module";
-import Oscillator from "./modules/Oscillator";
-import Filter from "./modules/Filter";
-import { AmpEnvelope, FreqEnvelope } from "./modules/Envelope";
+import Module, {
+  Connectable,
+  Oscillator,
+  Filter,
+  AmpEnvelope,
+  FreqEnvelope,
+} from "./Module";
 import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
 
