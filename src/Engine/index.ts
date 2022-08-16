@@ -36,6 +36,11 @@ class Engine {
     this.applyRoutes();
   }
 
+  public dispose() {
+    console.log("Engine disposed!");
+    Object.values(this.modules).forEach((m) => m.dispose());
+  }
+
   public getModuleByName(name: string): Module<Connectable> | undefined {
     return Object.values(this.modules).find((modula) => modula.name === name);
   }

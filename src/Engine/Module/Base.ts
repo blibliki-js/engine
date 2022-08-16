@@ -12,6 +12,7 @@ export interface Connectable {
   connect: Function;
   chain: Function;
   toDestination: Function;
+  dispose: Function;
 }
 
 interface ModuleInterface {
@@ -47,6 +48,10 @@ class Module<InternalModule extends Connectable> implements ModuleInterface {
 
   toDestination() {
     this.internalModule.toDestination();
+  }
+
+  dispose() {
+    this.internalModule.dispose();
   }
 }
 

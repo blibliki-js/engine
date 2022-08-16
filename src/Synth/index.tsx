@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Transport, Context, setContext } from "tone";
 import styled from "@emotion/styled";
 
+import Engine from "Engine";
+
 import MidiDeviceSelector from "components/MidiDeviceSelector";
 
 import Oscillators from "./Oscillators";
@@ -34,6 +36,8 @@ export default function Synth() {
     const context = new Context({ latencyHint: "interactive" });
     setContext(context);
     Transport.start();
+
+    return () => Engine.dispose();
   }, [enabled]);
 
   if (!enabled) return <button onClick={() => setEnabled(true)}>Start</button>;
