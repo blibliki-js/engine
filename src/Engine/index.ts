@@ -10,6 +10,9 @@ import Module, {
 import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
 
+import { store } from "store";
+import { modulesSelector, addModule } from "Engine/Module/modulesSlice";
+
 class Engine {
   modules: {
     [Identifier: string]: Module<Connectable>;
@@ -32,6 +35,7 @@ class Engine {
   public registerModule<InternalModule extends Connectable>(
     modula: Module<InternalModule>
   ) {
+    store.dispatch(addModule(modula));
     this.modules[modula.id] ??= modula;
     this.applyRoutes();
   }
