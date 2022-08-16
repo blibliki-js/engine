@@ -68,7 +68,8 @@ class Engine {
 
     (filterEnv as FreqEnvelope).connectToFilter(filter as Filter);
 
-    oscs.forEach((osc) => osc.chain(filter, ampEnv));
+    oscs.forEach((osc) => this.chain(osc.id, [filter.id, ampEnv.id]));
+
     ampEnv.toDestination();
     console.log("connected");
     this.registerMidiEvents(
@@ -76,6 +77,22 @@ class Engine {
       ampEnv as AmpEnvelope,
       filterEnv as FreqEnvelope
     );
+  }
+
+  private chain(sourceId: string, chainIds: string[]) {
+    const state = store.getState();
+    const source = modulesSelector.selectById(state, sourceId);
+    const chains = chainIds.map((id) => {
+      const m = modulesSelector.selectById(state, id);
+
+      if (!m) throw Error(`Missing module with id ${id}`);
+
+      return m;
+    });
+
+    if (!source) throw Error(`Missing module with id ${sourceId}`);
+
+    source.chain(...chains);
   }
 
   private registerMidiEvents(
