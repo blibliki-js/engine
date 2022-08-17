@@ -1,11 +1,24 @@
 import Volume from "components/audio_modules/Volume";
+import { selectModulesByType } from "Engine/Module/modulesSlice";
+import { useAppSelector } from "hooks";
 
 export default function Mixer() {
+  const oscillators = useAppSelector((state) =>
+    selectModulesByType(state, "oscillator")
+  );
+
+  if (!oscillators.length) return null;
+
   return (
     <div>
-      <Volume title="Osc 1" />
-      <Volume title="Osc 2" />
-      <Volume title="Osc 3" />
+      {oscillators.map((osc) => (
+        <Volume
+          key={osc.id}
+          id={osc.id}
+          name={osc.name}
+          volume={osc.props.volume}
+        />
+      ))}
     </div>
   );
 }

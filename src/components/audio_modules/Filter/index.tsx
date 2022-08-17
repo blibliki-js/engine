@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import { Filter as FilterModule } from "Engine/Module";
+import { useAppSelector } from "hooks";
+import { modulesSelector } from "Engine/Module/modulesSlice";
 
 import Fader, { MarkProps } from "components/Fader";
 
 interface FilterProps {
-  title: string;
-  code: string;
+  id: string;
 }
 
 const FilterContainer = styled.div`
@@ -29,38 +28,15 @@ const Title = styled.div`
 const AmountCenter: MarkProps[] = [{ value: 0, label: "-" }];
 
 export default function Filter(props: FilterProps) {
-  const { title, code } = props;
-  const [filter, setFilter] = useState<FilterModule>();
+  const { id } = props;
+  const {
+    name: title,
+    props: { cutoff, resonance, envelopeAmount },
+  } = useAppSelector((state) => modulesSelector.selectById(state, id)) || {};
 
-  const [cutoff, setCutoff] = useState<number>(5000);
-  const [resonance, setResonance] = useState<number>(0);
-  const [envelopeAmount, setEnvelopeAmount] = useState<number>(0);
-
-  useEffect(() => {
-    const f = new FilterModule(title, code);
-    setFilter(f);
-    Engine.registerModule(f);
-  }, []);
-
-  useEffect(() => {
-    if (!filter) return;
-
-    filter.cutoff = cutoff;
-  }, [filter, cutoff]);
-
-  useEffect(() => {
-    if (!filter) return;
-
-    filter.resonance = resonance;
-  }, [filter, resonance]);
-
-  useEffect(() => {
-    if (!filter) return;
-
-    filter.envelopeAmount = envelopeAmount;
-  }, [filter, envelopeAmount]);
-
-  if (!filter) return null;
+  const updateProp = (propName: string) => (value: number | string) => {
+    Engine.updatePropModule(id, { [propName]: value });
+  };
 
   return (
     <FilterContainer>
@@ -71,14 +47,14 @@ export default function Filter(props: FilterProps) {
           name="Hz"
           min={0}
           max={5000}
-          onChange={setCutoff}
+          onChange={updateProp("cutoff")}
           value={cutoff}
         />
         <Fader
           name="Q"
           min={0}
           max={100}
-          onChange={setResonance}
+          onChange={updateProp("resonance")}
           value={resonance}
         />
         <Fader
@@ -87,7 +63,7 @@ export default function Filter(props: FilterProps) {
           min={-8}
           max={8}
           step={0.2}
-          onChange={setEnvelopeAmount}
+          onChange={updateProp("envelopeAmount")}
           value={envelopeAmount}
         />
       </FaderContainer>

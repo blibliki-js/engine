@@ -1,5 +1,6 @@
 import {
   createSlice,
+  createSelector,
   createEntityAdapter,
   EntityState,
   PayloadAction,
@@ -7,9 +8,9 @@ import {
 
 import { RootState } from "store";
 
-import Module, { Connectable } from "./Base";
+import { ModuleInterface } from "./Base";
 
-const modulesAdapter = createEntityAdapter<Module<Connectable>>({});
+const modulesAdapter = createEntityAdapter<ModuleInterface>({});
 
 export const modulesSlice = createSlice({
   name: "modules",
@@ -17,9 +18,12 @@ export const modulesSlice = createSlice({
   reducers: {
     addModule: (
       state: EntityState<any>,
-      action: PayloadAction<Module<Connectable>>
+      action: PayloadAction<ModuleInterface>
     ) => {
       return modulesAdapter.addOne(state, action);
+    },
+    updateModule: (state: EntityState<any>, update: PayloadAction<any>) => {
+      return modulesAdapter.updateOne(state, update);
     },
   },
 });
@@ -28,6 +32,13 @@ export const modulesSelector = modulesAdapter.getSelectors(
   (state: RootState) => state.modules
 );
 
-export const { addModule } = modulesSlice.actions;
+export const selectModulesByType = createSelector(
+  (state: RootState) => modulesSelector.selectAll(state),
+  (_: RootState, type: string) => type,
+  (modules: ModuleInterface[], type: string) =>
+    modules.filter((m) => m.type === type)
+);
+
+export const { addModule, updateModule } = modulesSlice.actions;
 
 export default modulesSlice.reducer;

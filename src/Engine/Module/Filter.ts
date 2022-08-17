@@ -3,26 +3,38 @@ import { Filter as InternalFilter } from "tone";
 import { FreqEnvelope } from "./Envelope";
 import Module, { ModuleType } from "./Base";
 
-export default class Filter extends Module<InternalFilter> {
-  private _cutoff: number;
-  private _resonance: number;
-  private _envelopeAmount: number;
+interface FilterInterface {
+  cutoff: number;
+  resonance: number;
+  envelopeAmount: number;
+}
+
+interface FilterProps extends Partial<FilterInterface> {}
+
+const InitialProps: FilterInterface = {
+  cutoff: 5000,
+  resonance: 0,
+  envelopeAmount: 0,
+};
+
+export default class Filter extends Module<InternalFilter, FilterInterface> {
   private _envelope: FreqEnvelope;
 
-  constructor(name: string, code: string) {
+  constructor(name: string, code: string, props: FilterProps) {
     super(new InternalFilter({ type: "lowpass" }), {
       name,
       code,
+      props: { ...InitialProps, ...props },
       type: ModuleType.Filter,
     });
   }
 
   get cutoff() {
-    return this._cutoff;
+    return this._props["cutoff"];
   }
 
   set cutoff(value: number) {
-    this._cutoff = value;
+    this._props = { ...this.props, cutoff: value };
 
     if (this._envelope) {
       this._envelope.frequency = value;
@@ -36,20 +48,21 @@ export default class Filter extends Module<InternalFilter> {
   }
 
   get resonance() {
-    return this._resonance;
+    return this._props["resonance"];
   }
 
   set resonance(value: number) {
-    this._resonance = value;
+    this._props = { ...this.props, resonance: value };
+
     this.internalModule.Q.value = value;
   }
 
   get envelopeAmount() {
-    return this._envelopeAmount;
+    return this._props["envelopeAmount"];
   }
 
   set envelopeAmount(value: number) {
-    this._envelopeAmount = value;
+    this._props = { ...this.props, envelopeAmount: value };
 
     if (!this._envelope) return;
 

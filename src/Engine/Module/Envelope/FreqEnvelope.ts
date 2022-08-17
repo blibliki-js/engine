@@ -3,15 +3,15 @@ import { FrequencyEnvelope } from "tone";
 import { ModuleType } from "../Base";
 import Filter from "../Filter";
 
-import Base from "./Base";
+import Base, { EnvelopeInterface } from "./Base";
 
 export default class FreqEnvelope extends Base<FrequencyEnvelope> {
   private _frequency: number;
   private _amount: number;
   filter: Filter;
 
-  constructor(name: string, code: string) {
-    super(name, code, ModuleType.FreqEnvelope, new FrequencyEnvelope());
+  constructor(name: string, code: string, props: EnvelopeInterface) {
+    super(name, code, ModuleType.FreqEnvelope, new FrequencyEnvelope(), props);
 
     this.internalModule.octaves = 4;
   }
