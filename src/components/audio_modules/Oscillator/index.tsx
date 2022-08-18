@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import OscillatorModule from "Engine/modules/Oscillator";
+import { useAppSelector } from "hooks";
+import { modulesSelector } from "Engine/Module/modulesSlice";
 
 import Fader, { MarkProps } from "components/Fader";
 
-interface OscillatorProps {
-  title: string;
-  code: string;
-}
+const Center: MarkProps[] = [{ value: 0, label: "-" }];
 
 const OscillatorContainer = styled.div`
   border: 1px solid;
@@ -34,74 +31,49 @@ const WAVES: MarkProps[] = [
 ];
 
 const RANGES: MarkProps[] = [
+  { value: -1, label: "" },
   { value: 0, label: "" },
   { value: 1, label: "" },
   { value: 2, label: "" },
-  { value: 3, label: "" },
 ];
 
-const Center: MarkProps[] = [{ value: 0, label: "-" }];
+export default function Oscillator(props: { id: string }) {
+  const { id } = props;
+  const {
+    name: title,
+    props: { range, coarse, fine, wave: waveName },
+  } = useAppSelector((state) => modulesSelector.selectById(state, id)) || {};
 
-export default function Oscillator(props: OscillatorProps) {
-  const { title, code } = props;
-  const [oscillator, setOscillator] = useState<OscillatorModule>();
+  const wave = WAVES.find((w) => w.label === waveName)?.value;
 
-  const [coarse, setCoarse] = useState<number>(0);
-  const [fine, setFine] = useState<number>(0);
-  const [wave, setWave] = useState<number>(1);
-  const [range, setRange] = useState<number>(1);
+  const updateProp = (propName: string) => (value: number | string) => {
+    if (propName === "wave")
+      value = WAVES.find((w) => w.value === value)?.label || WAVES[0].label;
 
-  useEffect(() => {
-    const osc = new OscillatorModule(title, code);
+    Engine.updatePropModule(id, { [propName]: value });
+  };
 
-    setOscillator(osc);
-    Engine.registerModule(osc);
-
-    osc.start();
-  }, []);
-
-  useEffect(() => {
-    if (!oscillator) return;
-
-    oscillator.coarse = coarse;
-  }, [oscillator, coarse]);
-
-  useEffect(() => {
-    if (!oscillator) return;
-
-    oscillator.fine = fine;
-  }, [oscillator, fine]);
-
-  useEffect(() => {
-    if (!oscillator) return;
-
-    const newWave = WAVES.find((w) => w.value === wave);
-
-    if (!newWave) return;
-
-    oscillator.wave = newWave.label;
-  }, [oscillator, wave]);
-
-  useEffect(() => {
-    if (!oscillator) return;
-
-    oscillator.range = range - 1;
-  }, [oscillator, range]);
-
-  if (!oscillator) return null;
+  if (!id) return null;
 
   return (
     <OscillatorContainer>
       <Title>{title}</Title>
 
       <FaderContainer>
-        <Fader name="Octave" marks={RANGES} onChange={setRange} value={range} />
+        <Fader
+          name="Octave"
+          marks={RANGES}
+          min={-1}
+          max={2}
+          onChange={updateProp("range")}
+          value={range}
+        />
         <Fader
           name="Coarse"
           marks={Center}
           min={-12}
           max={12}
-          onChange={setCoarse}
+          onChange={updateProp("coarse")}
           value={coarse}
         />
         <Fader
@@ -109,10 +81,15 @@ export default function Oscillator(props: OscillatorProps) {
           marks={Center}
           min={-100}
           max={100}
-          onChange={setFine}
+          onChange={updateProp("fine")}
           value={fine}
         />
-        <Fader name="Wave" marks={WAVES} onChange={setWave} value={wave} />
+        <Fader
+          name="Wave"
+          marks={WAVES}
+          onChange={updateProp("wave")}
+          value={wave}
+        />
       </FaderContainer>
     </OscillatorContainer>
   );

@@ -7,20 +7,19 @@ import {
   MenuItem,
 } from "@mui/material";
 
-import MidiDevice from "Engine/MidiDevice";
 import { useAppSelector, useAppDispatch } from "hooks";
 
-import { initialize, selectDevice } from "./midiDevicesSlice";
+import { initialize, selectDevice, devicesSelector } from "./midiDevicesSlice";
 
 export default function MidiDeviceSelector() {
   const dispatch = useAppDispatch();
-  const { selectedDeviceId = "", devices } = useAppSelector(
-    (state) => state.midiDevices
-  );
+  const devices = useAppSelector((state) => devicesSelector.selectAll(state));
 
   useEffect(() => {
     dispatch(initialize());
   }, [dispatch]);
+
+  const selectedId = devices.find((d) => d.selected)?.id || "";
 
   const onChange = (event: SelectChangeEvent) => {
     dispatch(selectDevice(event.target.value));
@@ -32,7 +31,7 @@ export default function MidiDeviceSelector() {
       <Select
         labelId="demo-simple-select-label"
         id="demo-simple-select"
-        value={selectedDeviceId}
+        value={selectedId}
         label="select MIDI devide"
         onChange={onChange}
       >

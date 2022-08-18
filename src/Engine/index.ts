@@ -1,15 +1,22 @@
 import { now } from "tone";
 
-import Module, { Connectable } from "./Module";
-import Oscillator from "./modules/Oscillator";
-import Filter from "./modules/Filter";
-import { AmpEnvelope, FreqEnvelope } from "./modules/Envelope";
+import Module, {
+  Connectable,
+  Oscillator,
+  Filter,
+  AmpEnvelope,
+  FreqEnvelope,
+  createModule,
+} from "./Module";
 import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
 
+import { store } from "store";
+import { addModule, updateModule } from "Engine/Module/modulesSlice";
+
 class Engine {
   modules: {
-    [Identifier: string]: Module<Connectable>;
+    [Identifier: string]: Module<Connectable, any>;
   };
 
   private static instance: Engine;
@@ -26,37 +33,55 @@ class Engine {
     return Engine.instance;
   }
 
-  public registerModule<InternalModule extends Connectable>(
-    modula: Module<InternalModule>
-  ) {
-    this.modules[modula.id] ??= modula;
-    this.applyRoutes();
+  public findModule(id: string): Module<Connectable, any> | undefined {
+    return Object.values(this.modules).find((modula) => modula.id === id);
   }
 
-  public getModuleByName(name: string): Module<Connectable> | undefined {
-    return Object.values(this.modules).find((modula) => modula.name === name);
+  public registerModule(name: string, code: string, type: string, props: any) {
+    const modula = createModule(name, code, type, props);
+    store.dispatch(addModule(modula.serialize()));
+    this.modules[modula.id] ??= modula;
+    this.applyRoutes();
+
+    return modula.id;
+  }
+
+  updatePropModule(id: string, props: any) {
+    const modula = this.findModule(id);
+    if (!modula) return;
+
+    modula.props = props;
+    store.dispatch(
+      updateModule({ id, changes: { props: { ...modula.props } } })
+    );
+  }
+
+  public dispose() {
+    console.log("Engine disposed!");
+    Object.values(this.modules).forEach((m) => m.dispose());
   }
 
   private applyRoutes() {
-    const oscs = Object.values(this.modules).filter((m: Module<Connectable>) =>
-      m.code.startsWith("osc")
+    const oscs = Object.values(this.modules).filter(
+      (m: Module<Connectable, any>) => m.type === "oscillator"
     );
     const ampEnv = Object.values(this.modules).find(
-      (m: Module<Connectable>) => m.code === "ampEnvelope"
+      (m: Module<Connectable, any>) => m.type === "ampEnvelope"
     );
 
     const filter = Object.values(this.modules).find(
-      (m: Module<Connectable>) => m.code === "filter"
+      (m: Module<Connectable, any>) => m.type === "filter"
     );
     const filterEnv = Object.values(this.modules).find(
-      (m: Module<Connectable>) => m.code === "freqEnvelope"
+      (m: Module<Connectable, any>) => m.type === "freqEnvelope"
     );
 
     if (oscs.length !== 3 || !ampEnv || !filter || !filterEnv) return;
 
     (filterEnv as FreqEnvelope).connectToFilter(filter as Filter);
 
-    oscs.forEach((osc) => osc.chain(filter, ampEnv));
+    oscs.forEach((osc) => this.chain(osc.id, [filter.id, ampEnv.id]));
+
     ampEnv.toDestination();
     console.log("connected");
     this.registerMidiEvents(
@@ -66,32 +91,43 @@ class Engine {
     );
   }
 
+  private chain(sourceId: string, chainIds: string[]) {
+    const source = this.findModule(sourceId);
+    const chains = chainIds.map((id) => {
+      const m = this.findModule(id);
+
+      if (!m) throw Error(`Missing module with id ${id}`);
+
+      return m;
+    });
+
+    if (!source) throw Error(`Missing module with id ${sourceId}`);
+
+    source.chain(...chains);
+  }
+
   private registerMidiEvents(
     oscs: Array<Oscillator>,
     ampEnv: AmpEnvelope,
     filterEnv: FreqEnvelope
   ) {
-    MidiDeviceManager.fetchDevices().then((devices) => {
-      const device = devices[1];
-      device.connect();
+    MidiDeviceManager.onNote((midiEvent: MidiEvent) => {
+      const { note } = midiEvent;
 
-      device.onNote((midiEvent: MidiEvent) => {
-        const { note } = midiEvent;
-        if (!note) return;
+      if (!note) return;
 
-        switch (midiEvent.type) {
-          case "noteOn":
-            const time = now();
-            oscs.forEach((osc) => osc.setNoteAt(note, time));
-            ampEnv.triggerAttack(note, time);
-            filterEnv.triggerAttack(note, time);
-            break;
-          case "noteOff":
-            ampEnv.triggerRelease(note);
-            filterEnv.triggerRelease(note);
-            break;
-        }
-      });
+      switch (midiEvent.type) {
+        case "noteOn":
+          const time = now();
+          oscs.forEach((osc) => osc.setNoteAt(note, time));
+          ampEnv.triggerAttack(note, time);
+          filterEnv.triggerAttack(note, time);
+          break;
+        case "noteOff":
+          ampEnv.triggerRelease(note);
+          filterEnv.triggerRelease(note);
+          break;
+      }
     });
   }
 }

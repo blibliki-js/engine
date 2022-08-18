@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import Oscillator from "Engine/modules/Oscillator";
 import Fader from "components/Fader";
 
 interface VolumeProps {
-  title: string;
-  defaultVolume?: number;
+  id: string;
+  name: string;
+  volume: number;
 }
 
 const VolumeContainer = styled.div`
@@ -24,30 +23,19 @@ const Title = styled.div`
 `;
 
 export default function Volume(props: VolumeProps) {
-  const { title, defaultVolume = -10 } = props;
-  const [oscillator, setOscillator] = useState<Oscillator>();
-  const [volume, setVolume] = useState<number>(defaultVolume);
+  const { id, name, volume } = props;
 
-  useEffect(() => {
-    const osc = Engine.getModuleByName(title) as Oscillator;
-
-    setOscillator(osc);
-    setVolume(osc.volume);
-  }, []);
-
-  useEffect(() => {
-    if (!oscillator) return;
-
-    oscillator.volume = volume;
-  }, [oscillator, volume]);
+  const updateVolume = (value: number) => {
+    Engine.updatePropModule(id, { volume: value });
+  };
 
   return (
     <VolumeContainer>
       <Title>Volume</Title>
 
       <Fader
-        name={title}
-        onChange={setVolume}
+        name={name || ""}
+        onChange={updateVolume}
         value={volume}
         min={-100}
         max={0}

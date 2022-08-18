@@ -1,57 +1,77 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createSelector,
+  createEntityAdapter,
+} from "@reduxjs/toolkit";
 
-import { AppDispatch } from "store";
+import { RootState, AppDispatch } from "store";
 import MidiDeviceManager from "Engine/MidiDeviceManager";
-import MidiDevice from "Engine/MidiDevice";
+import MidiDevice, { MidiDeviceInterface } from "Engine/MidiDevice";
 
-interface MidiDevicesState {
-  devices: MidiDevice[];
-  selectedDeviceId?: string;
-}
-
-const initialState = {
-  devices: [],
-} as MidiDevicesState;
+const devicesAdapter = createEntityAdapter<MidiDeviceInterface>({});
 
 export const midiDevicesSlice = createSlice({
   name: "midiDevices",
-  initialState,
+  initialState: devicesAdapter.getInitialState(),
   reducers: {
-    setDevices: (state, action: PayloadAction<MidiDevice[]>) => {
-      state.devices = action.payload;
-    },
-    selectDevice: (state, action: PayloadAction<string | undefined>) => {
-      state.selectedDeviceId = action.payload;
-    },
-    addDevice: (state, action: PayloadAction<MidiDevice>) => {
-      state.devices.push(action.payload);
-    },
-    removeDevice: (state, action: PayloadAction<MidiDevice>) => {
-      const deviceId = action.payload.id;
-
-      if (state.selectedDeviceId === deviceId) {
-        state.selectedDeviceId = undefined;
-      }
-
-      state.devices = state.devices.filter((device) => device.id !== deviceId);
-    },
+    setDevices: devicesAdapter.setAll,
+    addDevice: devicesAdapter.addOne,
+    removeDevice: devicesAdapter.removeOne,
+    updateDevice: devicesAdapter.updateOne,
   },
 });
 
 const { setDevices, addDevice, removeDevice } = midiDevicesSlice.actions;
 
-export const { selectDevice } = midiDevicesSlice.actions;
-
 export const initialize = () => (dispatch: AppDispatch) => {
   MidiDeviceManager.fetchDevices().then((devices) => {
-    dispatch(setDevices(devices));
+    dispatch(setDevices(devices.map((d) => d.serialize())));
   });
 
   MidiDeviceManager.onStateChange((device: MidiDevice) => {
-    const action = device.state === "disconnected" ? removeDevice : addDevice;
-
-    dispatch(action(device));
+    if (device.state === "disconnected") {
+      device.disconnect();
+      dispatch(removeDevice(device.id));
+    } else {
+      dispatch(addDevice(device.serialize()));
+    }
   });
 };
+
+export const selectDevice =
+  (id: string) => (dispatch: AppDispatch, getState: () => RootState) => {
+    const state = getState();
+
+    const { id: prevId } = selectedDevice(state) || {};
+
+    if (prevId) {
+      MidiDeviceManager.select(prevId, false);
+
+      dispatch(
+        midiDevicesSlice.actions.updateDevice({
+          id: prevId,
+          changes: { selected: false },
+        })
+      );
+    }
+
+    MidiDeviceManager.select(id, true);
+
+    dispatch(
+      midiDevicesSlice.actions.updateDevice({
+        id: id,
+        changes: { selected: true },
+      })
+    );
+  };
+
+export const selectedDevice = createSelector(
+  (state: RootState) => devicesSelector.selectAll(state),
+  (devices: MidiDeviceInterface[]) => devices.find((d) => d.selected)
+);
+
+export const devicesSelector = devicesAdapter.getSelectors(
+  (state: RootState) => state.midiDevices
+);
 
 export default midiDevicesSlice.reducer;
