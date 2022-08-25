@@ -4,8 +4,6 @@ export const globalSlice = createSlice({
   name: "global",
   initialState: {
     isInitialized: false,
-    modules: [],
-    ampEnvValue: 0,
   },
   reducers: {
     setAttributes: (state, action) => {
