@@ -12,6 +12,7 @@ import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
 
 import { store } from "store";
+import { addActiveNote, removeActiveNote } from "globalSlice";
 import { addModule, updateModule } from "Engine/Module/modulesSlice";
 
 class Engine {
@@ -122,10 +123,12 @@ class Engine {
           oscs.forEach((osc) => osc.setNoteAt(note, time));
           ampEnv.triggerAttack(note, time);
           filterEnv.triggerAttack(note, time);
+          store.dispatch(addActiveNote(note));
           break;
         case "noteOff":
           ampEnv.triggerRelease(note);
           filterEnv.triggerRelease(note);
+          store.dispatch(removeActiveNote(note));
           break;
       }
     });
