@@ -12,7 +12,7 @@ interface FilterInterface {
 interface FilterProps extends Partial<FilterInterface> {}
 
 const InitialProps: FilterInterface = {
-  cutoff: 5000,
+  cutoff: 20000,
   resonance: 0,
   envelopeAmount: 0,
 };

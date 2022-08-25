@@ -5,15 +5,24 @@ import Filter from "../Filter";
 
 import Base, { EnvelopeInterface } from "./Base";
 
+interface FreqEnvelopeInterface extends Partial<EnvelopeInterface> {
+  amount?: number;
+}
+
+const InitialProps: FreqEnvelopeInterface = {
+  amount: 0,
+};
+
 export default class FreqEnvelope extends Base<FrequencyEnvelope> {
   private _frequency: number;
   private _amount: number;
   filter: Filter;
 
   constructor(name: string, code: string, props: EnvelopeInterface) {
-    super(name, code, ModuleType.FreqEnvelope, new FrequencyEnvelope(), props);
-
-    this.internalModule.octaves = 4;
+    super(name, code, ModuleType.FreqEnvelope, new FrequencyEnvelope(), {
+      ...InitialProps,
+      ...props,
+    });
   }
 
   get frequency() {

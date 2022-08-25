@@ -34,9 +34,11 @@ export default function Filter(props: FilterProps) {
     props: { cutoff, resonance, envelopeAmount },
   } = useAppSelector((state) => modulesSelector.selectById(state, id)) || {};
 
-  const updateProp = (propName: string) => (value: number | string) => {
-    Engine.updatePropModule(id, { [propName]: value });
-  };
+  const updateProp =
+    (propName: string) => (value: number, calcValue: number) => {
+      const currentVal = propName === "cutoff" ? calcValue : value;
+      Engine.updatePropModule(id, { [propName]: currentVal });
+    };
 
   return (
     <FilterContainer>
@@ -45,10 +47,11 @@ export default function Filter(props: FilterProps) {
       <FaderContainer>
         <Fader
           name="Hz"
-          min={0}
-          max={5000}
+          min={0.1}
+          max={20000}
           onChange={updateProp("cutoff")}
           value={cutoff}
+          exp={4}
         />
         <Fader
           name="Q"
