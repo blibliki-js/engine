@@ -1,7 +1,7 @@
 import { Envelope as Env } from "tone";
 
 import Note from "Engine/Note";
-import Module, { ModuleType } from "Engine/Module";
+import Module, { ModuleType, Triggerable } from "Engine/Module";
 
 export const enum EnvelopeStages {
   Attack = "attack",
@@ -28,9 +28,10 @@ const InitialProps: EnvelopeInterface = {
   release: MIN_TIME,
 };
 
-export default abstract class EnvelopeModule<
-  EnvelopeLike extends Env
-> extends Module<EnvelopeLike, EnvelopeInterface> {
+export default abstract class EnvelopeModule<EnvelopeLike extends Env>
+  extends Module<EnvelopeLike, EnvelopeInterface>
+  implements Triggerable
+{
   activeNotes: Note[];
 
   constructor(
@@ -89,14 +90,14 @@ export default abstract class EnvelopeModule<
     this.internalModule[stage] = calculatedValue;
   }
 
-  triggerAttack(note: Note, time: number) {
+  triggerAttack(note: Note | string, time: number) {
     this.internalModule.triggerRelease();
-    this.addNote(note);
+    this.addNote(this.getNote(note));
     this.internalModule.triggerAttack(time);
   }
 
-  triggerRelease(note: Note) {
-    this.removeNote(note);
+  triggerRelease(note: Note | string) {
+    this.removeNote(this.getNote(note));
     if (this.activeNotes.length) return;
 
     this.internalModule.triggerRelease();
@@ -104,6 +105,10 @@ export default abstract class EnvelopeModule<
 
   toDestination() {
     this.internalModule.toDestination();
+  }
+
+  private getNote(note: Note | string) {
+    return note instanceof Note ? note : new Note(note);
   }
 
   private maxTime(stage: EnvelopeStages): number {

@@ -4,7 +4,7 @@ import { Envelope, AmpEnvelope, FreqEnvelope } from "./Envelope";
 import Filter from "./Filter";
 
 export { default, ModuleType } from "./Base";
-export type { Connectable } from "./Base";
+export type { Connectable, Triggerable } from "./Base";
 
 export { default as Filter } from "./Filter";
 export { default as Oscillator } from "./Oscillator";

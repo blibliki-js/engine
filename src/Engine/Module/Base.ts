@@ -15,6 +15,11 @@ export interface Connectable {
   dispose: Function;
 }
 
+export interface Triggerable {
+  triggerAttack: Function;
+  triggerRelease: Function;
+}
+
 export interface ModuleInterface {
   id: string;
   name: string;
@@ -70,6 +75,10 @@ class Module<InternalModule extends Connectable, PropsInterface>
 
   dispose() {
     this.internalModule.dispose();
+  }
+
+  isTriggerable() {
+    return !!(this as unknown as Triggerable).triggerAttack;
   }
 
   serialize() {

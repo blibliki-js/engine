@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Note from "Engine/Note";
 
 interface GlobalProps {
   isInitialized: boolean;
-  activeNotes: Note[];
+  activeNotes: string[];
 }
 
 const initialState: GlobalProps = {
@@ -18,12 +17,12 @@ export const globalSlice = createSlice({
     setAttributes: (state, action) => {
       return { ...state, ...action.payload };
     },
-    addActiveNote: (state, action: PayloadAction<Note>) => {
+    addActiveNote: (state, action: PayloadAction<string>) => {
       state.activeNotes.push(action.payload);
     },
-    removeActiveNote: (state, action) => {
+    removeActiveNote: (state, action: PayloadAction<string>) => {
       state.activeNotes = state.activeNotes.filter(
-        (note) => note.fullName !== action.payload.fullName
+        (note) => note !== action.payload
       );
     },
   },

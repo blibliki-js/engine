@@ -37,17 +37,17 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
     this.internalModule.start();
   }
 
-  get note() {
+  get note(): Note {
     return this._note;
   }
 
-  setNoteAt(value: Note, time: number) {
-    this._note = value;
+  setNoteAt(value: Note | string, time: number) {
+    this._note = this.getNote(value);
     this.updateFrequency(time);
   }
 
-  set note(value: Note) {
-    this._note = value;
+  set note(value: Note | string) {
+    this._note = this.getNote(value);
     this.updateFrequency();
   }
 
@@ -123,5 +123,9 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
       this.internalModule.restart();
       this.internalModule.frequency.value = freq;
     }
+  }
+
+  private getNote(note: Note | string): Note {
+    return note instanceof Note ? note : new Note(note);
   }
 }

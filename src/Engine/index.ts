@@ -2,6 +2,7 @@ import { now } from "tone";
 
 import Module, {
   Connectable,
+  Triggerable,
   Oscillator,
   Filter,
   AmpEnvelope,
@@ -62,6 +63,40 @@ class Engine {
     Object.values(this.modules).forEach((m) => m.dispose());
   }
 
+  public triggerKey(noteName: string, type: string) {
+    const time = now();
+
+    switch (type) {
+      case "noteOn":
+        this.oscillators.forEach((osc) => osc.setNoteAt(noteName, time));
+        this.triggerables.forEach((triggerable) =>
+          triggerable.triggerAttack(noteName, time)
+        );
+        store.dispatch(addActiveNote(noteName));
+        break;
+      case "noteOff":
+        this.triggerables.forEach((triggerable) =>
+          triggerable.triggerRelease(noteName, time)
+        );
+        store.dispatch(removeActiveNote(noteName));
+        break;
+      default:
+        throw Error("This type is not a note");
+    }
+  }
+
+  public get oscillators(): Oscillator[] {
+    return Object.values(this.modules).filter(
+      (m: Module<Connectable, any>) => m.type === "oscillator"
+    ) as Oscillator[];
+  }
+
+  public get triggerables(): Triggerable[] {
+    return Object.values(this.modules).filter((m: Module<Connectable, any>) =>
+      m.isTriggerable()
+    ) as unknown[] as Triggerable[];
+  }
+
   private applyRoutes() {
     const oscs = Object.values(this.modules).filter(
       (m: Module<Connectable, any>) => m.type === "oscillator"
@@ -85,11 +120,7 @@ class Engine {
 
     ampEnv.toDestination();
     console.log("connected");
-    this.registerMidiEvents(
-      oscs as Oscillator[],
-      ampEnv as AmpEnvelope,
-      filterEnv as FreqEnvelope
-    );
+    this.registerMidiEvents();
   }
 
   private chain(sourceId: string, chainIds: string[]) {
@@ -107,30 +138,13 @@ class Engine {
     source.chain(...chains);
   }
 
-  private registerMidiEvents(
-    oscs: Array<Oscillator>,
-    ampEnv: AmpEnvelope,
-    filterEnv: FreqEnvelope
-  ) {
+  private registerMidiEvents() {
     MidiDeviceManager.onNote((midiEvent: MidiEvent) => {
       const { note } = midiEvent;
 
       if (!note) return;
 
-      switch (midiEvent.type) {
-        case "noteOn":
-          const time = now();
-          oscs.forEach((osc) => osc.setNoteAt(note, time));
-          ampEnv.triggerAttack(note, time);
-          filterEnv.triggerAttack(note, time);
-          store.dispatch(addActiveNote(note));
-          break;
-        case "noteOff":
-          ampEnv.triggerRelease(note);
-          filterEnv.triggerRelease(note);
-          store.dispatch(removeActiveNote(note));
-          break;
-      }
+      this.triggerKey(note.fullName, midiEvent.type);
     });
   }
 }

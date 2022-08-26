@@ -5,6 +5,7 @@ const Notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const NotesLength = Notes.length;
 
 export default class Note {
+  static _notes: Note[];
   name: string;
   octave: number;
 
@@ -14,6 +15,10 @@ export default class Note {
     } else {
       this.fromEvent(eventOrString);
     }
+  }
+
+  static notes(octave: number = 3) {
+    return Notes.map((note: string) => new Note(`${note}${octave}`));
   }
 
   get isSemi() {
@@ -55,6 +60,6 @@ export default class Note {
 
   private fromEvent(event: MIDIMessageEvent) {
     this.name = Notes[event.data[1] % 12];
-    this.octave = Math.floor(event.data[1] / 12);
+    this.octave = Math.floor(event.data[1] / 12) - 2;
   }
 }
