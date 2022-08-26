@@ -8,7 +8,10 @@ export default function Oscillators() {
 
   useEffect(() => {
     setIds([
-      Engine.registerModule("Osc 1", "osc1", "oscillator", { volume: -10 }),
+      Engine.registerModule("Osc 1", "osc1", "oscillator", {
+        wave: "square",
+        volume: -10,
+      }),
       Engine.registerModule("Osc 2", "osc2", "oscillator", {}),
       Engine.registerModule("Osc 3", "osc3", "oscillator", {}),
     ]);

@@ -47,7 +47,7 @@ export default function Filter(props: FilterProps) {
       <FaderContainer>
         <Fader
           name="Hz"
-          min={0.1}
+          min={20}
           max={20000}
           onChange={updateProp("cutoff")}
           value={cutoff}
