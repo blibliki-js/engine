@@ -21,10 +21,11 @@ export interface Triggerable {
 }
 
 export interface ModuleInterface {
-  id: string;
   name: string;
   code: string;
   type: ModuleType;
+  voice: number;
+  voicable: boolean;
   props?: any;
 }
 
@@ -36,6 +37,8 @@ class Module<InternalModule extends Connectable, PropsInterface>
   id: string;
   name: string;
   code: string;
+  readonly voice: number;
+  readonly voicable: boolean;
   type: ModuleType;
   _props: PropsInterface;
 
@@ -83,10 +86,11 @@ class Module<InternalModule extends Connectable, PropsInterface>
 
   serialize() {
     return {
-      id: this.id,
       name: this.name,
       code: this.code,
       type: this.type,
+      voice: this.voice,
+      voicable: this.voicable,
       props: this.props,
     };
   }

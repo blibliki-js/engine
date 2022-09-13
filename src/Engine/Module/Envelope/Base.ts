@@ -19,6 +19,7 @@ export interface EnvelopeInterface {
   decay: number;
   sustain: number;
   release: number;
+  voice: number;
 }
 
 const InitialProps: EnvelopeInterface = {
@@ -26,6 +27,7 @@ const InitialProps: EnvelopeInterface = {
   decay: MIN_TIME,
   sustain: SUSTAIN_MAX_VALUE,
   release: MIN_TIME,
+  voice: 0,
 };
 
 export default abstract class EnvelopeModule<EnvelopeLike extends Env>
@@ -45,7 +47,7 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
       name,
       code,
       type,
-      props: { ...InitialProps, ...props },
+      props: { ...InitialProps, ...props, voicable: true },
     });
 
     this.activeNotes = [];
