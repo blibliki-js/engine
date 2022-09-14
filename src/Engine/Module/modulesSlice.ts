@@ -10,7 +10,9 @@ import { RootState } from "store";
 
 import { ModuleInterface } from "./Base";
 
-const modulesAdapter = createEntityAdapter<ModuleInterface>({});
+const modulesAdapter = createEntityAdapter<ModuleInterface>({
+  selectId: (m) => m.code,
+});
 
 export const modulesSlice = createSlice({
   name: "modules",
@@ -37,6 +39,13 @@ export const selectModulesByType = createSelector(
   (_: RootState, type: string) => type,
   (modules: ModuleInterface[], type: string) =>
     modules.filter((m) => m.type === type)
+);
+
+export const selectModulesByCodes = createSelector(
+  (state: RootState) => modulesSelector.selectAll(state),
+  (_: RootState, codes: string[]) => codes,
+  (modules: ModuleInterface[], codes: string[]) =>
+    modules.filter((m) => codes.includes(m.code))
 );
 
 export const { addModule, updateModule } = modulesSlice.actions;

@@ -1,30 +1,24 @@
-import { useState, useEffect } from "react";
-import Envelope from "components/audio_modules/Envelope";
-import Filter from "components/audio_modules/Filter";
-import Engine from "Engine";
+import { useModules } from "hooks";
+import AudioModule from "components/audio_modules";
+
+const INITIAL_MODULE_PROPS = [
+  { name: "Filter", code: "filter", type: "filter" },
+  { name: "Amp Envelope", code: "amplitude", type: "ampEnvelope" },
+  { name: "Freq Envelope", code: "frequency", type: "freqEnvelope" },
+];
 
 export default function EnvelopesAndFilter() {
-  const [filterId, setFilterId] = useState();
-  const [ampEnvelopeId, setAmpEnvelopeId] = useState();
-  const [freqEnvelopeId, setFreqEnvelopeId] = useState();
+  const modules = useModules(INITIAL_MODULE_PROPS);
 
-  useEffect(() => {
-    setFilterId(Engine.registerModule("Filter", "filter", "filter", {}));
-    setAmpEnvelopeId(
-      Engine.registerModule("Amp Envelope", "amplitude", "ampEnvelope", {})
-    );
-    setFreqEnvelopeId(
-      Engine.registerModule("Freq Envelope", "frequency", "freqEnvelope", {})
-    );
-  }, [setFilterId, setFreqEnvelopeId, setAmpEnvelopeId]);
+  if (modules.length !== 3) return null;
 
-  if (!filterId || !ampEnvelopeId || !freqEnvelopeId) return null;
+  const [filter, ampEnv, freEnv] = modules;
 
   return (
     <div>
-      <Envelope id={ampEnvelopeId} />
-      <Envelope id={freqEnvelopeId} />
-      <Filter id={filterId} />
+      <AudioModule module={ampEnv} />
+      <AudioModule module={freEnv} />
+      <AudioModule module={filter} />
     </div>
   );
 }

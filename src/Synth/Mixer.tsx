@@ -13,8 +13,8 @@ export default function Mixer() {
     <div>
       {oscillators.map((osc) => (
         <Volume
-          key={osc.id}
-          id={osc.id}
+          key={osc.code}
+          code={osc.code}
           name={osc.name}
           volume={osc.props.volume}
         />

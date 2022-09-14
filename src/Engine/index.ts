@@ -5,7 +5,6 @@ import Module, {
   Triggerable,
   Oscillator,
   Filter,
-  AmpEnvelope,
   FreqEnvelope,
   createModule,
 } from "./Module";
@@ -39,6 +38,10 @@ class Engine {
     return Object.values(this.modules).find((modula) => modula.id === id);
   }
 
+  public findAllByCode(code: string): Module<Connectable, any>[] {
+    return Object.values(this.modules).filter((modula) => modula.code === code);
+  }
+
   public registerModule(name: string, code: string, type: string, props: any) {
     const modula = createModule(name, code, type, props);
     store.dispatch(addModule(modula.serialize()));
@@ -48,13 +51,14 @@ class Engine {
     return modula.id;
   }
 
-  updatePropModule(id: string, props: any) {
-    const modula = this.findModule(id);
-    if (!modula) return;
+  updatePropModule(code: string, props: any) {
+    const modules = this.findAllByCode(code);
+    if (modules.length === 0) return;
 
-    modula.props = props;
+    modules.forEach((m) => (m.props = props));
+
     store.dispatch(
-      updateModule({ id, changes: { props: { ...modula.props } } })
+      updateModule({ id: code, changes: { props: { ...modules[0].props } } })
     );
   }
 

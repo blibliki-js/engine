@@ -1,27 +1,32 @@
-import { useState, useEffect } from "react";
+import { useModules } from "hooks";
+import AudioModule from "components/audio_modules";
 
-import Engine from "Engine";
-import Oscillator from "components/audio_modules/Oscillator";
+const INITIAL_MODULE_PROPS = [
+  {
+    name: "Osc 1",
+    code: "osc1",
+    type: "oscillator",
+    props: {
+      wave: "square",
+      volume: -10,
+    },
+  },
+  { name: "Osc 2", code: "osc2", type: "oscillator" },
+  { name: "Osc 3", code: "osc3", type: "oscillator" },
+];
 
 export default function Oscillators() {
-  const [ids, setIds] = useState<string[]>([]);
+  const modules = useModules(INITIAL_MODULE_PROPS);
 
-  useEffect(() => {
-    setIds([
-      Engine.registerModule("Osc 1", "osc1", "oscillator", {
-        wave: "square",
-        volume: -10,
-      }),
-      Engine.registerModule("Osc 2", "osc2", "oscillator", {}),
-      Engine.registerModule("Osc 3", "osc3", "oscillator", {}),
-    ]);
-  }, [setIds]);
+  if (modules.length !== 3) return null;
+
+  const [osc1, osc2, osc3] = modules;
 
   return (
     <div>
-      {ids.map((id) => (
-        <Oscillator key={id} id={id} />
-      ))}
+      <AudioModule module={osc1} />
+      <AudioModule module={osc2} />
+      <AudioModule module={osc3} />
     </div>
   );
 }

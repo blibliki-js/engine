@@ -23,19 +23,20 @@ const FaderContainer = styled.div`
 `;
 
 interface EnvelopeProps {
-  id: string;
+  name: string;
+  code: string;
+  props: { attack: number; decay: number; sustain: number; release: number };
 }
 
 export default function Envelope(props: EnvelopeProps) {
-  const { id } = props;
-
   const {
+    code,
     name,
     props: { attack, decay, sustain, release },
-  } = useAppSelector((state) => modulesSelector.selectById(state, id)) || {};
+  } = props;
 
   const updateProp = (propName: string) => (value: number | string) => {
-    Engine.updatePropModule(id, { [propName]: value });
+    Engine.updatePropModule(code, { [propName]: value });
   };
 
   return (

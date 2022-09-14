@@ -1,8 +1,6 @@
 import styled from "@emotion/styled";
 
 import Engine from "Engine";
-import { useAppSelector } from "hooks";
-import { modulesSelector } from "Engine/Module/modulesSlice";
 
 import Fader, { MarkProps } from "components/Fader";
 
@@ -37,12 +35,16 @@ const RANGES: MarkProps[] = [
   { value: 2, label: "" },
 ];
 
-export default function Oscillator(props: { id: string }) {
-  const { id } = props;
+export default function Oscillator(props: {
+  name: string;
+  code: string;
+  props: { range: number; coarse: number; fine: number; wave: string };
+}) {
   const {
+    code,
     name: title,
     props: { range, coarse, fine, wave: waveName },
-  } = useAppSelector((state) => modulesSelector.selectById(state, id)) || {};
+  } = props;
 
   const wave = WAVES.find((w) => w.label === waveName)?.value;
 
@@ -50,10 +52,8 @@ export default function Oscillator(props: { id: string }) {
     if (propName === "wave")
       value = WAVES.find((w) => w.value === value)?.label || WAVES[0].label;
 
-    Engine.updatePropModule(id, { [propName]: value });
+    Engine.updatePropModule(code, { [propName]: value });
   };
-
-  if (!id) return null;
 
   return (
     <OscillatorContainer>
