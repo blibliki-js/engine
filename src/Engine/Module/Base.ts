@@ -24,8 +24,7 @@ export interface ModuleInterface {
   name: string;
   code: string;
   type: ModuleType;
-  voice: number;
-  voicable: boolean;
+  initialized?: boolean;
   props?: any;
 }
 
@@ -37,9 +36,8 @@ class Module<InternalModule extends Connectable, PropsInterface>
   id: string;
   name: string;
   code: string;
-  readonly voice: number;
-  readonly voicable: boolean;
   type: ModuleType;
+  readonly initialized: boolean = false;
   _props: PropsInterface;
 
   constructor(internalModule: InternalModule, props: Partial<ModuleInterface>) {
@@ -47,6 +45,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
     this.id = uuidv4();
 
     Object.assign(this, props);
+    this.initialized = true;
   }
 
   set props(value: PropsInterface) {
@@ -89,8 +88,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
       name: this.name,
       code: this.code,
       type: this.type,
-      voice: this.voice,
-      voicable: this.voicable,
+      initialized: this.initialized,
       props: this.props,
     };
   }

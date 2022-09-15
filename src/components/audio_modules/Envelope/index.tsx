@@ -25,6 +25,7 @@ const FaderContainer = styled.div`
 interface EnvelopeProps {
   name: string;
   code: string;
+  updateProps: Function;
   props: { attack: number; decay: number; sustain: number; release: number };
 }
 
@@ -32,11 +33,12 @@ export default function Envelope(props: EnvelopeProps) {
   const {
     code,
     name,
+    updateProps,
     props: { attack, decay, sustain, release },
   } = props;
 
   const updateProp = (propName: string) => (value: number | string) => {
-    Engine.updatePropModule(code, { [propName]: value });
+    updateProps(code, { [propName]: value });
   };
 
   return (

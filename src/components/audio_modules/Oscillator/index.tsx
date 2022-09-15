@@ -39,9 +39,11 @@ export default function Oscillator(props: {
   name: string;
   code: string;
   props: { range: number; coarse: number; fine: number; wave: string };
+  updateProps: Function;
 }) {
   const {
     code,
+    updateProps,
     name: title,
     props: { range, coarse, fine, wave: waveName },
   } = props;
@@ -52,7 +54,7 @@ export default function Oscillator(props: {
     if (propName === "wave")
       value = WAVES.find((w) => w.value === value)?.label || WAVES[0].label;
 
-    Engine.updatePropModule(code, { [propName]: value });
+    updateProps(code, { [propName]: value });
   };
 
   return (

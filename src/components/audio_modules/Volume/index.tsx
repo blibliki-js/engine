@@ -6,7 +6,8 @@ import Fader from "components/Fader";
 interface VolumeProps {
   name: string;
   code: string;
-  volume: number;
+  updateProps: Function;
+  props: any;
 }
 
 const VolumeContainer = styled.div`
@@ -23,10 +24,15 @@ const Title = styled.div`
 `;
 
 export default function Volume(props: VolumeProps) {
-  const { code, name, volume } = props;
+  const {
+    code,
+    name,
+    updateProps,
+    props: { volume },
+  } = props;
 
   const updateVolume = (value: number) => {
-    Engine.updatePropModule(code, { volume: value });
+    updateProps(code, { volume: value });
   };
 
   return (

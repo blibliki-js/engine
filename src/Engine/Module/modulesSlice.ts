@@ -7,6 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "store";
+import Engine from "Engine";
 
 import { ModuleInterface } from "./Base";
 
@@ -22,10 +23,30 @@ export const modulesSlice = createSlice({
       state: EntityState<any>,
       action: PayloadAction<ModuleInterface>
     ) => {
-      return modulesAdapter.addOne(state, action);
+      const { name, code, type, props } = action.payload;
+      const payload = Engine.registerModule(
+        name,
+        code,
+        type,
+        props
+      ).serialize();
+
+      return modulesAdapter.addOne(state, payload);
     },
     updateModule: (state: EntityState<any>, update: PayloadAction<any>) => {
-      return modulesAdapter.updateOne(state, update);
+      const {
+        id: code,
+        changes: { props: changedProps },
+      } = update.payload;
+      const { props } = Engine.updatePropsModule(
+        code,
+        changedProps
+      ).serialize();
+
+      return modulesAdapter.updateOne(state, {
+        id: code,
+        changes: { props },
+      });
     },
   },
 });

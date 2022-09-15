@@ -1,16 +1,18 @@
 import { useEffect } from "react";
-import Engine from "Engine";
-import { useAppSelector } from "hooks";
-import { selectModulesByCodes } from "Engine/Module/modulesSlice";
+import { useAppSelector, useAppDispatch } from "hooks";
+import { addModule, selectModulesByCodes } from "Engine/Module/modulesSlice";
+import { ModuleType } from "Engine/Module";
 
 interface UseModuleProps {
   name: string;
   code: string;
-  type: string;
+  type: ModuleType;
   props?: any;
 }
 
 export function useModules(propsArr: UseModuleProps[]) {
+  const dispatch = useAppDispatch();
+
   const modules = useAppSelector((state) =>
     selectModulesByCodes(
       state,
@@ -20,11 +22,9 @@ export function useModules(propsArr: UseModuleProps[]) {
 
   useEffect(() => {
     propsArr.forEach((moduleProps) => {
-      const { name, code, type, props } = moduleProps;
-
-      Engine.registerModule(name, code, type, props);
+      dispatch(addModule(moduleProps));
     });
   }, []);
 
-  return modules;
+  return modules.filter((m) => m.initialized);
 }

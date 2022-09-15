@@ -1,18 +1,19 @@
 import { useModules } from "hooks";
 import AudioModule from "components/audio_modules";
+import { ModuleType } from "Engine/Module";
 
 const INITIAL_MODULE_PROPS = [
   {
     name: "Osc 1",
     code: "osc1",
-    type: "oscillator",
+    type: ModuleType.Oscillator,
     props: {
       wave: "square",
       volume: -10,
     },
   },
-  { name: "Osc 2", code: "osc2", type: "oscillator" },
-  { name: "Osc 3", code: "osc3", type: "oscillator" },
+  { name: "Osc 2", code: "osc2", type: ModuleType.Oscillator },
+  { name: "Osc 3", code: "osc3", type: ModuleType.Oscillator },
 ];
 
 export default function Oscillators() {

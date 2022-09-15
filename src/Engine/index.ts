@@ -1,29 +1,14 @@
-import { now } from "tone";
-
-import Module, {
-  Connectable,
-  Triggerable,
-  Oscillator,
-  Filter,
-  FreqEnvelope,
-  createModule,
-} from "./Module";
 import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
-
-import { store } from "store";
-import { addActiveNote, removeActiveNote } from "globalSlice";
-import { addModule, updateModule } from "Engine/Module/modulesSlice";
+import Voice from "Engine/Voice";
 
 class Engine {
-  modules: {
-    [Identifier: string]: Module<Connectable, any>;
-  };
-
   private static instance: Engine;
+  voice: Voice;
 
   private constructor() {
-    this.modules = {};
+    this.voice = new Voice(0);
+    this.registerMidiEvents();
   }
 
   public static getInstance(): Engine {
@@ -34,112 +19,20 @@ class Engine {
     return Engine.instance;
   }
 
-  public findModule(id: string): Module<Connectable, any> | undefined {
-    return Object.values(this.modules).find((modula) => modula.id === id);
+  registerModule(name: string, code: string, type: string, props: any = {}) {
+    return this.voice.registerModule(name, code, type, props);
   }
 
-  public findAllByCode(code: string): Module<Connectable, any>[] {
-    return Object.values(this.modules).filter((modula) => modula.code === code);
+  updatePropsModule(code: string, props: any) {
+    return this.voice.updatePropsModule(code, props);
   }
 
-  public registerModule(name: string, code: string, type: string, props: any) {
-    const modula = createModule(name, code, type, props);
-    store.dispatch(addModule(modula.serialize()));
-    this.modules[modula.id] ??= modula;
-    this.applyRoutes();
-
-    return modula.id;
+  triggerKey(noteName: string, type: string) {
+    this.voice.triggerKey(noteName, type);
   }
 
-  updatePropModule(code: string, props: any) {
-    const modules = this.findAllByCode(code);
-    if (modules.length === 0) return;
-
-    modules.forEach((m) => (m.props = props));
-
-    store.dispatch(
-      updateModule({ id: code, changes: { props: { ...modules[0].props } } })
-    );
-  }
-
-  public dispose() {
-    console.log("Engine disposed!");
-    Object.values(this.modules).forEach((m) => m.dispose());
-  }
-
-  public triggerKey(noteName: string, type: string) {
-    const time = now();
-
-    switch (type) {
-      case "noteOn":
-        this.oscillators.forEach((osc) => osc.setNoteAt(noteName, time));
-        this.triggerables.forEach((triggerable) =>
-          triggerable.triggerAttack(noteName, time)
-        );
-        store.dispatch(addActiveNote(noteName));
-        break;
-      case "noteOff":
-        this.triggerables.forEach((triggerable) =>
-          triggerable.triggerRelease(noteName, time)
-        );
-        store.dispatch(removeActiveNote(noteName));
-        break;
-      default:
-        throw Error("This type is not a note");
-    }
-  }
-
-  public get oscillators(): Oscillator[] {
-    return Object.values(this.modules).filter(
-      (m: Module<Connectable, any>) => m.type === "oscillator"
-    ) as Oscillator[];
-  }
-
-  public get triggerables(): Triggerable[] {
-    return Object.values(this.modules).filter((m: Module<Connectable, any>) =>
-      m.isTriggerable()
-    ) as unknown[] as Triggerable[];
-  }
-
-  private applyRoutes() {
-    const oscs = Object.values(this.modules).filter(
-      (m: Module<Connectable, any>) => m.type === "oscillator"
-    );
-    const ampEnv = Object.values(this.modules).find(
-      (m: Module<Connectable, any>) => m.type === "ampEnvelope"
-    );
-
-    const filter = Object.values(this.modules).find(
-      (m: Module<Connectable, any>) => m.type === "filter"
-    );
-    const filterEnv = Object.values(this.modules).find(
-      (m: Module<Connectable, any>) => m.type === "freqEnvelope"
-    );
-
-    if (oscs.length !== 3 || !ampEnv || !filter || !filterEnv) return;
-
-    (filterEnv as FreqEnvelope).connectToFilter(filter as Filter);
-
-    oscs.forEach((osc) => this.chain(osc.id, [filter.id, ampEnv.id]));
-
-    ampEnv.toDestination();
-    console.log("connected");
-    this.registerMidiEvents();
-  }
-
-  private chain(sourceId: string, chainIds: string[]) {
-    const source = this.findModule(sourceId);
-    const chains = chainIds.map((id) => {
-      const m = this.findModule(id);
-
-      if (!m) throw Error(`Missing module with id ${id}`);
-
-      return m;
-    });
-
-    if (!source) throw Error(`Missing module with id ${sourceId}`);
-
-    source.chain(...chains);
+  dispose() {
+    this.voice.dispose();
   }
 
   private registerMidiEvents() {
