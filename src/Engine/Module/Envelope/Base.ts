@@ -94,8 +94,8 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
     this.internalModule.triggerAttack(time);
   }
 
-  triggerRelease() {
-    this.internalModule.triggerRelease();
+  triggerRelease(time: number) {
+    this.internalModule.triggerRelease(time);
   }
 
   toDestination() {

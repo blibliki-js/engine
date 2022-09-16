@@ -69,7 +69,7 @@ export default class Voice {
         break;
       case "noteOff":
         this.triggerables.forEach((triggerable) =>
-          triggerable.triggerRelease(noteName, time)
+          triggerable.triggerRelease(time)
         );
         store.dispatch(removeActiveNote(noteName));
         this.activeNote = null;
