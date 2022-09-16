@@ -26,5 +26,5 @@ export function useModules(propsArr: UseModuleProps[]) {
     });
   }, []);
 
-  return modules.filter((m) => m.initialized);
+  return modules;
 }

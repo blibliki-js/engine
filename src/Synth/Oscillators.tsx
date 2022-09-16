@@ -9,7 +9,7 @@ const INITIAL_MODULE_PROPS = [
     type: ModuleType.Oscillator,
     props: {
       wave: "square",
-      volume: -10,
+      volume: -30,
     },
   },
   { name: "Osc 2", code: "osc2", type: ModuleType.Oscillator },

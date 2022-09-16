@@ -16,10 +16,17 @@ export default class Voice {
     [Identifier: string]: Module<Connectable, any>;
   };
   voiceNo: number;
+  activeNote: string | null;
+  activeAt: Date;
+  autoNoteOfCallback: Function;
 
   constructor(voiceNo: number) {
     this.modules = {};
     this.voiceNo = voiceNo;
+  }
+
+  setAutoNoteOfCallback(callback: Function) {
+    this.autoNoteOfCallback = callback;
   }
 
   registerModule(name: string, code: string, type: string, props: any) {
@@ -49,10 +56,15 @@ export default class Voice {
 
     switch (type) {
       case "noteOn":
+        const overridedNote = this.activeNote;
+        this.activeNote = noteName;
+        this.activeAt = new Date();
         this.oscillators.forEach((osc) => osc.setNoteAt(noteName, time));
         this.triggerables.forEach((triggerable) =>
           triggerable.triggerAttack(noteName, time)
         );
+
+        if (overridedNote) store.dispatch(removeActiveNote(overridedNote));
         store.dispatch(addActiveNote(noteName));
         break;
       case "noteOff":
@@ -60,6 +72,7 @@ export default class Voice {
           triggerable.triggerRelease(noteName, time)
         );
         store.dispatch(removeActiveNote(noteName));
+        this.activeNote = null;
         break;
       default:
         throw Error("This type is not a note");

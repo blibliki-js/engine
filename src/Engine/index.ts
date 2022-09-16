@@ -1,13 +1,13 @@
 import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
-import Voice from "Engine/Voice";
+import VoiceManager from "Engine/VoiceManager";
 
 class Engine {
   private static instance: Engine;
-  voice: Voice;
+  voiceManager: VoiceManager;
 
   private constructor() {
-    this.voice = new Voice(0);
+    this.voiceManager = new VoiceManager(8);
     this.registerMidiEvents();
   }
 
@@ -20,19 +20,19 @@ class Engine {
   }
 
   registerModule(name: string, code: string, type: string, props: any = {}) {
-    return this.voice.registerModule(name, code, type, props);
+    return this.voiceManager.registerModule(name, code, type, props);
   }
 
   updatePropsModule(code: string, props: any) {
-    return this.voice.updatePropsModule(code, props);
+    return this.voiceManager.updatePropsModule(code, props);
   }
 
   triggerKey(noteName: string, type: string) {
-    this.voice.triggerKey(noteName, type);
+    this.voiceManager.triggerKey(noteName, type);
   }
 
   dispose() {
-    this.voice.dispose();
+    this.voiceManager.dispose();
   }
 
   private registerMidiEvents() {

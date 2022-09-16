@@ -24,12 +24,7 @@ export const modulesSlice = createSlice({
       action: PayloadAction<ModuleInterface>
     ) => {
       const { name, code, type, props } = action.payload;
-      const payload = Engine.registerModule(
-        name,
-        code,
-        type,
-        props
-      ).serialize();
+      const payload = Engine.registerModule(name, code, type, props);
 
       return modulesAdapter.addOne(state, payload);
     },
@@ -38,10 +33,7 @@ export const modulesSlice = createSlice({
         id: code,
         changes: { props: changedProps },
       } = update.payload;
-      const { props } = Engine.updatePropsModule(
-        code,
-        changedProps
-      ).serialize();
+      const { props } = Engine.updatePropsModule(code, changedProps);
 
       return modulesAdapter.updateOne(state, {
         id: code,

@@ -7,9 +7,6 @@ export default function Mixer() {
     selectModulesByType(state, "oscillator")
   );
 
-  if (oscillators.length !== 3 || oscillators.some((o) => !o.initialized))
-    return null;
-
   return (
     <div>
       {oscillators.map((osc) => (
