@@ -35,7 +35,10 @@ export default function Synth() {
   useEffect(() => {
     if (!enabled) return;
 
-    const context = new Context({ latencyHint: "interactive" });
+    const context = new Context({
+      latencyHint: "interactive",
+      lookAhead: 0.01,
+    });
     setContext(context);
     Transport.start();
 
