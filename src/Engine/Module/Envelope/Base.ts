@@ -89,7 +89,7 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
     this.internalModule[stage] = calculatedValue;
   }
 
-  triggerAttack(_: any, time: number) {
+  triggerAttack(time: number) {
     this.internalModule.triggerRelease();
     this.internalModule.triggerAttack(time);
   }

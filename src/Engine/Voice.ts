@@ -60,9 +60,9 @@ export default class Voice {
         this.activeNote = noteName;
         this.activeAt = new Date();
         this.oscillators.forEach((osc) => osc.setNoteAt(noteName, time));
-        this.triggerables.forEach((triggerable) =>
-          triggerable.triggerAttack(noteName, time)
-        );
+        this.triggerables.forEach((triggerable) => {
+          triggerable.triggerAttack(time);
+        });
 
         if (overridedNote) store.dispatch(removeActiveNote(overridedNote));
         store.dispatch(addActiveNote(noteName));
