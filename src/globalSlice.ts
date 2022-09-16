@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface GlobalProps {
   isInitialized: boolean;
   activeNotes: string[];
+  voices: number;
 }
 
 const initialState: GlobalProps = {
   isInitialized: false,
   activeNotes: [],
+  voices: 1,
 };
 
 export const globalSlice = createSlice({

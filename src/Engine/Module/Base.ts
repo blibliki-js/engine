@@ -21,7 +21,6 @@ export interface Triggerable {
 }
 
 export interface ModuleInterface {
-  id: string;
   name: string;
   code: string;
   type: ModuleType;
@@ -83,7 +82,6 @@ class Module<InternalModule extends Connectable, PropsInterface>
 
   serialize() {
     return {
-      id: this.id,
       name: this.name,
       code: this.code,
       type: this.type,

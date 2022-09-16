@@ -4,9 +4,10 @@ import Engine from "Engine";
 import Fader from "components/Fader";
 
 interface VolumeProps {
-  id: string;
   name: string;
-  volume: number;
+  code: string;
+  updateProps: Function;
+  props: any;
 }
 
 const VolumeContainer = styled.div`
@@ -23,10 +24,15 @@ const Title = styled.div`
 `;
 
 export default function Volume(props: VolumeProps) {
-  const { id, name, volume } = props;
+  const {
+    code,
+    name,
+    updateProps,
+    props: { volume },
+  } = props;
 
   const updateVolume = (value: number) => {
-    Engine.updatePropModule(id, { volume: value });
+    updateProps(code, { volume: value });
   };
 
   return (

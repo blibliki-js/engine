@@ -7,10 +7,13 @@ import {
 } from "@reduxjs/toolkit";
 
 import { RootState } from "store";
+import Engine from "Engine";
 
 import { ModuleInterface } from "./Base";
 
-const modulesAdapter = createEntityAdapter<ModuleInterface>({});
+const modulesAdapter = createEntityAdapter<ModuleInterface>({
+  selectId: (m) => m.code,
+});
 
 export const modulesSlice = createSlice({
   name: "modules",
@@ -20,10 +23,22 @@ export const modulesSlice = createSlice({
       state: EntityState<any>,
       action: PayloadAction<ModuleInterface>
     ) => {
-      return modulesAdapter.addOne(state, action);
+      const { name, code, type, props } = action.payload;
+      const payload = Engine.registerModule(name, code, type, props);
+
+      return modulesAdapter.addOne(state, payload);
     },
     updateModule: (state: EntityState<any>, update: PayloadAction<any>) => {
-      return modulesAdapter.updateOne(state, update);
+      const {
+        id: code,
+        changes: { props: changedProps },
+      } = update.payload;
+      const { props } = Engine.updatePropsModule(code, changedProps);
+
+      return modulesAdapter.updateOne(state, {
+        id: code,
+        changes: { props },
+      });
     },
   },
 });
@@ -37,6 +52,13 @@ export const selectModulesByType = createSelector(
   (_: RootState, type: string) => type,
   (modules: ModuleInterface[], type: string) =>
     modules.filter((m) => m.type === type)
+);
+
+export const selectModulesByCodes = createSelector(
+  (state: RootState) => modulesSelector.selectAll(state),
+  (_: RootState, codes: string[]) => codes,
+  (modules: ModuleInterface[], codes: string[]) =>
+    modules.filter((m) => codes.includes(m.code))
 );
 
 export const { addModule, updateModule } = modulesSlice.actions;

@@ -7,7 +7,10 @@ import { modulesSelector } from "Engine/Module/modulesSlice";
 import Fader, { MarkProps } from "components/Fader";
 
 interface FilterProps {
-  id: string;
+  name: string;
+  code: string;
+  updateProps: Function;
+  props: { cutoff: number; resonance: number; envelopeAmount: number };
 }
 
 const FilterContainer = styled.div`
@@ -28,16 +31,17 @@ const Title = styled.div`
 const AmountCenter: MarkProps[] = [{ value: 0, label: "-" }];
 
 export default function Filter(props: FilterProps) {
-  const { id } = props;
   const {
+    code,
+    updateProps,
     name: title,
     props: { cutoff, resonance, envelopeAmount },
-  } = useAppSelector((state) => modulesSelector.selectById(state, id)) || {};
+  } = props;
 
   const updateProp =
     (propName: string) => (value: number, calcValue: number) => {
       const currentVal = propName === "cutoff" ? calcValue : value;
-      Engine.updatePropModule(id, { [propName]: currentVal });
+      updateProps(code, { [propName]: currentVal });
     };
 
   return (

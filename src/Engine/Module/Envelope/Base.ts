@@ -13,12 +13,14 @@ export const enum EnvelopeStages {
 const MAX_TIME = 2;
 const MIN_TIME = 0.01;
 const SUSTAIN_MAX_VALUE = 1;
+const SUSTAIN_MIN_VALUE = 0;
 
 export interface EnvelopeInterface {
   attack: number;
   decay: number;
   sustain: number;
   release: number;
+  voice: number;
 }
 
 const InitialProps: EnvelopeInterface = {
@@ -26,14 +28,13 @@ const InitialProps: EnvelopeInterface = {
   decay: MIN_TIME,
   sustain: SUSTAIN_MAX_VALUE,
   release: MIN_TIME,
+  voice: 0,
 };
 
 export default abstract class EnvelopeModule<EnvelopeLike extends Env>
   extends Module<EnvelopeLike, EnvelopeInterface>
   implements Triggerable
 {
-  activeNotes: Note[];
-
   constructor(
     name: string,
     code: string,
@@ -45,10 +46,8 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
       name,
       code,
       type,
-      props: { ...InitialProps, ...props },
+      props: { ...InitialProps, ...props, voicable: true },
     });
-
-    this.activeNotes = [];
   }
 
   get attack() {
@@ -85,21 +84,17 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
 
   setStage(stage: EnvelopeStages, value: number) {
     const calculatedValue =
-      value === 0 ? MIN_TIME : this.maxTime(stage) * value;
+      value === 0 ? this.minTime(stage) : this.maxTime(stage) * value;
     this._props = { ...this.props, [stage]: value };
     this.internalModule[stage] = calculatedValue;
   }
 
-  triggerAttack(note: Note | string, time: number) {
+  triggerAttack(_: any, time: number) {
     this.internalModule.triggerRelease();
-    this.addNote(this.getNote(note));
     this.internalModule.triggerAttack(time);
   }
 
-  triggerRelease(note: Note | string) {
-    this.removeNote(this.getNote(note));
-    if (this.activeNotes.length) return;
-
+  triggerRelease() {
     this.internalModule.triggerRelease();
   }
 
@@ -107,22 +102,12 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
     this.internalModule.toDestination();
   }
 
-  private getNote(note: Note | string) {
-    return note instanceof Note ? note : new Note(note);
-  }
-
   private maxTime(stage: EnvelopeStages): number {
     return stage === EnvelopeStages.Sustain ? SUSTAIN_MAX_VALUE : MAX_TIME;
   }
 
-  private addNote(note: Note) {
-    this.activeNotes.push(note);
-  }
-
-  private removeNote(note: Note) {
-    this.activeNotes = this.activeNotes.filter(
-      (n) => n.fullName !== note.fullName
-    );
+  private minTime(stage: EnvelopeStages): number {
+    return stage === EnvelopeStages.Sustain ? SUSTAIN_MIN_VALUE : MIN_TIME;
   }
 }
 
