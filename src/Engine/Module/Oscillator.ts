@@ -10,7 +10,7 @@ export interface OscillatorInterface {
   wave: string;
   volume: number;
   range: number;
-  voice: number;
+  voiceNo: number;
 }
 
 const InitialProps: OscillatorInterface = {
@@ -20,7 +20,7 @@ const InitialProps: OscillatorInterface = {
   wave: "sine",
   range: 0,
   volume: -100,
-  voice: 0,
+  voiceNo: 0,
 };
 
 export default class Oscillator extends Module<Osc, OscillatorInterface> {
@@ -30,7 +30,7 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
     super(new Osc(), {
       name,
       code,
-      props: { ...InitialProps, ...props, voicable: true },
+      props: { ...InitialProps, ...props },
       type: ModuleType.Oscillator,
     });
 
@@ -118,7 +118,7 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
   private registerOutputs() {
     this.registerOutput({
       name: "output",
-      pluggable: this,
+      pluggable: this.internalModule,
       onPlug: (input) => {
         this.connect(input.pluggable);
       },

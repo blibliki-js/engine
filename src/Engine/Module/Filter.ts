@@ -7,7 +7,7 @@ interface FilterInterface {
   cutoff: number;
   resonance: number;
   envelopeAmount: number;
-  voice: number;
+  voiceNo: number;
 }
 
 interface FilterProps extends Partial<FilterInterface> {}
@@ -16,7 +16,7 @@ const InitialProps: FilterInterface = {
   cutoff: 20000,
   resonance: 0,
   envelopeAmount: 0,
-  voice: 0,
+  voiceNo: 0,
 };
 
 export default class Filter extends Module<InternalFilter, FilterInterface> {
@@ -26,7 +26,7 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
     super(new InternalFilter({ type: "lowpass" }), {
       name,
       code,
-      props: { ...InitialProps, ...props, voiceble: true },
+      props: { ...InitialProps, ...props },
       type: ModuleType.Filter,
     });
 
@@ -98,7 +98,7 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
   private registerOutputs() {
     this.registerOutput({
       name: "output",
-      pluggable: this,
+      pluggable: this.internalModule,
       onPlug: (input) => {
         this.connect(input.pluggable);
       },

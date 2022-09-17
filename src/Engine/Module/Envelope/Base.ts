@@ -1,6 +1,5 @@
 import { Envelope as Env } from "tone";
 
-import Note from "Engine/Note";
 import Module, { ModuleType, Triggerable } from "Engine/Module";
 
 export const enum EnvelopeStages {
@@ -20,7 +19,7 @@ export interface EnvelopeInterface {
   decay: number;
   sustain: number;
   release: number;
-  voice: number;
+  voiceNo: number;
 }
 
 const InitialProps: EnvelopeInterface = {
@@ -28,7 +27,7 @@ const InitialProps: EnvelopeInterface = {
   decay: MIN_TIME,
   sustain: SUSTAIN_MAX_VALUE,
   release: MIN_TIME,
-  voice: 0,
+  voiceNo: 0,
 };
 
 export default abstract class EnvelopeModule<EnvelopeLike extends Env>
@@ -46,7 +45,7 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
       name,
       code,
       type,
-      props: { ...InitialProps, ...props, voicable: true },
+      props: { ...InitialProps, ...props },
     });
 
     this.registerInputs();
@@ -111,7 +110,7 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
   protected registerOutputs() {
     this.registerOutput({
       name: "output",
-      pluggable: this,
+      pluggable: this.internalModule,
       onPlug: (input) => {
         this.connect(input.pluggable);
       },

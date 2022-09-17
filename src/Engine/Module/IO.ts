@@ -52,11 +52,18 @@ abstract class IO {
   unPlug(io: IO) {
     if (this.onUnPlug) this.onUnPlug(io);
 
-    if (this.ioType === IOType.Output) io.unPlug(this);
+    if (this.ioType === IOType.Output) {
+      this.pluggable.disconnect();
+      io.unPlug(this);
+    }
 
     this.connections = this.connections.filter(
       (current_io) => current_io.id === io.id
     );
+  }
+
+  unPlugAll() {
+    this.connections.forEach((c) => this.unPlug(c));
   }
 
   serialize(): SerializeInterface {

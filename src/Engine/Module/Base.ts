@@ -41,6 +41,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
   inputs: Input[] = [];
   outputs: Output[] = [];
   type: ModuleType;
+  voiceNo: number;
   _props: PropsInterface;
 
   constructor(internalModule: InternalModule, props: Partial<ModuleInterface>) {
@@ -69,6 +70,10 @@ class Module<InternalModule extends Connectable, PropsInterface>
     if (!input) throw Error(`Input ${to} not exist`);
 
     output.plug(input);
+  }
+
+  unplugAll() {
+    this.outputs.forEach((o) => o.unPlugAll());
   }
 
   toDestination() {
