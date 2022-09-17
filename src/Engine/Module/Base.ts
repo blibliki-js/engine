@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
+import { Input, Output, IOInterface } from "./IO";
+
 export enum ModuleType {
   Oscillator = "oscillator",
   Envelope = "envelope",
@@ -35,6 +37,8 @@ class Module<InternalModule extends Connectable, PropsInterface>
   id: string;
   name: string;
   code: string;
+  inputs: Input[] = [];
+  outputs: Output[] = [];
   type: ModuleType;
   _props: PropsInterface;
 
@@ -56,16 +60,14 @@ class Module<InternalModule extends Connectable, PropsInterface>
     return this._props;
   }
 
-  connect(module: Module<InternalModule, PropsInterface>) {
-    this.internalModule.connect(module.internalModule);
-  }
+  plug(audioModule: Module<Connectable, any>, from: string, to: string) {
+    const output = this.outputs.find((i) => i.name === from);
+    const input = audioModule.inputs.find((i) => i.name === to);
 
-  chain(...modules: Module<InternalModule, PropsInterface>[]) {
-    this.internalModule.chain(
-      ...modules.map(
-        (m: Module<InternalModule, PropsInterface>) => m.internalModule
-      )
-    );
+    if (!output) throw Error(`Output ${from} not exist`);
+    if (!input) throw Error(`Input ${to} not exist`);
+
+    output.plug(input);
   }
 
   toDestination() {
@@ -86,7 +88,21 @@ class Module<InternalModule extends Connectable, PropsInterface>
       code: this.code,
       type: this.type,
       props: this.props,
+      inputs: this.inputs.map((i) => i.serialize()),
+      outputs: this.outputs.map((i) => i.serialize()),
     };
+  }
+
+  protected connect(pluggable: any) {
+    this.internalModule.connect(pluggable);
+  }
+
+  protected registerInput(props: IOInterface) {
+    this.inputs.push(new Input(this, props));
+  }
+
+  protected registerOutput(props: IOInterface) {
+    this.outputs.push(new Output(this, props));
   }
 }
 

@@ -6,8 +6,6 @@ import Module, {
   Connectable,
   Triggerable,
   Oscillator,
-  Filter,
-  FreqEnvelope,
   createModule,
 } from "./Module";
 
@@ -79,10 +77,6 @@ export default class Voice {
     }
   }
 
-  private findModule(id: string): Module<Connectable, any> | undefined {
-    return Object.values(this.modules).find((modula) => modula.id === id);
-  }
-
   private findByCode(code: string): Module<Connectable, any> | undefined {
     return Object.values(this.modules).find((modula) => modula.code === code);
   }
@@ -116,26 +110,11 @@ export default class Voice {
 
     if (oscs.length !== 3 || !ampEnv || !filter || !filterEnv) return;
 
-    (filterEnv as FreqEnvelope).connectToFilter(filter as Filter);
-
-    oscs.forEach((osc) => this.chain(osc.id, [filter.id, ampEnv.id]));
+    filterEnv.plug(filter, "frequency", "frequency");
+    oscs.forEach((osc) => osc.plug(filter, "output", "input"));
+    filter.plug(ampEnv, "output", "input");
 
     ampEnv.toDestination();
     console.log(`Voice ${this.voiceNo} connected`);
-  }
-
-  private chain(sourceId: string, chainIds: string[]) {
-    const source = this.findModule(sourceId);
-    const chains = chainIds.map((id) => {
-      const m = this.findModule(id);
-
-      if (!m) throw Error(`Missing module with id ${id}`);
-
-      return m;
-    });
-
-    if (!source) throw Error(`Missing module with id ${sourceId}`);
-
-    source.chain(...chains);
   }
 }

@@ -33,6 +33,8 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
       props: { ...InitialProps, ...props, voicable: true },
       type: ModuleType.Oscillator,
     });
+
+    this.registerOutputs();
     this.note = new Note("C3");
 
     this.internalModule.sync();
@@ -111,6 +113,16 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
 
   start() {
     this.internalModule.start();
+  }
+
+  private registerOutputs() {
+    this.registerOutput({
+      name: "output",
+      pluggable: this,
+      onPlug: (input) => {
+        this.connect(input.pluggable);
+      },
+    });
   }
 
   private updateFrequency(time?: number) {

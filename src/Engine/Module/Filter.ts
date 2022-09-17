@@ -29,6 +29,9 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
       props: { ...InitialProps, ...props, voiceble: true },
       type: ModuleType.Filter,
     });
+
+    this.registerInputs();
+    this.registerOutputs();
   }
 
   get cutoff() {
@@ -74,5 +77,31 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
   conntectedEnvelope(envelope: FreqEnvelope) {
     this._envelope = envelope;
     this._envelope.frequency = this.cutoff;
+  }
+
+  private registerInputs() {
+    this.registerInput({
+      name: "input",
+      pluggable: this.internalModule,
+    });
+
+    this.registerInput({
+      name: "frequency",
+      pluggable: this.frequency,
+      onPlug: (input) => {
+        this._envelope = input.pluggable;
+        this._envelope.frequency = this.cutoff;
+      },
+    });
+  }
+
+  private registerOutputs() {
+    this.registerOutput({
+      name: "output",
+      pluggable: this,
+      onPlug: (input) => {
+        this.connect(input.pluggable);
+      },
+    });
   }
 }

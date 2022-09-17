@@ -23,6 +23,8 @@ export default class FreqEnvelope extends Base<FrequencyEnvelope> {
       ...InitialProps,
       ...props,
     });
+
+    this.registerOutputs();
   }
 
   get frequency() {
@@ -48,5 +50,17 @@ export default class FreqEnvelope extends Base<FrequencyEnvelope> {
     this.internalModule.connect(filter.frequency);
     this.filter = filter;
     this.filter.conntectedEnvelope(this);
+  }
+
+  protected registerOutputs() {
+    super.registerOutputs();
+
+    this.registerOutput({
+      name: "frequency",
+      pluggable: this,
+      onPlug: (input) => {
+        this.connect(input.pluggable);
+      },
+    });
   }
 }

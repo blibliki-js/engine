@@ -48,6 +48,9 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
       type,
       props: { ...InitialProps, ...props, voicable: true },
     });
+
+    this.registerInputs();
+    this.registerOutputs();
   }
 
   get attack() {
@@ -98,8 +101,21 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
     this.internalModule.triggerRelease(time);
   }
 
-  toDestination() {
-    this.internalModule.toDestination();
+  private registerInputs() {
+    this.registerInput({
+      name: "input",
+      pluggable: this.internalModule,
+    });
+  }
+
+  protected registerOutputs() {
+    this.registerOutput({
+      name: "output",
+      pluggable: this,
+      onPlug: (input) => {
+        this.connect(input.pluggable);
+      },
+    });
   }
 
   private maxTime(stage: EnvelopeStages): number {
