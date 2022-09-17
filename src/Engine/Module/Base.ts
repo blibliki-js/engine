@@ -32,6 +32,7 @@ export interface ModuleInterface {
 class Module<InternalModule extends Connectable, PropsInterface>
   implements ModuleInterface
 {
+  static poly = true;
   protected internalModule: InternalModule;
 
   id: string;
