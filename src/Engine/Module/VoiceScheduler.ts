@@ -1,8 +1,7 @@
-import { Destination } from "tone";
 import { store } from "store";
 import { addActiveNote, removeActiveNote } from "globalSlice";
 
-import Module, { Connectable, ModuleType } from "../Module";
+import Module, { ModuleType, DummnyInternalModule } from "./Base";
 import MidiEvent from "Engine/MidiEvent";
 import { Input, Output } from "./IO";
 
@@ -11,7 +10,7 @@ export interface VoiceSchedulerInterface {
 }
 
 export default class VoiceScheduler extends Module<
-  Connectable,
+  DummnyInternalModule,
   VoiceSchedulerInterface
 > {
   static poly = false;
@@ -19,7 +18,7 @@ export default class VoiceScheduler extends Module<
   midiOutput: Output;
 
   constructor(name: string, code: string, props: VoiceSchedulerInterface) {
-    super(Destination, {
+    super(new DummnyInternalModule(), {
       name,
       code,
       type: ModuleType.VoiceScheduler,

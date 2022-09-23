@@ -16,8 +16,6 @@ export enum ModuleType {
 
 export interface Connectable {
   connect: Function;
-  chain: Function;
-  toDestination: Function;
   dispose: Function;
 }
 
@@ -32,6 +30,14 @@ export interface ModuleInterface {
   type: ModuleType;
   props?: any;
   voiceNo?: number;
+}
+
+export class DummnyInternalModule implements Connectable {
+  connect() {
+    throw Error("This module is not connectable");
+  }
+
+  dispose() {}
 }
 
 class Module<InternalModule extends Connectable, PropsInterface>

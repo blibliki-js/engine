@@ -1,8 +1,7 @@
 import MidiDevice from "Engine/MidiDevice";
 import MidiDeviceManager from "Engine/MidiDeviceManager";
 import MidiEvent from "Engine/MidiEvent";
-import { Destination } from "tone";
-import Module, { ModuleType, Connectable } from "../Module";
+import Module, { ModuleType, DummnyInternalModule } from "./Base";
 import { Output } from "./IO";
 
 export interface MidiSelectorInterface {
@@ -14,7 +13,7 @@ const InitialProps: MidiSelectorInterface = {
 };
 
 export default class MidiSelector extends Module<
-  Connectable,
+  DummnyInternalModule,
   MidiSelectorInterface
 > {
   midiOutput: Output;
@@ -24,7 +23,7 @@ export default class MidiSelector extends Module<
     code: string,
     props: Partial<MidiSelectorInterface>
   ) {
-    super(Destination, {
+    super(new DummnyInternalModule(), {
       name,
       code,
       props: { ...InitialProps, ...props },
