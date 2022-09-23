@@ -1,6 +1,30 @@
-import VoiceManager from "Engine/VoiceManager";
+import Engine from "Engine";
 
 const routes = [
+  [
+    ["midiSelector", "midi out"],
+    ["voiceScheduler", "midi in"],
+  ],
+  [
+    ["voiceScheduler", "midi out"],
+    ["osc1", "midi in"],
+  ],
+  [
+    ["voiceScheduler", "midi out"],
+    ["osc2", "midi in"],
+  ],
+  [
+    ["voiceScheduler", "midi out"],
+    ["osc3", "midi in"],
+  ],
+  [
+    ["voiceScheduler", "midi out"],
+    ["amplitude", "midi in"],
+  ],
+  [
+    ["voiceScheduler", "midi out"],
+    ["frequency", "midi in"],
+  ],
   [
     ["frequency", "frequency"],
     ["filter", "frequency"],
@@ -27,26 +51,25 @@ const routes = [
   ],
 ];
 
-export function applyRoutes(voiceManager: VoiceManager) {
-  Object.values(voiceManager.modules).forEach((m) => m.unplugAll());
+export function applyRoutes() {
+  Object.values(Engine.modules).forEach((m) => m.unplugAll());
 
-  routes.forEach((route) => {
+  const succesedConnections = routes.map((route) => {
     const [[sourceCode, output], [destinationCode, input]] = route;
 
-    const sources = voiceManager.findAllByCode(sourceCode);
-    const destinations = voiceManager.findAllByCode(destinationCode);
+    const source = Engine.findByCode(sourceCode);
+    const destination = Engine.findByCode(destinationCode);
 
-    if (sources.length === 1) {
-      destinations.forEach((d) => sources[0].plug(d, output, input));
-    } else if (destinations.length === 1) {
-      sources.forEach((s) => s.plug(destinations[0], output, input));
-    } else {
-      sources.forEach((s) => {
-        const destination = destinations.find((d) => d.voiceNo === s.voiceNo);
-        if (!destination) return;
+    if (!source || !destination) return false;
 
-        s.plug(destination, output, input);
-      });
-    }
+    source.plug(destination, output, input);
+
+    return true;
   });
+
+  if (succesedConnections.every((v) => v)) {
+    console.log("######## Routes succesfully applied");
+  } else {
+    console.log("######## Routes partialy applied");
+  }
 }

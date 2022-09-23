@@ -4,7 +4,7 @@ import Module, { Connectable } from "./Base";
 
 export interface IOInterface {
   name: string;
-  pluggable: any;
+  pluggable?: any;
   onPlug?: (io: IO) => void;
   onUnPlug?: (io: IO) => void;
 }
@@ -53,12 +53,12 @@ abstract class IO {
     if (this.onUnPlug) this.onUnPlug(io);
 
     if (this.ioType === IOType.Output) {
-      this.pluggable.disconnect();
+      this.pluggable?.disconnect();
       io.unPlug(this);
     }
 
     this.connections = this.connections.filter(
-      (current_io) => current_io.id === io.id
+      (current_io) => current_io.id !== io.id
     );
   }
 
@@ -69,7 +69,9 @@ abstract class IO {
   serialize(): SerializeInterface {
     return {
       name: this.name,
-      connections: this.connections.map((c) => c.name),
+      connections: this.connections.map(
+        (c) => `${c.audioModule.name}/${c.name}`
+      ),
     };
   }
 }

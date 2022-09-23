@@ -2,6 +2,7 @@ import { FrequencyEnvelope } from "tone";
 
 import { ModuleType } from "../Base";
 import Filter from "../Filter";
+import PolyModule, { PolyModuleType } from "../PolyModule";
 
 import Base, { EnvelopeInterface } from "./Base";
 
@@ -61,6 +62,17 @@ export default class FreqEnvelope extends Base<FrequencyEnvelope> {
       onPlug: (input) => {
         this.connect(input.pluggable);
       },
+    });
+  }
+}
+
+export class PolyFreqEnvelope extends PolyModule<EnvelopeInterface> {
+  constructor(name: string, code: string, props: Partial<EnvelopeInterface>) {
+    super(PolyModuleType.FreqEnvelope, {
+      name,
+      code,
+      props: { ...InitialProps, ...props },
+      type: ModuleType.FreqEnvelope,
     });
   }
 }

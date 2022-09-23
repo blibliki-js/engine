@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
 
-import Engine from "Engine";
 import Fader from "components/Fader";
 
 interface VolumeProps {
+  id: string;
   name: string;
   code: string;
   updateProps: Function;
@@ -25,14 +25,14 @@ const Title = styled.div`
 
 export default function Volume(props: VolumeProps) {
   const {
-    code,
+    id,
     name,
     updateProps,
     props: { volume },
   } = props;
 
   const updateVolume = (value: number) => {
-    updateProps(code, { volume: value });
+    updateProps(id, { volume: value });
   };
 
   return (

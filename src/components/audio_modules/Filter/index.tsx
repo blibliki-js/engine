@@ -1,12 +1,9 @@
 import styled from "@emotion/styled";
 
-import Engine from "Engine";
-import { useAppSelector } from "hooks";
-import { modulesSelector } from "Engine/Module/modulesSlice";
-
 import Fader, { MarkProps } from "components/Fader";
 
 interface FilterProps {
+  id: string;
   name: string;
   code: string;
   updateProps: Function;
@@ -32,7 +29,7 @@ const AmountCenter: MarkProps[] = [{ value: 0, label: "-" }];
 
 export default function Filter(props: FilterProps) {
   const {
-    code,
+    id,
     updateProps,
     name: title,
     props: { cutoff, resonance, envelopeAmount },
@@ -41,7 +38,7 @@ export default function Filter(props: FilterProps) {
   const updateProp =
     (propName: string) => (value: number, calcValue: number) => {
       const currentVal = propName === "cutoff" ? calcValue : value;
-      updateProps(code, { [propName]: currentVal });
+      updateProps(id, { [propName]: currentVal });
     };
 
   return (

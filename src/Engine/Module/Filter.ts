@@ -2,12 +2,13 @@ import { Filter as InternalFilter } from "tone";
 
 import { FreqEnvelope } from "./Envelope";
 import Module, { ModuleType } from "./Base";
+import PolyModule, { PolyModuleType } from "./PolyModule";
 
 interface FilterInterface {
   cutoff: number;
   resonance: number;
   envelopeAmount: number;
-  voiceNo: number;
+  voiceNo?: number;
 }
 
 interface FilterProps extends Partial<FilterInterface> {}
@@ -16,7 +17,6 @@ const InitialProps: FilterInterface = {
   cutoff: 20000,
   resonance: 0,
   envelopeAmount: 0,
-  voiceNo: 0,
 };
 
 export default class Filter extends Module<InternalFilter, FilterInterface> {
@@ -102,6 +102,17 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
       onPlug: (input) => {
         this.connect(input.pluggable);
       },
+    });
+  }
+}
+
+export class PolyFilter extends PolyModule<FilterInterface> {
+  constructor(name: string, code: string, props: Partial<FilterInterface>) {
+    super(PolyModuleType.Filter, {
+      name,
+      code,
+      props: { ...InitialProps, ...props },
+      type: ModuleType.Filter,
     });
   }
 }

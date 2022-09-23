@@ -3,6 +3,8 @@ import { Provider, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 import { StyledEngineProvider } from "@mui/material/styles";
 
+import Engine from "Engine";
+
 import { store } from "./store";
 import { initialize } from "./globalSlice";
 import Synth from "./Synth";
@@ -26,6 +28,7 @@ function App() {
 
   useEffect(() => {
     dispatch(initialize());
+    Engine.initialize();
   }, [dispatch]);
 
   return (

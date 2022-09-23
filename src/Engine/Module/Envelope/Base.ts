@@ -1,6 +1,8 @@
 import { Envelope as Env } from "tone";
 
 import Module, { ModuleType, Triggerable } from "Engine/Module";
+import PolyModule, { PolyModuleType } from "../PolyModule";
+import MidiEvent from "Engine/MidiEvent";
 
 export const enum EnvelopeStages {
   Attack = "attack",
@@ -19,7 +21,7 @@ export interface EnvelopeInterface {
   decay: number;
   sustain: number;
   release: number;
-  voiceNo: number;
+  voiceNo?: number;
 }
 
 const InitialProps: EnvelopeInterface = {
@@ -27,7 +29,6 @@ const InitialProps: EnvelopeInterface = {
   decay: MIN_TIME,
   sustain: SUSTAIN_MAX_VALUE,
   release: MIN_TIME,
-  voiceNo: 0,
 };
 
 export default abstract class EnvelopeModule<EnvelopeLike extends Env>
@@ -105,6 +106,11 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
       name: "input",
       pluggable: this.internalModule,
     });
+
+    this.registerInput({
+      name: "midi in",
+      pluggable: this.midiTriggered,
+    });
   }
 
   protected registerOutputs() {
@@ -116,6 +122,24 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
       },
     });
   }
+
+  private midiTriggered = (midiEvent: MidiEvent, voiceNo?: number) => {
+    if (voiceNo !== undefined && this.voiceNo === undefined)
+      throw Error("Module not supporting polyphony");
+
+    if (this.voiceNo !== voiceNo) return;
+
+    switch (midiEvent.type) {
+      case "noteOn":
+        this.triggerAttack(midiEvent.triggeredAt);
+        break;
+      case "noteOff":
+        this.triggerRelease(midiEvent.triggeredAt);
+        break;
+      default:
+        throw Error("This type is not a note");
+    }
+  };
 
   private maxTime(stage: EnvelopeStages): number {
     return stage === EnvelopeStages.Sustain ? SUSTAIN_MAX_VALUE : MAX_TIME;
@@ -129,5 +153,16 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
 export class Envelope extends EnvelopeModule<Env> {
   constructor(name: string, code: string, props: EnvelopeInterface) {
     super(name, code, ModuleType.Envelope, new Env(), props);
+  }
+}
+
+export class PolyEnvelope extends PolyModule<EnvelopeInterface> {
+  constructor(name: string, code: string, props: Partial<EnvelopeInterface>) {
+    super(PolyModuleType.Envelope, {
+      name,
+      code,
+      props: { ...InitialProps, ...props },
+      type: ModuleType.Envelope,
+    });
   }
 }

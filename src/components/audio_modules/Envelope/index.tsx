@@ -1,9 +1,5 @@
 import styled from "@emotion/styled";
 
-import Engine from "Engine";
-import { useAppSelector } from "hooks";
-import { modulesSelector } from "Engine/Module/modulesSlice";
-
 import Fader from "components/Fader";
 
 const EnvelopeContainer = styled.div`
@@ -23,6 +19,7 @@ const FaderContainer = styled.div`
 `;
 
 interface EnvelopeProps {
+  id: string;
   name: string;
   code: string;
   updateProps: Function;
@@ -31,14 +28,14 @@ interface EnvelopeProps {
 
 export default function Envelope(props: EnvelopeProps) {
   const {
-    code,
+    id,
     name,
     updateProps,
     props: { attack, decay, sustain, release },
   } = props;
 
   const updateProp = (propName: string) => (value: number | string) => {
-    updateProps(code, { [propName]: value });
+    updateProps(id, { [propName]: value });
   };
 
   return (
