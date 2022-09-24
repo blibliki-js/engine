@@ -1,14 +1,21 @@
-import MidiDeviceManager from "Engine/MidiDeviceManager";
-import MidiEvent from "Engine/MidiEvent";
-import VoiceManager from "Engine/VoiceManager";
+import { store } from "store";
+import Module, {
+  ModuleType,
+  Connectable,
+  PolyModule,
+  createModule,
+} from "Engine/Module";
+import { addModule } from "Engine/Module/modulesSlice";
+import { applyRoutes } from "./routes";
 
 class Engine {
   private static instance: Engine;
-  voiceManager: VoiceManager;
+  modules: {
+    [Identifier: string]: Module<Connectable, any> | PolyModule<any>;
+  };
 
   private constructor() {
-    this.voiceManager = new VoiceManager(8);
-    this.registerMidiEvents();
+    this.modules = {};
   }
 
   public static getInstance(): Engine {
@@ -19,30 +26,55 @@ class Engine {
     return Engine.instance;
   }
 
+  initialize() {
+    this.regeisterMaster();
+  }
+
   registerModule(name: string, code: string, type: string, props: any = {}) {
-    return this.voiceManager.registerModule(name, code, type, props);
+    const audioModule = createModule(name, code, type, props);
+    this.modules[audioModule.id] = audioModule;
+
+    applyRoutes();
+
+    return audioModule.serialize();
   }
 
-  updatePropsModule(code: string, props: any) {
-    return this.voiceManager.updatePropsModule(code, props);
+  updatePropsModule(id: string, props: any) {
+    const audioModule = this.findById(id);
+    audioModule.props = props;
+
+    return audioModule.serialize();
   }
 
-  triggerKey(noteName: string, type: string) {
-    this.voiceManager.triggerKey(noteName, type);
-  }
+  triggerKey(noteName: string, type: string) {}
 
   dispose() {
-    this.voiceManager.dispose();
+    Object.values(this.modules).forEach((m) => m.dispose());
+    this.modules = {};
   }
 
-  private registerMidiEvents() {
-    MidiDeviceManager.onNote((midiEvent: MidiEvent) => {
-      const { note } = midiEvent;
+  findById(id: string): Module<Connectable, any> | PolyModule<any> {
+    const audioModule = this.modules[id];
 
-      if (!note) return;
+    if (!audioModule) throw Error(`Audio module with id ${id} not exists`);
 
-      this.triggerKey(note.fullName, midiEvent.type);
-    });
+    return audioModule;
+  }
+
+  findByCode(code: string): Module<Connectable, any> | PolyModule<any> | null {
+    const audioModule = Object.values(this.modules).find(
+      (modula) => modula.code === code
+    );
+
+    if (!audioModule) return null;
+
+    return audioModule;
+  }
+
+  private regeisterMaster() {
+    store.dispatch(
+      addModule({ name: "Master", code: "master", type: ModuleType.Master })
+    );
   }
 }
 

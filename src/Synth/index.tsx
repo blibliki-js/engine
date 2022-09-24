@@ -4,9 +4,10 @@ import styled from "@emotion/styled";
 
 import Engine from "Engine";
 
-import MidiDeviceSelector from "components/MidiDeviceSelector";
 import Keyboard from "components/Keyboard";
 
+import MidiDeviceSelector from "./MidiDeviceSelector";
+import VoiceScheduler from "./VoiceScheduler";
 import Oscillators from "./Oscillators";
 import Mixer from "./Mixer";
 import EnvelopesAndFilter from "./EnvelopesAndFilter";
@@ -14,7 +15,7 @@ import EnvelopesAndFilter from "./EnvelopesAndFilter";
 const SynthContainer = styled.div`
   display: grid;
   grid-template-areas:
-    "midi midi midi"
+    "midi midi voice-scheduler"
     "oscillators mixer envelopes"
     "keyboard keyboard keyboard";
   gap: 10px;
@@ -52,7 +53,9 @@ export default function Synth() {
       <Row area="midi">
         <MidiDeviceSelector />
       </Row>
-
+      <Row area="voice-scheduler">
+        <VoiceScheduler />
+      </Row>
       <Row area="oscillators">
         <Oscillators />
       </Row>

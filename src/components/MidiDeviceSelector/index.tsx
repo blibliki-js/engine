@@ -9,9 +9,22 @@ import {
 
 import { useAppSelector, useAppDispatch } from "hooks";
 
-import { initialize, selectDevice, devicesSelector } from "./midiDevicesSlice";
+import { initialize, devicesSelector } from "./midiDevicesSlice";
 
-export default function MidiDeviceSelector() {
+export default function MidiDeviceSelector(props: {
+  id: string;
+  code: string;
+  name: string;
+  props: { selectedId: string };
+  updateProps: Function;
+}) {
+  const {
+    id,
+    name,
+    updateProps,
+    props: { selectedId },
+  } = props;
+
   const dispatch = useAppDispatch();
   const devices = useAppSelector((state) => devicesSelector.selectAll(state));
 
@@ -19,21 +32,19 @@ export default function MidiDeviceSelector() {
     dispatch(initialize());
   }, [dispatch]);
 
-  const selectedId = devices.find((d) => d.selected)?.id || "";
-
-  const onChange = (event: SelectChangeEvent) => {
-    dispatch(selectDevice(event.target.value));
+  const updateSelectedId = (event: SelectChangeEvent<string>) => {
+    updateProps(id, { selectedId: event.target.value });
   };
 
   return (
     <FormControl fullWidth>
-      <InputLabel id="demo-simple-select-label">MIDI device</InputLabel>
+      <InputLabel id="midi-select">{name}</InputLabel>
       <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
-        value={selectedId}
+        labelId="midi-select"
+        id="midi-select"
+        value={selectedId || ""}
         label="select MIDI devide"
-        onChange={onChange}
+        onChange={updateSelectedId}
       >
         {devices.map((device) => (
           <MenuItem key={device.id} value={device.id}>

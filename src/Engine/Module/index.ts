@@ -1,9 +1,17 @@
 import { ModuleType } from "./Base";
-import Oscillator from "./Oscillator";
+import { PolyModuleType } from "./PolyModule";
+import Oscillator, { PolyOscillator } from "./Oscillator";
 import { Envelope, AmpEnvelope, FreqEnvelope } from "./Envelope";
-import Filter from "./Filter";
+import Filter, { PolyFilter } from "./Filter";
+import Master from "./Master";
+import VoiceScheduler from "./VoiceScheduler";
+import MidiSelector from "./MidiSelector";
+import { PolyAmpEnvelope } from "./Envelope/AmpEnvelope";
+import { PolyFreqEnvelope } from "./Envelope/FreqEnvelope";
+import { PolyEnvelope } from "./Envelope/Base";
 
 export { default, ModuleType } from "./Base";
+export { default as PolyModule, PolyModuleType } from "./PolyModule";
 export type { Connectable, Triggerable } from "./Base";
 
 export { default as Filter } from "./Filter";
@@ -21,27 +29,44 @@ export function createModule(
   type: string,
   props: any
 ) {
-  let klass;
+  const klass = moduleClassFromType(type);
 
+  return new klass(name, code, props);
+}
+
+export function moduleClassFromType(type: string) {
   switch (type) {
     case ModuleType.Oscillator:
-      klass = Oscillator;
-      break;
+      return Oscillator;
     case ModuleType.Envelope:
-      klass = Envelope;
-      break;
+      return Envelope;
     case ModuleType.AmpEnvelope:
-      klass = AmpEnvelope;
-      break;
+      return AmpEnvelope;
     case ModuleType.FreqEnvelope:
-      klass = FreqEnvelope;
-      break;
+      return FreqEnvelope;
     case ModuleType.Filter:
-      klass = Filter;
-      break;
+      return Filter;
+    case PolyModuleType.Oscillator:
+      return PolyOscillator;
+    case PolyModuleType.Envelope:
+      return PolyEnvelope;
+    case PolyModuleType.AmpEnvelope:
+      return PolyAmpEnvelope;
+    case PolyModuleType.FreqEnvelope:
+      return PolyFreqEnvelope;
+    case PolyModuleType.Filter:
+      return PolyFilter;
+    case ModuleType.Master:
+      return Master;
+    case ModuleType.VoiceScheduler:
+      return VoiceScheduler;
+    case ModuleType.MidiSelector:
+      return MidiSelector;
     default:
       throw Error("Unknown module type");
   }
+}
 
-  return new klass(name, code, props);
+export function isPoly(type: string): boolean {
+  return true;
 }

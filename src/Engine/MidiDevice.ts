@@ -1,19 +1,18 @@
 import MidiEvent from "./MidiEvent";
-import MidiDeviceManager from "./MidiDeviceManager";
 
 export interface MidiDeviceInterface {
   id: string;
   name: string;
   state: string;
-  selected: boolean;
 }
+
+export type EventListerCallback = (event: MidiEvent) => void;
 
 export default class MidiDevice implements MidiDeviceInterface {
   id: string;
   name: string;
   state: string;
-  selected: boolean;
-  noteCallback: Function;
+  eventListerCallbacks: EventListerCallback[] = [];
 
   private _midi: MIDIInput;
 
@@ -21,7 +20,6 @@ export default class MidiDevice implements MidiDeviceInterface {
     this.id = midi.id;
     this.name = midi.name || `Device ${midi.id}`;
     this.state = midi.state;
-    this.selected = false;
     this._midi = midi;
 
     this.connect();
@@ -29,8 +27,6 @@ export default class MidiDevice implements MidiDeviceInterface {
 
   connect() {
     this._midi.onmidimessage = (e) => {
-      if (!this.selected) return;
-
       const isMidiEvent = e instanceof MIDIMessageEvent;
 
       if (!isMidiEvent) return;
@@ -44,13 +40,19 @@ export default class MidiDevice implements MidiDeviceInterface {
   }
 
   serialize() {
-    const { id, name, state, selected } = this;
+    const { id, name, state } = this;
 
-    return { id, name, state, selected };
+    return { id, name, state };
   }
 
-  select(value: boolean = true) {
-    this.selected = value;
+  addEventListener(callback: EventListerCallback) {
+    this.eventListerCallbacks.push(callback);
+  }
+
+  removeEventListener(callback: EventListerCallback) {
+    this.eventListerCallbacks = this.eventListerCallbacks.filter(
+      (c) => c === callback
+    );
   }
 
   _processEvent(e: MIDIMessageEvent) {
@@ -59,7 +61,7 @@ export default class MidiDevice implements MidiDeviceInterface {
     switch (event.type) {
       case "noteOn":
       case "noteOff":
-        MidiDeviceManager.noteCallback(event);
+        this.eventListerCallbacks.forEach((callback) => callback(event));
     }
   }
 }

@@ -3,11 +3,6 @@ import MidiDevice from "./MidiDevice";
 class MidiDeviceManager {
   private devices: Array<MidiDevice>;
   private static instance: MidiDeviceManager;
-  noteCallback: Function;
-
-  onNote(callback: Function) {
-    this.noteCallback = callback;
-  }
 
   public static getInstance(): MidiDeviceManager {
     if (!MidiDeviceManager.instance) {
@@ -25,12 +20,14 @@ class MidiDeviceManager {
     return this.devices;
   }
 
-  async find(id: string): Promise<MidiDevice | undefined> {
-    return (await this.fetchDevices()).find((dev: MidiDevice) => dev.id === id);
-  }
+  async find(id: string): Promise<MidiDevice> {
+    const device = (await this.fetchDevices()).find(
+      (dev: MidiDevice) => dev.id === id
+    );
 
-  async select(id: string, value: boolean) {
-    (await this.find(id))?.select(value);
+    if (!device) throw Error(`Midie device with id ${id} not found`);
+
+    return device;
   }
 
   async _inputs() {

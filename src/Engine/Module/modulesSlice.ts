@@ -8,12 +8,20 @@ import {
 
 import { RootState } from "store";
 import Engine from "Engine";
+import { ModuleType, PolyModuleType } from "Engine/Module";
 
-import { ModuleInterface } from "./Base";
+interface ModuleInterface extends AddModuleInterface {
+  id: string;
+}
 
-const modulesAdapter = createEntityAdapter<ModuleInterface>({
-  selectId: (m) => m.code,
-});
+interface AddModuleInterface {
+  name: string;
+  code: string;
+  type: ModuleType | PolyModuleType;
+  props?: any;
+}
+
+const modulesAdapter = createEntityAdapter<ModuleInterface>({});
 
 export const modulesSlice = createSlice({
   name: "modules",
@@ -21,7 +29,7 @@ export const modulesSlice = createSlice({
   reducers: {
     addModule: (
       state: EntityState<any>,
-      action: PayloadAction<ModuleInterface>
+      action: PayloadAction<AddModuleInterface>
     ) => {
       const { name, code, type, props } = action.payload;
       const payload = Engine.registerModule(name, code, type, props);
@@ -30,13 +38,13 @@ export const modulesSlice = createSlice({
     },
     updateModule: (state: EntityState<any>, update: PayloadAction<any>) => {
       const {
-        id: code,
+        id,
         changes: { props: changedProps },
       } = update.payload;
-      const { props } = Engine.updatePropsModule(code, changedProps);
+      const { props } = Engine.updatePropsModule(id, changedProps);
 
       return modulesAdapter.updateOne(state, {
-        id: code,
+        id,
         changes: { props },
       });
     },

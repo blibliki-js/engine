@@ -1,17 +1,21 @@
 import { v4 as uuidv4 } from "uuid";
 
+import { Input, Output, IOInterface } from "./IO";
+import PolyModule from "./PolyModule";
+
 export enum ModuleType {
-  Oscillator = "oscillator",
-  Envelope = "envelope",
-  AmpEnvelope = "ampEnvelope",
-  FreqEnvelope = "freqEnvelope",
-  Filter = "filter",
+  Oscillator = "monoOscillator",
+  Envelope = "monoEnvelope",
+  AmpEnvelope = "monoAmpEnvelope",
+  FreqEnvelope = "monoFreqEnvelope",
+  Filter = "monoFilter",
+  Master = "master",
+  VoiceScheduler = "voiceScheduler",
+  MidiSelector = "midiSelector",
 }
 
 export interface Connectable {
   connect: Function;
-  chain: Function;
-  toDestination: Function;
   dispose: Function;
 }
 
@@ -25,6 +29,15 @@ export interface ModuleInterface {
   code: string;
   type: ModuleType;
   props?: any;
+  voiceNo?: number;
+}
+
+export class DummnyInternalModule implements Connectable {
+  connect() {
+    throw Error("This module is not connectable");
+  }
+
+  dispose() {}
 }
 
 class Module<InternalModule extends Connectable, PropsInterface>
@@ -32,10 +45,14 @@ class Module<InternalModule extends Connectable, PropsInterface>
 {
   protected internalModule: InternalModule;
 
-  id: string;
+  readonly id: string;
   name: string;
   code: string;
+  inputs: Input[] = [];
+  outputs: Output[] = [];
   type: ModuleType;
+  readonly voiceNo?: number;
+  updatedAt: Date;
   _props: PropsInterface;
 
   constructor(internalModule: InternalModule, props: Partial<ModuleInterface>) {
@@ -49,6 +66,8 @@ class Module<InternalModule extends Connectable, PropsInterface>
     if (!value) return;
     if (!this._props) this._props = value;
 
+    this.updatedAt = new Date();
+
     Object.assign(this, value);
   }
 
@@ -56,37 +75,92 @@ class Module<InternalModule extends Connectable, PropsInterface>
     return this._props;
   }
 
-  connect(module: Module<InternalModule, PropsInterface>) {
-    this.internalModule.connect(module.internalModule);
+  plug(
+    audioModule: Module<Connectable, any> | PolyModule<any>,
+    from: string,
+    to: string
+  ) {
+    const output = this.outputs.find((i) => i.name === from);
+    if (!output) throw Error(`Output ${from} not exist`);
+
+    const log = `${this.name}:${this.voiceNo}`;
+
+    if (audioModule instanceof Module) {
+      console.log(`${log} to mono inputs ${audioModule.name}:${to}`);
+      this.plugMono(output, audioModule, to);
+      return;
+    }
+
+    if (this.voiceNo === undefined) {
+      console.log(`${log} to all poly inputs ${audioModule.name}:${to}`);
+      audioModule.audioModules.forEach((m) => this.plugMono(output, m, to));
+    } else {
+      const currentVoiceModule = audioModule.audioModules.find(
+        (m) => m.voiceNo === this.voiceNo
+      );
+
+      if (!currentVoiceModule) {
+        throw Error(
+          `Audio module ${audioModule.name} missing voice ${this.voiceNo}`
+        );
+      }
+
+      console.log(
+        `${log} to poly voice ${currentVoiceModule.voiceNo} input ${audioModule.name}:${to}`
+      );
+
+      this.plugMono(output, currentVoiceModule, to);
+    }
   }
 
-  chain(...modules: Module<InternalModule, PropsInterface>[]) {
-    this.internalModule.chain(
-      ...modules.map(
-        (m: Module<InternalModule, PropsInterface>) => m.internalModule
-      )
-    );
-  }
-
-  toDestination() {
-    this.internalModule.toDestination();
+  unplugAll() {
+    this.outputs.forEach((o) => o.unPlugAll());
   }
 
   dispose() {
     this.internalModule.dispose();
   }
 
-  isTriggerable() {
-    return !!(this as unknown as Triggerable).triggerAttack;
-  }
-
   serialize() {
     return {
+      id: this.id,
       name: this.name,
       code: this.code,
       type: this.type,
       props: this.props,
+      inputs: this.inputs.map((i) => i.serialize()),
+      outputs: this.outputs.map((i) => i.serialize()),
     };
+  }
+
+  protected connect(pluggable: any) {
+    this.internalModule.connect(pluggable);
+  }
+
+  protected registerInput(props: IOInterface): Input {
+    const input = new Input(this, props);
+    this.inputs.push(input);
+
+    return input;
+  }
+
+  protected registerOutput(props: IOInterface): Output {
+    const output = new Output(this, props);
+    this.outputs.push(output);
+
+    return output;
+  }
+
+  private plugMono(
+    output: Output,
+    audioModule: Module<Connectable, any>,
+    to: string
+  ) {
+    const input = audioModule.inputs.find((i) => i.name === to);
+    if (!input)
+      throw Error(`Input ${to} in module ${audioModule.name} not exist`);
+
+    output.plug(input);
   }
 }
 

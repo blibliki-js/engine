@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "hooks";
 import { addModule, selectModulesByCodes } from "Engine/Module/modulesSlice";
-import { ModuleType } from "Engine/Module";
+import { ModuleType, PolyModuleType } from "Engine/Module";
 
 interface UseModuleProps {
   name: string;
   code: string;
-  type: ModuleType;
+  type: ModuleType | PolyModuleType;
   props?: any;
 }
 

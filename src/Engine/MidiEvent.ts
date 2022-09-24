@@ -1,3 +1,4 @@
+import { now } from "tone";
 import Note from "./Note";
 
 const EvenType: { [key: number]: string } = {
@@ -7,12 +8,14 @@ const EvenType: { [key: number]: string } = {
 
 export default class MidiEvent {
   note?: Note;
+  triggeredAt: number;
   private data: Uint8Array;
   private _type: string;
   private _event: MIDIMessageEvent;
 
   constructor(event: MIDIMessageEvent) {
     this._event = event;
+    this.triggeredAt = now();
     this.data = event.data;
     this.defineNote();
   }

@@ -2,12 +2,13 @@ import { Filter as InternalFilter } from "tone";
 
 import { FreqEnvelope } from "./Envelope";
 import Module, { ModuleType } from "./Base";
+import PolyModule, { PolyModuleType } from "./PolyModule";
 
 interface FilterInterface {
   cutoff: number;
   resonance: number;
   envelopeAmount: number;
-  voice: number;
+  voiceNo?: number;
 }
 
 interface FilterProps extends Partial<FilterInterface> {}
@@ -16,7 +17,6 @@ const InitialProps: FilterInterface = {
   cutoff: 20000,
   resonance: 0,
   envelopeAmount: 0,
-  voice: 0,
 };
 
 export default class Filter extends Module<InternalFilter, FilterInterface> {
@@ -26,9 +26,12 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
     super(new InternalFilter({ type: "lowpass" }), {
       name,
       code,
-      props: { ...InitialProps, ...props, voiceble: true },
+      props: { ...InitialProps, ...props },
       type: ModuleType.Filter,
     });
+
+    this.registerInputs();
+    this.registerOutputs();
   }
 
   get cutoff() {
@@ -74,5 +77,42 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
   conntectedEnvelope(envelope: FreqEnvelope) {
     this._envelope = envelope;
     this._envelope.frequency = this.cutoff;
+  }
+
+  private registerInputs() {
+    this.registerInput({
+      name: "input",
+      pluggable: this.internalModule,
+    });
+
+    this.registerInput({
+      name: "frequency",
+      pluggable: this.frequency,
+      onPlug: (input) => {
+        this._envelope = input.pluggable;
+        this._envelope.frequency = this.cutoff;
+      },
+    });
+  }
+
+  private registerOutputs() {
+    this.registerOutput({
+      name: "output",
+      pluggable: this.internalModule,
+      onPlug: (input) => {
+        this.connect(input.pluggable);
+      },
+    });
+  }
+}
+
+export class PolyFilter extends PolyModule<FilterInterface> {
+  constructor(name: string, code: string, props: Partial<FilterInterface>) {
+    super(PolyModuleType.Filter, {
+      name,
+      code,
+      props: { ...InitialProps, ...props },
+      type: ModuleType.Filter,
+    });
   }
 }

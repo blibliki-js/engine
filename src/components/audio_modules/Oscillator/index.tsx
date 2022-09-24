@@ -1,7 +1,5 @@
 import styled from "@emotion/styled";
 
-import Engine from "Engine";
-
 import Fader, { MarkProps } from "components/Fader";
 
 const Center: MarkProps[] = [{ value: 0, label: "-" }];
@@ -36,13 +34,14 @@ const RANGES: MarkProps[] = [
 ];
 
 export default function Oscillator(props: {
-  name: string;
+  id: string;
   code: string;
+  name: string;
   props: { range: number; coarse: number; fine: number; wave: string };
   updateProps: Function;
 }) {
   const {
-    code,
+    id,
     updateProps,
     name: title,
     props: { range, coarse, fine, wave: waveName },
@@ -54,7 +53,7 @@ export default function Oscillator(props: {
     if (propName === "wave")
       value = WAVES.find((w) => w.value === value)?.label || WAVES[0].label;
 
-    updateProps(code, { [propName]: value });
+    updateProps(id, { [propName]: value });
   };
 
   return (

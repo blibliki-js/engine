@@ -5,8 +5,11 @@ import Oscillator from "components/audio_modules/Oscillator";
 import Envelope from "components/audio_modules/Envelope";
 import Filter from "components/audio_modules/Filter";
 import Volume from "components/audio_modules/Volume";
+import MidiDeviceSelector from "components/MidiDeviceSelector";
+import VoiceScheduler from "components/VoiceScheduler";
 
 interface AudioModuleProps {
+  id: string;
   name: string;
   code: string;
   type: string;
@@ -18,21 +21,23 @@ export default function AudioModule(audioModuleProps: {
   componentType?: string;
 }) {
   const dispatch = useAppDispatch();
-  const { code, name, type, props } = audioModuleProps.module;
+  const { id, code, name, type, props } = audioModuleProps.module;
 
   const componentType =
     audioModuleProps.componentType || audioModuleProps.module.type;
   let Component;
 
-  const updateProps = (code: string, props: any) => {
-    dispatch(updateModule({ id: code, changes: { props } }));
+  const updateProps = (id: string, props: any) => {
+    dispatch(updateModule({ id, changes: { props } }));
   };
 
   switch (componentType) {
     case "oscillator":
+    case "monoOscillator":
       Component = Oscillator;
       break;
     case "filter":
+    case "monoFilter":
       Component = Filter;
       break;
     case "volume":
@@ -41,7 +46,16 @@ export default function AudioModule(audioModuleProps: {
     case "envelope":
     case "ampEnvelope":
     case "freqEnvelope":
+    case "monoEnvelope":
+    case "monoAmpEnvelope":
+    case "monoFreqEnvelope":
       Component = Envelope;
+      break;
+    case "midiSelector":
+      Component = MidiDeviceSelector;
+      break;
+    case "voiceScheduler":
+      Component = VoiceScheduler;
       break;
     default:
       throw Error(`Unknown audio module type ${type}`);
@@ -49,6 +63,7 @@ export default function AudioModule(audioModuleProps: {
 
   return (
     <Component
+      id={id}
       code={code}
       name={name}
       props={props}

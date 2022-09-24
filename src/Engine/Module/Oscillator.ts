@@ -1,7 +1,9 @@
+import MidiEvent from "Engine/MidiEvent";
 import { Oscillator as Osc, ToneOscillatorType } from "tone";
 
 import Module, { ModuleType } from "../Module";
 import Note from "../Note";
+import PolyModule, { PolyModuleType } from "./PolyModule";
 
 export interface OscillatorInterface {
   noteName: string;
@@ -10,7 +12,7 @@ export interface OscillatorInterface {
   wave: string;
   volume: number;
   range: number;
-  voice: number;
+  voiceNo?: number;
 }
 
 const InitialProps: OscillatorInterface = {
@@ -20,7 +22,6 @@ const InitialProps: OscillatorInterface = {
   wave: "sine",
   range: 0,
   volume: -100,
-  voice: 0,
 };
 
 export default class Oscillator extends Module<Osc, OscillatorInterface> {
@@ -30,9 +31,12 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
     super(new Osc(), {
       name,
       code,
-      props: { ...InitialProps, ...props, voicable: true },
+      props: { ...InitialProps, ...props },
       type: ModuleType.Oscillator,
     });
+
+    this.registerInputs();
+    this.registerOutputs();
     this.note = new Note("C3");
 
     this.internalModule.sync();
@@ -113,6 +117,41 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
     this.internalModule.start();
   }
 
+  private registerInputs() {
+    this.registerInput({
+      name: "midi in",
+      pluggable: this.midiTriggered,
+    });
+  }
+
+  private registerOutputs() {
+    this.registerOutput({
+      name: "output",
+      pluggable: this.internalModule,
+      onPlug: (input) => {
+        this.connect(input.pluggable);
+      },
+    });
+  }
+
+  private midiTriggered = (midiEvent: MidiEvent, voiceNo?: number) => {
+    if (voiceNo !== undefined && this.voiceNo === undefined)
+      throw Error("Module not supporting polyphony");
+
+    if (this.voiceNo !== voiceNo) return;
+
+    switch (midiEvent.type) {
+      case "noteOn":
+        if (!midiEvent.note) break;
+        this.setNoteAt(midiEvent.note, midiEvent.triggeredAt);
+        break;
+      case "noteOff":
+        break;
+      default:
+        throw Error("This type is not a note");
+    }
+  };
+
   private updateFrequency(time?: number) {
     if (!this.note) return;
 
@@ -129,5 +168,16 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
 
   private getNote(note: Note | string): Note {
     return note instanceof Note ? note : new Note(note);
+  }
+}
+
+export class PolyOscillator extends PolyModule<OscillatorInterface> {
+  constructor(name: string, code: string, props: Partial<OscillatorInterface>) {
+    super(PolyModuleType.Oscillator, {
+      name,
+      code,
+      props: { ...InitialProps, ...props },
+      type: ModuleType.Oscillator,
+    });
   }
 }
