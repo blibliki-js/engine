@@ -1,8 +1,9 @@
 import { Envelope as Env } from "tone";
 
-import Module, { ModuleType, Triggerable } from "Engine/Module";
+import Module, { ModuleType, Connectable, Triggerable } from "Engine/Module";
 import PolyModule, { PolyModuleType } from "../PolyModule";
 import MidiEvent from "Engine/MidiEvent";
+import { Output } from "../IO";
 
 export const enum EnvelopeStages {
   Attack = "attack",
@@ -48,9 +49,6 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
       type,
       props: { ...InitialProps, ...props },
     });
-
-    this.registerInputs();
-    this.registerOutputs();
   }
 
   get attack() {
@@ -92,19 +90,52 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
     this.internalModule[stage] = calculatedValue;
   }
 
-  triggerAttack(time: number) {
-    this.internalModule.triggerRelease();
-    this.internalModule.triggerAttack(time);
+  triggerAttack(midiEvent: MidiEvent) {
+    this.internalModule.triggerAttack(midiEvent.triggeredAt);
   }
 
-  triggerRelease(time: number) {
-    this.internalModule.triggerRelease(time);
+  triggerRelease(midiEvent: MidiEvent) {
+    this.internalModule.triggerRelease(midiEvent.triggeredAt);
+  }
+
+  private maxTime(stage: EnvelopeStages): number {
+    return stage === EnvelopeStages.Sustain ? SUSTAIN_MAX_VALUE : MAX_TIME;
+  }
+
+  private minTime(stage: EnvelopeStages): number {
+    return stage === EnvelopeStages.Sustain ? SUSTAIN_MIN_VALUE : MIN_TIME;
+  }
+}
+
+export abstract class PolyBase<
+  EnvelopeModule extends Module<Connectable, any>
+> extends PolyModule<EnvelopeModule, EnvelopeInterface> {
+  constructor(
+    name: string,
+    code: string,
+    type: ModuleType,
+    polyType: PolyModuleType,
+    props: Partial<EnvelopeInterface>
+  ) {
+    super(polyType, {
+      name,
+      code,
+      type,
+      props: { ...InitialProps, ...props },
+    });
+
+    this.registerInputs();
+    this.registerOutputs();
   }
 
   private registerInputs() {
     this.registerInput({
       name: "input",
-      pluggable: this.internalModule,
+      onPlug: (output: Output) => {
+        this.audioModules.forEach((m) =>
+          output.pluggable(m.internalModule, m.voiceNo)
+        );
+      },
     });
 
     this.registerInput({
@@ -116,37 +147,8 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
   protected registerOutputs() {
     this.registerOutput({
       name: "output",
-      pluggable: this.internalModule,
-      onPlug: (input) => {
-        this.connect(input.pluggable);
-      },
+      pluggable: this.connect,
     });
-  }
-
-  private midiTriggered = (midiEvent: MidiEvent, voiceNo?: number) => {
-    if (voiceNo !== undefined && this.voiceNo === undefined)
-      throw Error("Module not supporting polyphony");
-
-    if (this.voiceNo !== voiceNo) return;
-
-    switch (midiEvent.type) {
-      case "noteOn":
-        this.triggerAttack(midiEvent.triggeredAt);
-        break;
-      case "noteOff":
-        this.triggerRelease(midiEvent.triggeredAt);
-        break;
-      default:
-        throw Error("This type is not a note");
-    }
-  };
-
-  private maxTime(stage: EnvelopeStages): number {
-    return stage === EnvelopeStages.Sustain ? SUSTAIN_MAX_VALUE : MAX_TIME;
-  }
-
-  private minTime(stage: EnvelopeStages): number {
-    return stage === EnvelopeStages.Sustain ? SUSTAIN_MIN_VALUE : MIN_TIME;
   }
 }
 
@@ -156,13 +158,11 @@ export class Envelope extends EnvelopeModule<Env> {
   }
 }
 
-export class PolyEnvelope extends PolyModule<EnvelopeInterface> {
+export class PolyEnvelope extends PolyBase<Envelope> {
   constructor(name: string, code: string, props: Partial<EnvelopeInterface>) {
-    super(PolyModuleType.Envelope, {
-      name,
-      code,
-      props: { ...InitialProps, ...props },
-      type: ModuleType.Envelope,
+    super(name, code, ModuleType.Envelope, PolyModuleType.Envelope, {
+      ...InitialProps,
+      ...props,
     });
   }
 }

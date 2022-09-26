@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-
-import Module, { Connectable } from "./Base";
+import { AudioModule } from "../Module";
 
 export interface IOInterface {
   name: string;
@@ -23,17 +22,13 @@ abstract class IO {
   id: string;
   ioType: IOType;
   name: string;
-  audioModule: Module<Connectable, any>;
+  audioModule: AudioModule;
   pluggable: any;
   onPlug: (io: IO) => void;
   onUnPlug: (io: IO) => void;
   connections: Input[] | Output[] = [];
 
-  constructor(
-    ioType: IOType,
-    audioModule: Module<Connectable, any>,
-    props: IOInterface
-  ) {
+  constructor(ioType: IOType, audioModule: AudioModule, props: IOInterface) {
     this.id = uuidv4();
     this.ioType = ioType;
     this.audioModule = audioModule;
@@ -53,7 +48,6 @@ abstract class IO {
     if (this.onUnPlug) this.onUnPlug(io);
 
     if (this.ioType === IOType.Output) {
-      this.pluggable?.disconnect();
       io.unPlug(this);
     }
 
@@ -77,13 +71,13 @@ abstract class IO {
 }
 
 export class Input extends IO {
-  constructor(audioModule: Module<Connectable, any>, props: IOInterface) {
+  constructor(audioModule: AudioModule, props: IOInterface) {
     super(IOType.Input, audioModule, props);
   }
 }
 
 export class Output extends IO {
-  constructor(audioModule: Module<Connectable, any>, props: IOInterface) {
+  constructor(audioModule: AudioModule, props: IOInterface) {
     super(IOType.Output, audioModule, props);
   }
 }

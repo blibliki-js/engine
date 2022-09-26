@@ -1,10 +1,10 @@
-import { ModuleType } from "./Base";
-import { PolyModuleType } from "./PolyModule";
+import Module, { Connectable, ModuleType } from "./Base";
+import PolyModule, { PolyModuleType } from "./PolyModule";
 import Oscillator, { PolyOscillator } from "./Oscillator";
 import { Envelope, AmpEnvelope, FreqEnvelope } from "./Envelope";
 import Filter, { PolyFilter } from "./Filter";
 import Master from "./Master";
-import VoiceScheduler from "./VoiceScheduler";
+import VoiceScheduler, { Voice } from "./VoiceScheduler";
 import MidiSelector from "./MidiSelector";
 import { PolyAmpEnvelope } from "./Envelope/AmpEnvelope";
 import { PolyFreqEnvelope } from "./Envelope/FreqEnvelope";
@@ -23,12 +23,16 @@ export {
   EnvelopeStages,
 } from "./Envelope";
 
+export type AudioModule =
+  | Module<Connectable, any>
+  | PolyModule<Module<Connectable, any>, any>;
+
 export function createModule(
   name: string,
   code: string,
   type: string,
   props: any
-) {
+): AudioModule {
   const klass = moduleClassFromType(type);
 
   return new klass(name, code, props);
@@ -58,15 +62,13 @@ export function moduleClassFromType(type: string) {
       return PolyFilter;
     case ModuleType.Master:
       return Master;
-    case ModuleType.VoiceScheduler:
+    case ModuleType.Voice:
+      return Voice;
+    case PolyModuleType.VoiceScheduler:
       return VoiceScheduler;
     case ModuleType.MidiSelector:
       return MidiSelector;
     default:
       throw Error("Unknown module type");
   }
-}
-
-export function isPoly(type: string): boolean {
-  return true;
 }

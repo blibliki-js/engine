@@ -35,8 +35,6 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
       type: ModuleType.Oscillator,
     });
 
-    this.registerInputs();
-    this.registerOutputs();
     this.note = new Note("C3");
 
     this.internalModule.sync();
@@ -117,40 +115,14 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
     this.internalModule.start();
   }
 
-  private registerInputs() {
-    this.registerInput({
-      name: "midi in",
-      pluggable: this.midiTriggered,
-    });
+  triggerAttack(midiEvent: MidiEvent) {
+    if (!midiEvent.note) return;
+    this.setNoteAt(midiEvent.note, midiEvent.triggeredAt);
   }
 
-  private registerOutputs() {
-    this.registerOutput({
-      name: "output",
-      pluggable: this.internalModule,
-      onPlug: (input) => {
-        this.connect(input.pluggable);
-      },
-    });
+  triggerRelease(midiEvent: MidiEvent) {
+    // Do nothing
   }
-
-  private midiTriggered = (midiEvent: MidiEvent, voiceNo?: number) => {
-    if (voiceNo !== undefined && this.voiceNo === undefined)
-      throw Error("Module not supporting polyphony");
-
-    if (this.voiceNo !== voiceNo) return;
-
-    switch (midiEvent.type) {
-      case "noteOn":
-        if (!midiEvent.note) break;
-        this.setNoteAt(midiEvent.note, midiEvent.triggeredAt);
-        break;
-      case "noteOff":
-        break;
-      default:
-        throw Error("This type is not a note");
-    }
-  };
 
   private updateFrequency(time?: number) {
     if (!this.note) return;
@@ -171,13 +143,33 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
   }
 }
 
-export class PolyOscillator extends PolyModule<OscillatorInterface> {
+export class PolyOscillator extends PolyModule<
+  Oscillator,
+  OscillatorInterface
+> {
   constructor(name: string, code: string, props: Partial<OscillatorInterface>) {
     super(PolyModuleType.Oscillator, {
       name,
       code,
       props: { ...InitialProps, ...props },
       type: ModuleType.Oscillator,
+    });
+
+    this.registerInputs();
+    this.registerOutputs();
+  }
+
+  private registerInputs() {
+    this.registerInput({
+      name: "midi in",
+      pluggable: this.midiTriggered,
+    });
+  }
+
+  private registerOutputs() {
+    this.registerOutput({
+      name: "output",
+      pluggable: this.connect,
     });
   }
 }

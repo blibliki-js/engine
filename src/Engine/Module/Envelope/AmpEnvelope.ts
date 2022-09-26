@@ -1,8 +1,8 @@
 import { AmplitudeEnvelope } from "tone";
 
 import { ModuleType } from "Engine/Module";
-import Base, { EnvelopeInterface } from "./Base";
-import PolyModule, { PolyModuleType } from "../PolyModule";
+import Base, { EnvelopeInterface, PolyBase } from "./Base";
+import { PolyModuleType } from "../PolyModule";
 
 export default class AmpEnvelope extends Base<AmplitudeEnvelope> {
   constructor(name: string, code: string, props: EnvelopeInterface) {
@@ -10,13 +10,14 @@ export default class AmpEnvelope extends Base<AmplitudeEnvelope> {
   }
 }
 
-export class PolyAmpEnvelope extends PolyModule<EnvelopeInterface> {
+export class PolyAmpEnvelope extends PolyBase<AmpEnvelope> {
   constructor(name: string, code: string, props: Partial<EnvelopeInterface>) {
-    super(PolyModuleType.AmpEnvelope, {
+    super(
       name,
       code,
-      props,
-      type: ModuleType.AmpEnvelope,
-    });
+      ModuleType.AmpEnvelope,
+      PolyModuleType.AmpEnvelope,
+      props
+    );
   }
 }

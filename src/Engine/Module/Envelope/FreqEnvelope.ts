@@ -2,9 +2,9 @@ import { FrequencyEnvelope } from "tone";
 
 import { ModuleType } from "../Base";
 import Filter from "../Filter";
-import PolyModule, { PolyModuleType } from "../PolyModule";
+import { PolyModuleType } from "../PolyModule";
 
-import Base, { EnvelopeInterface } from "./Base";
+import Base, { EnvelopeInterface, PolyBase } from "./Base";
 
 interface FreqEnvelopeInterface extends Partial<EnvelopeInterface> {
   amount?: number;
@@ -24,8 +24,6 @@ export default class FreqEnvelope extends Base<FrequencyEnvelope> {
       ...InitialProps,
       ...props,
     });
-
-    this.registerOutputs();
   }
 
   get frequency() {
@@ -52,6 +50,18 @@ export default class FreqEnvelope extends Base<FrequencyEnvelope> {
     this.filter = filter;
     this.filter.conntectedEnvelope(this);
   }
+}
+
+export class PolyFreqEnvelope extends PolyBase<FreqEnvelope> {
+  constructor(name: string, code: string, props: Partial<EnvelopeInterface>) {
+    super(
+      name,
+      code,
+      ModuleType.FreqEnvelope,
+      PolyModuleType.FreqEnvelope,
+      props
+    );
+  }
 
   protected registerOutputs() {
     super.registerOutputs();
@@ -60,19 +70,15 @@ export default class FreqEnvelope extends Base<FrequencyEnvelope> {
       name: "frequency",
       pluggable: this,
       onPlug: (input) => {
-        this.connect(input.pluggable);
+        if (input.pluggable instanceof Array) {
+          input.pluggable.forEach((p) => {
+            const [voiceNo, frequency] = p;
+            this.connect(frequency, voiceNo);
+          });
+        } else {
+          this.connect(input.pluggable);
+        }
       },
-    });
-  }
-}
-
-export class PolyFreqEnvelope extends PolyModule<EnvelopeInterface> {
-  constructor(name: string, code: string, props: Partial<EnvelopeInterface>) {
-    super(PolyModuleType.FreqEnvelope, {
-      name,
-      code,
-      props: { ...InitialProps, ...props },
-      type: ModuleType.FreqEnvelope,
     });
   }
 }

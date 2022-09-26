@@ -1,17 +1,12 @@
 import { store } from "store";
-import Module, {
-  ModuleType,
-  Connectable,
-  PolyModule,
-  createModule,
-} from "Engine/Module";
+import { AudioModule, ModuleType, createModule } from "Engine/Module";
 import { addModule } from "Engine/Module/modulesSlice";
 import { applyRoutes } from "./routes";
 
 class Engine {
   private static instance: Engine;
   modules: {
-    [Identifier: string]: Module<Connectable, any> | PolyModule<any>;
+    [Identifier: string]: AudioModule;
   };
 
   private constructor() {
@@ -53,7 +48,7 @@ class Engine {
     this.modules = {};
   }
 
-  findById(id: string): Module<Connectable, any> | PolyModule<any> {
+  findById(id: string): AudioModule {
     const audioModule = this.modules[id];
 
     if (!audioModule) throw Error(`Audio module with id ${id} not exists`);
@@ -61,7 +56,7 @@ class Engine {
     return audioModule;
   }
 
-  findByCode(code: string): Module<Connectable, any> | PolyModule<any> | null {
+  findByCode(code: string): AudioModule | null {
     const audioModule = Object.values(this.modules).find(
       (modula) => modula.code === code
     );

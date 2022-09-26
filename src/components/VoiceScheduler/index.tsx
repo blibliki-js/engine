@@ -25,6 +25,8 @@ export default function VoiceScheduler(props: {
     updateProps(id, { numberOfVoices: event.target.value });
   };
 
+  if (!numberOfVoices) debugger;
+
   return (
     <FormControl fullWidth>
       <InputLabel id="voice-select">{name}</InputLabel>

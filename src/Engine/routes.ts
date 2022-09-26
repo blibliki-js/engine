@@ -60,7 +60,12 @@ export function applyRoutes() {
     const source = Engine.findByCode(sourceCode);
     const destination = Engine.findByCode(destinationCode);
 
-    if (!source || !destination) return false;
+    if (!source || !destination) {
+      console.log(
+        `missing ${sourceCode}:${output} => ${destinationCode}:${input}`
+      );
+      return false;
+    }
 
     source.plug(destination, output, input);
 

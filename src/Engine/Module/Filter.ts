@@ -3,6 +3,8 @@ import { Filter as InternalFilter } from "tone";
 import { FreqEnvelope } from "./Envelope";
 import Module, { ModuleType } from "./Base";
 import PolyModule, { PolyModuleType } from "./PolyModule";
+import { Output } from "./IO";
+import { PolyFreqEnvelope } from "./Envelope/FreqEnvelope";
 
 interface FilterInterface {
   cutoff: number;
@@ -29,9 +31,6 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
       props: { ...InitialProps, ...props },
       type: ModuleType.Filter,
     });
-
-    this.registerInputs();
-    this.registerOutputs();
   }
 
   get cutoff() {
@@ -78,41 +77,53 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
     this._envelope = envelope;
     this._envelope.frequency = this.cutoff;
   }
-
-  private registerInputs() {
-    this.registerInput({
-      name: "input",
-      pluggable: this.internalModule,
-    });
-
-    this.registerInput({
-      name: "frequency",
-      pluggable: this.frequency,
-      onPlug: (input) => {
-        this._envelope = input.pluggable;
-        this._envelope.frequency = this.cutoff;
-      },
-    });
-  }
-
-  private registerOutputs() {
-    this.registerOutput({
-      name: "output",
-      pluggable: this.internalModule,
-      onPlug: (input) => {
-        this.connect(input.pluggable);
-      },
-    });
-  }
 }
 
-export class PolyFilter extends PolyModule<FilterInterface> {
+export class PolyFilter extends PolyModule<Filter, FilterInterface> {
   constructor(name: string, code: string, props: Partial<FilterInterface>) {
     super(PolyModuleType.Filter, {
       name,
       code,
       props: { ...InitialProps, ...props },
       type: ModuleType.Filter,
+    });
+
+    this.registerInputs();
+    this.registerOutputs();
+  }
+
+  private registerInputs() {
+    this.registerInput({
+      name: "input",
+      onPlug: (output: Output) => {
+        this.audioModules.forEach((m) => {
+          output.pluggable(m.internalModule, m.voiceNo);
+        });
+      },
+    });
+
+    this.registerInput({
+      name: "frequency",
+      pluggable: this.audioModules.map((m) => [m.voiceNo, m.frequency]),
+      onPlug: (output) => {
+        this.conntectedEnvelope(output.pluggable);
+      },
+    });
+  }
+
+  conntectedEnvelope(polyFreqEnvelope: PolyFreqEnvelope) {
+    polyFreqEnvelope.audioModules.forEach((envelope) => {
+      if (envelope.voiceNo === undefined) return;
+
+      const filter = this.findVoice(envelope.voiceNo);
+      filter.conntectedEnvelope(envelope);
+    });
+  }
+
+  protected registerOutputs() {
+    this.registerOutput({
+      name: "output",
+      pluggable: this.connect,
     });
   }
 }

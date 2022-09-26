@@ -1,12 +1,12 @@
 import { useModules } from "hooks";
 import AudioModule from "components/audio_modules";
-import { ModuleType } from "Engine/Module";
+import { PolyModuleType } from "Engine/Module";
 
 const INITIAL_MODULE_PROPS = [
   {
     name: "Voice scheduler",
     code: "voiceScheduler",
-    type: ModuleType.VoiceScheduler,
+    type: PolyModuleType.VoiceScheduler,
     props: { numberOfVoices: 6 },
   },
 ];

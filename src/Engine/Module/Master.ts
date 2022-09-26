@@ -1,5 +1,6 @@
 import { Destination } from "tone";
 import Module, { ModuleType } from "../Module";
+import { Output } from "./IO";
 
 export interface MasterInterface {}
 
@@ -7,8 +8,6 @@ export default class Master extends Module<
   typeof Destination,
   MasterInterface
 > {
-  static poly = false;
-
   constructor() {
     super(Destination, {
       name: "Master",
@@ -21,7 +20,9 @@ export default class Master extends Module<
   private registerInputs() {
     this.registerInput({
       name: "input",
-      pluggable: this.internalModule,
+      onPlug: (output: Output) => {
+        output.pluggable(this.internalModule);
+      },
     });
   }
 }

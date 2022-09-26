@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
+import { InputNode } from "tone";
 
 import { Input, Output, IOInterface } from "./IO";
-import PolyModule from "./PolyModule";
+import MidiEvent from "Engine/MidiEvent";
+import { AudioModule } from "../Module";
 
 export enum ModuleType {
   Oscillator = "monoOscillator",
@@ -10,13 +12,13 @@ export enum ModuleType {
   FreqEnvelope = "monoFreqEnvelope",
   Filter = "monoFilter",
   Master = "master",
-  VoiceScheduler = "voiceScheduler",
+  Voice = "voice",
   MidiSelector = "midiSelector",
 }
 
 export interface Connectable {
-  connect: Function;
-  dispose: Function;
+  connect: (inputNode: InputNode) => void;
+  dispose: () => void;
 }
 
 export interface Triggerable {
@@ -33,7 +35,7 @@ export interface ModuleInterface {
 }
 
 export class DummnyInternalModule implements Connectable {
-  connect() {
+  connect(inputNode: InputNode) {
     throw Error("This module is not connectable");
   }
 
@@ -43,7 +45,7 @@ export class DummnyInternalModule implements Connectable {
 class Module<InternalModule extends Connectable, PropsInterface>
   implements ModuleInterface
 {
-  protected internalModule: InternalModule;
+  internalModule: InternalModule;
 
   readonly id: string;
   name: string;
@@ -75,51 +77,51 @@ class Module<InternalModule extends Connectable, PropsInterface>
     return this._props;
   }
 
-  plug(
-    audioModule: Module<Connectable, any> | PolyModule<any>,
-    from: string,
-    to: string
-  ) {
+  plug(audioModule: AudioModule, from: string, to: string) {
     const output = this.outputs.find((i) => i.name === from);
     if (!output) throw Error(`Output ${from} not exist`);
 
-    const log = `${this.name}:${this.voiceNo}`;
+    console.log(`${this.name}:${from} => ${audioModule.name}:${to}`);
 
-    if (audioModule instanceof Module) {
-      console.log(`${log} to mono inputs ${audioModule.name}:${to}`);
-      this.plugMono(output, audioModule, to);
-      return;
-    }
+    const input = audioModule.inputs.find((i) => i.name === to);
+    if (!input)
+      throw Error(`Input ${to} in module ${audioModule.name} not exist`);
 
-    if (this.voiceNo === undefined) {
-      console.log(`${log} to all poly inputs ${audioModule.name}:${to}`);
-      audioModule.audioModules.forEach((m) => this.plugMono(output, m, to));
-    } else {
-      const currentVoiceModule = audioModule.audioModules.find(
-        (m) => m.voiceNo === this.voiceNo
-      );
-
-      if (!currentVoiceModule) {
-        throw Error(
-          `Audio module ${audioModule.name} missing voice ${this.voiceNo}`
-        );
-      }
-
-      console.log(
-        `${log} to poly voice ${currentVoiceModule.voiceNo} input ${audioModule.name}:${to}`
-      );
-
-      this.plugMono(output, currentVoiceModule, to);
-    }
+    output.plug(input);
   }
 
   unplugAll() {
     this.outputs.forEach((o) => o.unPlugAll());
   }
 
+  connect(inputNode: InputNode) {
+    this.internalModule.connect(inputNode);
+  }
+
   dispose() {
     this.internalModule.dispose();
   }
+
+  triggerAttack(midiEvent: MidiEvent) {
+    throw Error("triggerAttack not implemented");
+  }
+
+  triggerRelease(midiEvent: MidiEvent) {
+    throw Error("triggerRelease not implemented");
+  }
+
+  midiTriggered = (midiEvent: MidiEvent) => {
+    switch (midiEvent.type) {
+      case "noteOn":
+        this.triggerAttack(midiEvent);
+        break;
+      case "noteOff":
+        this.triggerRelease(midiEvent);
+        break;
+      default:
+        throw Error("This type is not a note");
+    }
+  };
 
   serialize() {
     return {
@@ -131,10 +133,6 @@ class Module<InternalModule extends Connectable, PropsInterface>
       inputs: this.inputs.map((i) => i.serialize()),
       outputs: this.outputs.map((i) => i.serialize()),
     };
-  }
-
-  protected connect(pluggable: any) {
-    this.internalModule.connect(pluggable);
   }
 
   protected registerInput(props: IOInterface): Input {
@@ -149,18 +147,6 @@ class Module<InternalModule extends Connectable, PropsInterface>
     this.outputs.push(output);
 
     return output;
-  }
-
-  private plugMono(
-    output: Output,
-    audioModule: Module<Connectable, any>,
-    to: string
-  ) {
-    const input = audioModule.inputs.find((i) => i.name === to);
-    if (!input)
-      throw Error(`Input ${to} in module ${audioModule.name} not exist`);
-
-    output.plug(input);
   }
 }
 
