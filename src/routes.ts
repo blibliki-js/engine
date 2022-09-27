@@ -1,4 +1,4 @@
-import Engine from "Engine";
+import Engine from "./";
 
 const routes = [
   [

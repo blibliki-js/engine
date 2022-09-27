@@ -1,6 +1,4 @@
-import { store } from "store";
-import { AudioModule, ModuleType, createModule } from "Engine/Module";
-import { addModule } from "Engine/Module/modulesSlice";
+import { AudioModule, ModuleType, createModule } from "Module";
 import { applyRoutes } from "./routes";
 
 class Engine {
@@ -21,9 +19,7 @@ class Engine {
     return Engine.instance;
   }
 
-  initialize() {
-    this.regeisterMaster();
-  }
+  initialize() {}
 
   registerModule(name: string, code: string, type: string, props: any = {}) {
     const audioModule = createModule(name, code, type, props);
@@ -64,12 +60,6 @@ class Engine {
     if (!audioModule) return null;
 
     return audioModule;
-  }
-
-  private regeisterMaster() {
-    store.dispatch(
-      addModule({ name: "Master", code: "master", type: ModuleType.Master })
-    );
   }
 }
 

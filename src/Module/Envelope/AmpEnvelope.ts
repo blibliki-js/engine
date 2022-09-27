@@ -1,6 +1,6 @@
 import { AmplitudeEnvelope } from "tone";
 
-import { ModuleType } from "Engine/Module";
+import { ModuleType } from "Module";
 import Base, { EnvelopeInterface, PolyBase } from "./Base";
 import { PolyModuleType } from "../PolyModule";
 
