@@ -27,14 +27,14 @@ class Engine {
 
     applyRoutes();
 
-    return audioModule.serialize();
+    return audioModule;
   }
 
   updatePropsModule(id: string, props: any) {
     const audioModule = this.findById(id);
     audioModule.props = props;
 
-    return audioModule.serialize();
+    return audioModule;
   }
 
   triggerKey(noteName: string, type: string) {}
