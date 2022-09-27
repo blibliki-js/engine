@@ -14,8 +14,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
+    "outDir": "./build",
+    "declaration": true,
     "baseUrl": "src"
   },
   "include": ["src"]

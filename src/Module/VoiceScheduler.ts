@@ -1,8 +1,5 @@
-import { store } from "store";
-import { addActiveNote, removeActiveNote } from "globalSlice";
-
 import Module, { ModuleType, DummnyInternalModule } from "./Base";
-import MidiEvent from "Engine/MidiEvent";
+import MidiEvent from "MidiEvent";
 import { Output } from "./IO";
 import PolyModule, { PolyModuleType } from "./PolyModule";
 
@@ -120,16 +117,12 @@ export class Voice extends Module<DummnyInternalModule, VoiceInterface> {
 
     switch (type) {
       case "noteOn":
-        const overridedNote = this.activeNote;
         this.activeNote = noteName;
         this.triggeredAt = triggeredAt;
         this.midiEvent = midiEvent;
 
-        if (overridedNote) store.dispatch(removeActiveNote(overridedNote));
-        store.dispatch(addActiveNote(noteName));
         break;
       case "noteOff":
-        store.dispatch(removeActiveNote(noteName));
         this.activeNote = null;
         this.midiEvent = null;
         break;

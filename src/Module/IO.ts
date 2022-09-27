@@ -8,7 +8,7 @@ export interface IOInterface {
   onUnPlug?: (io: IO) => void;
 }
 
-interface SerializeInterface {
+export interface SerializeInterface {
   name: string;
   connections: string[];
 }

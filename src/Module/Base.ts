@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { InputNode } from "tone";
 
 import { Input, Output, IOInterface } from "./IO";
-import MidiEvent from "Engine/MidiEvent";
+import MidiEvent from "MidiEvent";
 import { AudioModule } from "../Module";
 
 export enum ModuleType {
