@@ -1,16 +1,14 @@
 {
-  "name": "patch-train-synthesizer",
+  "name": "@blibliki/engine",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "tone": "^14.7.77",
     "uuid": "^8.3.2"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "eslintConfig": {
-    "extends": [
-    ]
+    "extends": []
   },
   "browserslist": {
     "production": [
