@@ -1,6 +1,6 @@
-import MidiDevice from "MidiDevice";
-import MidiDeviceManager from "MidiDeviceManager";
-import MidiEvent from "MidiEvent";
+import MidiDevice from "../MidiDevice";
+import MidiDeviceManager from "../MidiDeviceManager";
+import MidiEvent from "../MidiEvent";
 import Module, { ModuleType, DummnyInternalModule } from "./Base";
 import { Output } from "./IO";
 

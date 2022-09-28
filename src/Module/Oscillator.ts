@@ -1,4 +1,4 @@
-import MidiEvent from "MidiEvent";
+import MidiEvent from "../MidiEvent";
 import { Oscillator as Osc, ToneOscillatorType } from "tone";
 
 import Module, { ModuleType } from "../Module";

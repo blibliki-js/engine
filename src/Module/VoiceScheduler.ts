@@ -1,5 +1,5 @@
 import Module, { ModuleType, DummnyInternalModule } from "./Base";
-import MidiEvent from "MidiEvent";
+import MidiEvent from "../MidiEvent";
 import { Output } from "./IO";
 import PolyModule, { PolyModuleType } from "./PolyModule";
 

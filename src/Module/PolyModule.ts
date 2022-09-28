@@ -1,4 +1,4 @@
-import MidiEvent from "MidiEvent";
+import MidiEvent from "../MidiEvent";
 import { InputNode } from "tone";
 import { v4 as uuidv4 } from "uuid";
 import { createModule } from ".";

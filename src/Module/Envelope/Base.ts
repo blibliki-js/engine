@@ -1,8 +1,8 @@
 import { Envelope as Env } from "tone";
 
-import Module, { ModuleType, Connectable, Triggerable } from "Module";
+import Module, { ModuleType, Connectable, Triggerable } from "../index";
 import PolyModule, { PolyModuleType } from "../PolyModule";
-import MidiEvent from "MidiEvent";
+import MidiEvent from "../../MidiEvent";
 import { Output } from "../IO";
 
 export const enum EnvelopeStages {
