@@ -15,6 +15,7 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "sourceMap": true,
     "outDir": "build"
   },
   "include": ["src"]

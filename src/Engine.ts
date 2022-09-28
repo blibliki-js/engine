@@ -1,8 +1,25 @@
+import { Transport, Context, setContext } from "tone";
+
+import { ModuleType } from "./Module";
 import { AudioModule, createModule } from "./Module";
+import Master from "./Module/Master";
 import { applyRoutes } from "./routes";
+
+type LatencyHint = "interactive" | "playback" | "balanced";
+
+interface ContextInterface {
+  latencyHint: LatencyHint;
+  lookAhead: number;
+}
+
+interface InitializeInterface {
+  context?: Partial<ContextInterface>;
+}
 
 class Engine {
   private static instance: Engine;
+  private _master: Master;
+
   modules: {
     [Identifier: string]: AudioModule;
   };
@@ -19,7 +36,15 @@ class Engine {
     return Engine.instance;
   }
 
-  initialize() {}
+  initialize(props: InitializeInterface) {
+    const context = new Context(props.context);
+    setContext(context);
+    Transport.start();
+
+    return {
+      master: this.master,
+    };
+  }
 
   registerModule(name: string, code: string, type: string, props: any = {}) {
     const audioModule = createModule(name, code, type, props);
@@ -35,6 +60,19 @@ class Engine {
     audioModule.props = props;
 
     return audioModule.serialize();
+  }
+
+  get master() {
+    if (this._master) return this._master.serialize();
+
+    const masterProps = this.registerModule(
+      "Master",
+      "master",
+      ModuleType.Master
+    );
+    this._master = this.modules[masterProps.id] as Master;
+
+    return masterProps;
   }
 
   triggerKey(noteName: string, type: string) {}
