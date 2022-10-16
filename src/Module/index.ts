@@ -9,6 +9,7 @@ import MidiSelector from "./MidiSelector";
 import { PolyAmpEnvelope } from "./Envelope/AmpEnvelope";
 import { PolyFreqEnvelope } from "./Envelope/FreqEnvelope";
 import { PolyEnvelope } from "./Envelope/Base";
+import Volume, { PolyVolume } from "./Volume";
 
 export { default, ModuleType } from "./Base";
 export { default as PolyModule, PolyModuleType } from "./PolyModule";
@@ -50,6 +51,8 @@ export function moduleClassFromType(type: string) {
       return FreqEnvelope;
     case ModuleType.Filter:
       return Filter;
+    case ModuleType.Volume:
+      return Volume;
     case PolyModuleType.Oscillator:
       return PolyOscillator;
     case PolyModuleType.Envelope:
@@ -60,6 +63,8 @@ export function moduleClassFromType(type: string) {
       return PolyFreqEnvelope;
     case PolyModuleType.Filter:
       return PolyFilter;
+    case PolyModuleType.Volume:
+      return PolyVolume;
     case ModuleType.Master:
       return Master;
     case ModuleType.Voice:

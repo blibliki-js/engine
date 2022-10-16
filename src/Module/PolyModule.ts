@@ -13,6 +13,7 @@ export enum PolyModuleType {
   FreqEnvelope = "freqEnvelope",
   VoiceScheduler = "voiceScheduler",
   Filter = "filter",
+  Volume = "volume",
 }
 
 interface PolyModuleInterface extends ModuleInterface {}
