@@ -3,7 +3,7 @@ import { Transport, Context, setContext } from "tone";
 import { ModuleType } from "./Module";
 import { AudioModule, createModule } from "./Module";
 import Master from "./Module/Master";
-import { applyRoutes } from "./routes";
+import { applyRoutes, createRoute, RouteInterface, RouteProps } from "./routes";
 
 type LatencyHint = "interactive" | "playback" | "balanced";
 
@@ -24,8 +24,13 @@ class Engine {
     [Identifier: string]: AudioModule;
   };
 
+  routes: {
+    [Identifier: string]: RouteInterface;
+  };
+
   private constructor() {
     this.modules = {};
+    this.routes = {};
   }
 
   public static getInstance(): Engine {
@@ -50,7 +55,7 @@ class Engine {
     const audioModule = createModule(name, type, props);
     this.modules[audioModule.id] = audioModule;
 
-    //applyRoutes();
+    applyRoutes(Object.values(this.routes));
 
     return audioModule.serialize();
   }
@@ -67,6 +72,19 @@ class Engine {
     audioModule.props = props;
 
     return audioModule.serialize();
+  }
+
+  addRoute(props: RouteProps) {
+    const route = createRoute(props);
+    this.routes[route.id] = route;
+
+    applyRoutes(Object.values(this.routes));
+
+    return route;
+  }
+
+  removeRoute(route: RouteInterface) {
+    delete this.routes[route.id];
   }
 
   get master() {

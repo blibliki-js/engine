@@ -1,10 +1,22 @@
+import { v4 as uuidv4 } from "uuid";
+
 import Engine from "./";
 
-interface RouteInterface {
+export interface RouteProps {
   sourceId: string;
   sourceOutput: string;
   destinationId: string;
   destinationInput: string;
+}
+
+export interface RouteInterface extends RouteProps {
+  id: string;
+}
+
+export function createRoute(props: RouteProps) {
+  const id = uuidv4();
+
+  return { id, ...props };
 }
 
 export function applyRoutes(routes: RouteInterface[]) {
