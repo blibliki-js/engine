@@ -119,6 +119,8 @@ export default abstract class PolyModule<
       ...this.audioModules[0].serialize(),
       id: this.id,
       type: this.type,
+      inputs: this.inputs.map((i) => i.serialize()),
+      outputs: this.outputs.map((i) => i.serialize()),
     };
   }
 
