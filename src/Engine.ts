@@ -55,6 +55,13 @@ class Engine {
     return audioModule.serialize();
   }
 
+  updateNameModule(id: string, name: string) {
+    const audioModule = this.findById(id);
+    audioModule.name = name;
+
+    return audioModule.serialize();
+  }
+
   updatePropsModule(id: string, props: any) {
     const audioModule = this.findById(id);
     audioModule.props = props;
