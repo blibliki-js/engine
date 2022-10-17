@@ -38,14 +38,12 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
 {
   constructor(
     name: string,
-    code: string,
     type: ModuleType,
     internalModule: EnvelopeLike,
     props: EnvelopeInterface
   ) {
     super(internalModule, {
       name,
-      code,
       type,
       props: { ...InitialProps, ...props },
     });
@@ -112,14 +110,12 @@ export abstract class PolyBase<
 > extends PolyModule<EnvelopeModule, EnvelopeInterface> {
   constructor(
     name: string,
-    code: string,
     type: ModuleType,
     polyType: PolyModuleType,
     props: Partial<EnvelopeInterface>
   ) {
     super(polyType, {
       name,
-      code,
       type,
       props: { ...InitialProps, ...props },
     });
@@ -153,14 +149,14 @@ export abstract class PolyBase<
 }
 
 export class Envelope extends EnvelopeModule<Env> {
-  constructor(name: string, code: string, props: EnvelopeInterface) {
-    super(name, code, ModuleType.Envelope, new Env(), props);
+  constructor(name: string, props: EnvelopeInterface) {
+    super(name, ModuleType.Envelope, new Env(), props);
   }
 }
 
 export class PolyEnvelope extends PolyBase<Envelope> {
-  constructor(name: string, code: string, props: Partial<EnvelopeInterface>) {
-    super(name, code, ModuleType.Envelope, PolyModuleType.Envelope, {
+  constructor(name: string, props: Partial<EnvelopeInterface>) {
+    super(name, ModuleType.Envelope, PolyModuleType.Envelope, {
       ...InitialProps,
       ...props,
     });

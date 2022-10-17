@@ -13,10 +13,9 @@ export default class VoiceScheduler extends PolyModule<
 > {
   midiOutput: Output;
 
-  constructor(name: string, code: string, props: VoiceSchedulerInterface) {
+  constructor(name: string, props: VoiceSchedulerInterface) {
     super(PolyModuleType.VoiceScheduler, {
       name,
-      code,
       props,
       type: ModuleType.Voice,
     });
@@ -100,10 +99,9 @@ export class Voice extends Module<DummnyInternalModule, VoiceInterface> {
   triggeredAt: number;
   midiOutput: Output;
 
-  constructor(name: string, code: string, props: VoiceInterface) {
+  constructor(name: string, props: VoiceInterface) {
     super(new DummnyInternalModule(), {
       name,
-      code,
       type: ModuleType.Voice,
       props,
     });

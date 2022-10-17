@@ -1,73 +1,29 @@
 import Engine from "./";
 
-const routes = [
-  [
-    ["midiSelector", "midi out"],
-    ["voiceScheduler", "midi in"],
-  ],
-  [
-    ["voiceScheduler", "midi out"],
-    ["osc1", "midi in"],
-  ],
-  [
-    ["voiceScheduler", "midi out"],
-    ["osc2", "midi in"],
-  ],
-  [
-    ["voiceScheduler", "midi out"],
-    ["osc3", "midi in"],
-  ],
-  [
-    ["voiceScheduler", "midi out"],
-    ["amplitude", "midi in"],
-  ],
-  [
-    ["voiceScheduler", "midi out"],
-    ["frequency", "midi in"],
-  ],
-  [
-    ["frequency", "frequency"],
-    ["filter", "frequency"],
-  ],
-  [
-    ["osc1", "output"],
-    ["filter", "input"],
-  ],
-  [
-    ["osc2", "output"],
-    ["filter", "input"],
-  ],
-  [
-    ["osc3", "output"],
-    ["filter", "input"],
-  ],
-  [
-    ["filter", "output"],
-    ["amplitude", "input"],
-  ],
-  [
-    ["amplitude", "output"],
-    ["master", "input"],
-  ],
-];
+interface RouteInterface {
+  sourceId: string;
+  sourceOutput: string;
+  destinationId: string;
+  destinationInput: string;
+}
 
-export function applyRoutes() {
+export function applyRoutes(routes: RouteInterface[]) {
   Object.values(Engine.modules).forEach((m) => m.unplugAll());
 
   const succesedConnections = routes.map((route) => {
-    const [[sourceCode, output], [destinationCode, input]] = route;
+    const { sourceId, sourceOutput, destinationId, destinationInput } = route;
 
-    const source = Engine.findByCode(sourceCode);
-    const destination = Engine.findByCode(destinationCode);
+    const source = Engine.findById(sourceId);
+    const destination = Engine.findById(destinationId);
 
     if (!source || !destination) {
       console.log(
-        `missing ${sourceCode}:${output} => ${destinationCode}:${input}`
+        `missing ${sourceId}:${sourceOutput} => ${destinationId}:${destinationInput}`
       );
       return false;
     }
 
-    source.plug(destination, output, input);
+    source.plug(destination, sourceOutput, destinationInput);
 
     return true;
   });

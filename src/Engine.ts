@@ -46,11 +46,11 @@ class Engine {
     };
   }
 
-  registerModule(name: string, code: string, type: string, props: any = {}) {
-    const audioModule = createModule(name, code, type, props);
+  registerModule(name: string, type: string, props: any = {}) {
+    const audioModule = createModule(name, type, props);
     this.modules[audioModule.id] = audioModule;
 
-    applyRoutes();
+    //applyRoutes();
 
     return audioModule.serialize();
   }
@@ -86,16 +86,6 @@ class Engine {
     const audioModule = this.modules[id];
 
     if (!audioModule) throw Error(`Audio module with id ${id} not exists`);
-
-    return audioModule;
-  }
-
-  findByCode(code: string): AudioModule | null {
-    const audioModule = Object.values(this.modules).find(
-      (modula) => modula.code === code
-    );
-
-    if (!audioModule) return null;
 
     return audioModule;
   }

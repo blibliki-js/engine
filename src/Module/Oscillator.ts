@@ -27,10 +27,9 @@ const InitialProps: OscillatorInterface = {
 export default class Oscillator extends Module<Osc, OscillatorInterface> {
   private _note: Note;
 
-  constructor(name: string, code: string, props: Partial<OscillatorInterface>) {
+  constructor(name: string, props: Partial<OscillatorInterface>) {
     super(new Osc(), {
       name,
-      code,
       props: { ...InitialProps, ...props },
       type: ModuleType.Oscillator,
     });
@@ -147,10 +146,9 @@ export class PolyOscillator extends PolyModule<
   Oscillator,
   OscillatorInterface
 > {
-  constructor(name: string, code: string, props: Partial<OscillatorInterface>) {
+  constructor(name: string, props: Partial<OscillatorInterface>) {
     super(PolyModuleType.Oscillator, {
       name,
-      code,
       props: { ...InitialProps, ...props },
       type: ModuleType.Oscillator,
     });

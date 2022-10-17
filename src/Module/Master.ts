@@ -11,7 +11,6 @@ export default class Master extends Module<
   constructor() {
     super(Destination, {
       name: "Master",
-      code: "master",
       type: ModuleType.Master,
     });
     this.registerInputs();

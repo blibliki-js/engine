@@ -29,7 +29,6 @@ export interface Triggerable {
 
 export interface ModuleInterface {
   name: string;
-  code: string;
   type: ModuleType;
   props?: any;
   voiceNo?: number;
@@ -50,7 +49,6 @@ class Module<InternalModule extends Connectable, PropsInterface>
 
   readonly id: string;
   name: string;
-  code: string;
   inputs: Input[] = [];
   outputs: Output[] = [];
   type: ModuleType;
@@ -128,7 +126,6 @@ class Module<InternalModule extends Connectable, PropsInterface>
     return {
       id: this.id,
       name: this.name,
-      code: this.code,
       type: this.type,
       props: this.props,
       inputs: this.inputs.map((i) => i.serialize()),

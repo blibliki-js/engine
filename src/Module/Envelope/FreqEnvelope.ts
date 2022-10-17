@@ -19,8 +19,8 @@ export default class FreqEnvelope extends Base<FrequencyEnvelope> {
   private _amount: number;
   filter: Filter;
 
-  constructor(name: string, code: string, props: EnvelopeInterface) {
-    super(name, code, ModuleType.FreqEnvelope, new FrequencyEnvelope(), {
+  constructor(name: string, props: EnvelopeInterface) {
+    super(name, ModuleType.FreqEnvelope, new FrequencyEnvelope(), {
       ...InitialProps,
       ...props,
     });
@@ -53,14 +53,8 @@ export default class FreqEnvelope extends Base<FrequencyEnvelope> {
 }
 
 export class PolyFreqEnvelope extends PolyBase<FreqEnvelope> {
-  constructor(name: string, code: string, props: Partial<EnvelopeInterface>) {
-    super(
-      name,
-      code,
-      ModuleType.FreqEnvelope,
-      PolyModuleType.FreqEnvelope,
-      props
-    );
+  constructor(name: string, props: Partial<EnvelopeInterface>) {
+    super(name, ModuleType.FreqEnvelope, PolyModuleType.FreqEnvelope, props);
   }
 
   protected registerOutputs() {

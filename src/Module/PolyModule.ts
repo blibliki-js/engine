@@ -24,7 +24,6 @@ export default abstract class PolyModule<
 > {
   readonly id: string;
   name: string;
-  code: string;
   audioModules: MonoAudioModule[];
   inputs: Input[] = [];
   outputs: Output[] = [];
@@ -163,12 +162,10 @@ export default abstract class PolyModule<
       audioModule?.dispose();
     } else {
       const props = this.audioModules.length ? this.props : {};
-      const audioModule = createModule(
-        this.name,
-        this.code,
-        this.childrenType,
-        { ...props, voiceNo: this.audioModules.length }
-      );
+      const audioModule = createModule(this.name, this.childrenType, {
+        ...props,
+        voiceNo: this.audioModules.length,
+      });
 
       if (audioModule instanceof PolyModule)
         throw Error("Polymodule not supported");

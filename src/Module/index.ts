@@ -13,7 +13,7 @@ import Volume, { PolyVolume } from "./Volume";
 
 export { default, ModuleType } from "./Base";
 export { default as PolyModule, PolyModuleType } from "./PolyModule";
-export type { Connectable, Triggerable } from "./Base";
+export type { ModuleInterface, Connectable, Triggerable } from "./Base";
 
 export { default as Filter } from "./Filter";
 export { default as Oscillator } from "./Oscillator";
@@ -30,13 +30,12 @@ export type AudioModule =
 
 export function createModule(
   name: string,
-  code: string,
   type: string,
   props: any
 ): AudioModule {
   const klass = moduleClassFromType(type);
 
-  return new klass(name, code, props);
+  return new klass(name, props);
 }
 
 export function moduleClassFromType(type: string) {

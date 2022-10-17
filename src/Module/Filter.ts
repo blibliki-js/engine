@@ -24,10 +24,9 @@ const InitialProps: FilterInterface = {
 export default class Filter extends Module<InternalFilter, FilterInterface> {
   private _envelope: FreqEnvelope;
 
-  constructor(name: string, code: string, props: FilterProps) {
+  constructor(name: string, props: FilterProps) {
     super(new InternalFilter({ type: "lowpass" }), {
       name,
-      code,
       props: { ...InitialProps, ...props },
       type: ModuleType.Filter,
     });
@@ -80,10 +79,9 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
 }
 
 export class PolyFilter extends PolyModule<Filter, FilterInterface> {
-  constructor(name: string, code: string, props: Partial<FilterInterface>) {
+  constructor(name: string, props: Partial<FilterInterface>) {
     super(PolyModuleType.Filter, {
       name,
-      code,
       props: { ...InitialProps, ...props },
       type: ModuleType.Filter,
     });
