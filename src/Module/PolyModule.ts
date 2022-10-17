@@ -23,7 +23,7 @@ export default abstract class PolyModule<
   PropsInterface
 > {
   readonly id: string;
-  name: string;
+  _name: string;
   audioModules: MonoAudioModule[];
   inputs: Input[] = [];
   outputs: Output[] = [];
@@ -47,6 +47,15 @@ export default abstract class PolyModule<
 
   get type() {
     return this._type;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(value: string) {
+    this._name = value;
+    this.audioModules.forEach((m) => (m.name = value));
   }
 
   // Do nothing

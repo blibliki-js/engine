@@ -30,7 +30,7 @@ export interface Triggerable {
 export interface ModuleInterface {
   name: string;
   type: ModuleType;
-  props?: any;
+  props?: { [key: string]: any };
   voiceNo?: number;
 }
 
