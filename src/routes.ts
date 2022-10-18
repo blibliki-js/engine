@@ -4,9 +4,9 @@ import Engine from "./";
 
 export interface RouteProps {
   sourceId: string;
-  sourceOutput: string;
+  outputId: string;
   destinationId: string;
-  destinationInput: string;
+  inputId: string;
 }
 
 export interface RouteInterface extends RouteProps {
@@ -23,19 +23,12 @@ export function applyRoutes(routes: RouteInterface[]) {
   Object.values(Engine.modules).forEach((m) => m.unplugAll());
 
   const succesedConnections = routes.map((route) => {
-    const { sourceId, sourceOutput, destinationId, destinationInput } = route;
+    const { sourceId, outputId, destinationId, inputId } = route;
 
     const source = Engine.findById(sourceId);
     const destination = Engine.findById(destinationId);
 
-    if (!source || !destination) {
-      console.log(
-        `missing ${sourceId}:${sourceOutput} => ${destinationId}:${destinationInput}`
-      );
-      return false;
-    }
-
-    source.plug(destination, sourceOutput, destinationInput);
+    source.plug(destination, outputId, inputId);
 
     return true;
   });

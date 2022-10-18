@@ -84,12 +84,12 @@ export default abstract class PolyModule<
   }
 
   plug(audioModule: AudioModule, from: string, to: string) {
-    const output = this.outputs.find((i) => i.name === from);
+    const output = this.outputs.find((i) => i.id === from);
     if (!output) throw Error(`Output ${from} not exist`);
 
     console.log(`${this.name}:${from} => ${audioModule.name}:${to}`);
 
-    const input = audioModule.inputs.find((i) => i.name === to);
+    const input = audioModule.inputs.find((i) => i.id === to);
     if (!input)
       throw Error(`Input ${to} in module ${audioModule.name} not exist`);
 
