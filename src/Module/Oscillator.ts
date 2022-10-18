@@ -21,7 +21,7 @@ const InitialProps: OscillatorInterface = {
   coarse: 0,
   wave: "sine",
   range: 0,
-  volume: -100,
+  volume: 0,
 };
 
 export default class Oscillator extends Module<Osc, OscillatorInterface> {
