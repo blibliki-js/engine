@@ -40,7 +40,7 @@ export default abstract class PolyModule<
     const { props: extraProps, ...basicProps } = props;
     Object.assign(this, basicProps);
 
-    this.numberOfVoices = 6;
+    this.numberOfVoices = 1;
 
     Object.assign(this, { props: extraProps });
   }
@@ -106,7 +106,7 @@ export default abstract class PolyModule<
     });
   }
 
-  midiTriggered = (midiEvent: MidiEvent, voiceNo: number) => {
+  midiTriggered = (midiEvent: MidiEvent, voiceNo: number = 0) => {
     const audioModule = this.findVoice(voiceNo);
     audioModule.midiTriggered(midiEvent);
   };
