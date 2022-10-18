@@ -9,8 +9,10 @@ export interface IOInterface {
 }
 
 export interface SerializeInterface {
+  id: string;
   name: string;
-  connections: string[];
+  moduleId: string;
+  moduleName: string;
 }
 
 enum IOType {
@@ -62,10 +64,10 @@ abstract class IO {
 
   serialize(): SerializeInterface {
     return {
+      id: this.id,
       name: this.name,
-      connections: this.connections.map(
-        (c) => `${c.audioModule.name}/${c.name}`
-      ),
+      moduleId: this.audioModule.id,
+      moduleName: this.audioModule.name,
     };
   }
 }
