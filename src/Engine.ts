@@ -1,4 +1,4 @@
-import { Transport, Context, setContext } from "tone";
+import { Context, setContext } from "tone";
 
 import { ModuleType } from "./Module";
 import { AudioModule, createModule } from "./Module";
@@ -19,6 +19,7 @@ interface InitializeInterface {
 class Engine {
   private static instance: Engine;
   private _master: Master;
+  private context: Context;
 
   modules: {
     [Identifier: string]: AudioModule;
@@ -42,9 +43,9 @@ class Engine {
   }
 
   initialize(props: InitializeInterface) {
-    const context = new Context(props.context);
-    setContext(context);
-    Transport.start();
+    this.context = new Context(props.context);
+    setContext(this.context);
+    this.context.transport.start();
 
     return {
       master: this.master,

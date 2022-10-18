@@ -1,4 +1,4 @@
-import { Destination } from "tone";
+import { Destination, getDestination } from "tone";
 import Module, { ModuleType } from "../Module";
 import { Output } from "./IO";
 
@@ -9,7 +9,7 @@ export default class Master extends Module<
   MasterInterface
 > {
   constructor() {
-    super(Destination, {
+    super(getDestination(), {
       name: "Master",
       type: ModuleType.Master,
     });
