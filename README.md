@@ -1,3 +1,4 @@
 # Blibliki Engine
-This is an engine for making synth systems
-More infor and documentation soon!
+This is an engine for making synth systems.
+
+More info and documentation soon!
