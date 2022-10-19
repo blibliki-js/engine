@@ -4,7 +4,6 @@ import { Oscillator as Osc, ToneOscillatorType } from "tone";
 import Module, { ModuleType } from "../Module";
 import Note from "../Note";
 import PolyModule, { PolyModuleType } from "./PolyModule";
-import { Output } from "./IO";
 
 export interface OscillatorInterface {
   noteName: string;

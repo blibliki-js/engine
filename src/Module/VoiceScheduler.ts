@@ -1,10 +1,10 @@
 import Module, { ModuleType, DummnyInternalModule } from "./Base";
 import MidiEvent from "../MidiEvent";
-import { Output } from "./IO";
+import { Input, Output } from "./IO";
 import PolyModule, { PolyModuleType } from "./PolyModule";
 
 export interface VoiceSchedulerInterface {
-  numberOfVoices: number;
+  polyNumber: number;
 }
 
 export default class VoiceScheduler extends PolyModule<
@@ -12,6 +12,7 @@ export default class VoiceScheduler extends PolyModule<
   VoiceSchedulerInterface
 > {
   midiOutput: Output;
+  numberOfVoicesOut: Output;
 
   constructor(name: string, props: VoiceSchedulerInterface) {
     super(PolyModuleType.VoiceScheduler, {
@@ -22,6 +23,22 @@ export default class VoiceScheduler extends PolyModule<
 
     this.registerInputs();
     this.registerOutputs();
+    this.polyNumber = this.numberOfVoices;
+  }
+
+  set polyNumber(value: number) {
+    super.numberOfVoices = value;
+    if (!this.numberOfVoicesOut) return;
+
+    this.numberOfVoicesOut.connections.forEach((input) => {
+      if (input.audioModule instanceof Module) return;
+
+      input.audioModule.numberOfVoices = value;
+    });
+  }
+
+  get polyNumber() {
+    return this.numberOfVoices;
   }
 
   midiTriggered = (midiEvent: MidiEvent) => {
@@ -55,7 +72,7 @@ export default class VoiceScheduler extends PolyModule<
 
     return {
       ...serialize,
-      props: { ...serialize.props, numberOfVoices: this.numberOfVoices },
+      props: { ...serialize.props, polyNumber: this.polyNumber },
     };
   }
 
@@ -81,8 +98,13 @@ export default class VoiceScheduler extends PolyModule<
   }
 
   private registerOutputs() {
-    this.registerOutput({
+    this.numberOfVoicesOut = this.registerOutput({
       name: "number of voices",
+      onPlug: (input: Input) => {
+        if (input.audioModule instanceof Module) return;
+
+        input.audioModule.numberOfVoices = this.numberOfVoices;
+      },
     });
 
     this.midiOutput = this.registerOutput({ name: "midi out" });

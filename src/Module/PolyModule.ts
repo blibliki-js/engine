@@ -42,6 +42,7 @@ export default abstract class PolyModule<
     this.numberOfVoices = 1;
 
     Object.assign(this, { props: extraProps });
+    this.registerNumberOfVoicesInput();
   }
 
   get type() {
@@ -70,6 +71,7 @@ export default abstract class PolyModule<
   }
 
   set props(value: PropsInterface) {
+    Object.assign(this, value);
     this.audioModules.forEach((m) => (m.props = value));
   }
 
@@ -107,7 +109,7 @@ export default abstract class PolyModule<
 
   midiTriggered = (midiEvent: MidiEvent, voiceNo: number = 0) => {
     const audioModule = this.findVoice(voiceNo);
-    audioModule.midiTriggered(midiEvent);
+    audioModule?.midiTriggered(midiEvent);
   };
 
   serialize() {
@@ -132,7 +134,7 @@ export default abstract class PolyModule<
         if (m.voiceNo === undefined) throw Error("Voice error");
 
         const audioModule = this.findVoice(m.voiceNo);
-        audioModule.connect(m, attribute);
+        audioModule?.connect(m, attribute);
       });
       return;
     }
@@ -149,12 +151,23 @@ export default abstract class PolyModule<
         if (m.voiceNo === undefined) throw Error("Voice error");
 
         const audioModule = this.findVoice(m.voiceNo);
-        audioModule.disconnect(m, attribute);
+
+        try {
+          audioModule?.disconnect(m, attribute);
+        } catch (e) {
+          console.log(e);
+        }
       });
       return;
     }
 
-    this.audioModules.forEach((m) => m.disconnect(inputAudioModule, attribute));
+    try {
+      this.audioModules.forEach((m) =>
+        m.disconnect(inputAudioModule, attribute)
+      );
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   protected registerInput(props: IOInterface): Input {
@@ -179,13 +192,7 @@ export default abstract class PolyModule<
   }
 
   protected findVoice(voiceNo: number) {
-    const audioModule = this.audioModules.find((m) => m.voiceNo === voiceNo);
-
-    if (!audioModule) {
-      throw Error(`Voice number ${voiceNo} not found in ${this.name}`);
-    }
-
-    return audioModule;
+    return this.audioModules.find((m) => m.voiceNo === voiceNo);
   }
 
   protected registerBasicOutputs() {
@@ -203,6 +210,12 @@ export default abstract class PolyModule<
   protected registerBasicInputs() {
     this.registerInput({
       name: "input",
+    });
+  }
+
+  private registerNumberOfVoicesInput() {
+    this.registerInput({
+      name: "number of voices",
     });
   }
 

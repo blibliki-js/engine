@@ -95,7 +95,7 @@ export class PolyFilter extends PolyModule<Filter, FilterInterface> {
       name: "frequency",
       pluggable: "frequency",
       onPlug: (output) => {
-        this.conntectedEnvelope(output.pluggable);
+        this.conntectedEnvelope(output.audioModule as PolyFreqEnvelope);
       },
     });
   }
@@ -105,7 +105,7 @@ export class PolyFilter extends PolyModule<Filter, FilterInterface> {
       if (envelope.voiceNo === undefined) return;
 
       const filter = this.findVoice(envelope.voiceNo);
-      filter.conntectedEnvelope(envelope);
+      filter?.conntectedEnvelope(envelope);
     });
   }
 }
