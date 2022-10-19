@@ -124,14 +124,32 @@ export default abstract class PolyModule<
     };
   }
 
-  protected connect = (inputNode: InputNode, voiceNo?: number) => {
-    if (voiceNo !== undefined) {
-      const audioModule = this.findVoice(voiceNo);
-      audioModule.connect(inputNode);
+  protected connect = (inputAudioModule: AudioModule) => {
+    if (inputAudioModule instanceof PolyModule) {
+      inputAudioModule.audioModules.forEach((m) => {
+        if (m.voiceNo === undefined) throw Error("Voice error");
+
+        const audioModule = this.findVoice(m.voiceNo);
+        audioModule.connect(m);
+      });
       return;
     }
 
-    this.audioModules.forEach((m) => m.connect(inputNode));
+    this.audioModules.forEach((m) => m.connect(inputAudioModule));
+  };
+
+  protected disconnect = (inputAudioModule: AudioModule) => {
+    if (inputAudioModule instanceof PolyModule) {
+      inputAudioModule.audioModules.forEach((m) => {
+        if (m.voiceNo === undefined) throw Error("Voice error");
+
+        const audioModule = this.findVoice(m.voiceNo);
+        audioModule.disconnect(m);
+      });
+      return;
+    }
+
+    this.audioModules.forEach((m) => m.disconnect(inputAudioModule));
   };
 
   protected registerInput(props: IOInterface): Input {

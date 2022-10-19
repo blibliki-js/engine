@@ -19,6 +19,7 @@ export enum ModuleType {
 
 export interface Connectable {
   connect: (inputNode: InputNode) => void;
+  disconnect: (inputNode?: InputNode) => void;
   dispose: () => void;
 }
 
@@ -38,6 +39,8 @@ export class DummnyInternalModule implements Connectable {
   connect(inputNode: InputNode) {
     throw Error("This module is not connectable");
   }
+
+  disconnect(inputNode?: InputNode) {}
 
   dispose() {}
 }
@@ -93,9 +96,29 @@ class Module<InternalModule extends Connectable, PropsInterface>
     this.outputs.forEach((o) => o.unPlugAll());
   }
 
-  connect(inputNode: InputNode) {
-    this.internalModule.connect(inputNode);
-  }
+  connect = (inputAudioModule: AudioModule) => {
+    if (inputAudioModule instanceof PolyModule) {
+      inputAudioModule.audioModules.forEach((m) => {
+        this.internalModule.connect(m.internalModule as InputNode);
+      });
+      return;
+    }
+
+    this.internalModule.connect(inputAudioModule.internalModule as InputNode);
+  };
+
+  disconnect = (inputAudioModule: AudioModule) => {
+    if (inputAudioModule instanceof PolyModule) {
+      inputAudioModule.audioModules.forEach((m) => {
+        this.internalModule.disconnect(m.internalModule as InputNode);
+      });
+      return;
+    }
+
+    this.internalModule.disconnect(
+      inputAudioModule.internalModule as InputNode
+    );
+  };
 
   dispose() {
     this.internalModule.dispose();
