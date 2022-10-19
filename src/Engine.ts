@@ -1,8 +1,9 @@
 import { Context, setContext } from "tone";
 
-import { ModuleType } from "./Module";
+import { ModuleType, PolyModule } from "./Module";
 import { AudioModule, createModule } from "./Module";
 import Master from "./Module/Master";
+import VoiceScheduler from "./Module/VoiceScheduler";
 import { applyRoutes, createRoute, RouteInterface, RouteProps } from "./routes";
 
 type LatencyHint = "interactive" | "playback" | "balanced";
@@ -70,7 +71,13 @@ class Engine {
 
   updatePropsModule(id: string, props: any) {
     const audioModule = this.findById(id);
+
+    const polyNumber =
+      audioModule instanceof VoiceScheduler && audioModule.polyNumber;
     audioModule.props = props;
+    const { polyNumber: newPolyNumber } = props;
+
+    if (polyNumber !== newPolyNumber) applyRoutes(Object.values(this.routes));
 
     return audioModule.serialize();
   }
