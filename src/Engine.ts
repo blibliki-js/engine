@@ -77,15 +77,17 @@ class Engine {
 
   addRoute(props: RouteProps) {
     const route = createRoute(props);
-    this.routes[route.id] = route;
+    const newRoutes = { ...this.routes, [route.id]: route };
 
-    applyRoutes(Object.values(this.routes));
+    applyRoutes(Object.values(newRoutes));
+    this.routes = newRoutes;
 
     return route;
   }
 
   removeRoute(route: RouteInterface) {
     delete this.routes[route.id];
+    applyRoutes(Object.values(this.routes));
   }
 
   get master() {
