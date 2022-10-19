@@ -2,6 +2,7 @@ import { FrequencyEnvelope } from "tone";
 
 import { ModuleType } from "../Base";
 import Filter from "../Filter";
+import { Output } from "../IO";
 import { PolyModuleType } from "../PolyModule";
 
 import Base, { EnvelopeInterface, PolyBase } from "./Base";
@@ -44,34 +45,24 @@ export default class FreqEnvelope extends Base<FrequencyEnvelope> {
 
     this.internalModule.octaves = value;
   }
-
-  connectToFilter(filter: Filter) {
-    this.internalModule.connect(filter.frequency);
-    this.filter = filter;
-    this.filter.conntectedEnvelope(this);
-  }
 }
 
 export class PolyFreqEnvelope extends PolyBase<FreqEnvelope> {
   constructor(name: string, props: Partial<EnvelopeInterface>) {
     super(name, ModuleType.FreqEnvelope, PolyModuleType.FreqEnvelope, props);
+
+    this.registerOutputs();
   }
 
   protected registerOutputs() {
-    super.registerOutputs();
-
     this.registerOutput({
       name: "frequency",
       pluggable: this,
-      onPlug: (input) => {
-        if (input.pluggable instanceof Array) {
-          input.pluggable.forEach((p) => {
-            const [voiceNo, frequency] = p;
-            this.connect(frequency, voiceNo);
-          });
-        } else {
-          this.connect(input.pluggable);
-        }
+      onPlug: (output: Output) => {
+        this.connect(output.audioModule, output.pluggable);
+      },
+      onUnPlug: (output: Output) => {
+        this.disconnect(output.audioModule, output.pluggable);
       },
     });
   }

@@ -3,7 +3,6 @@ import { Filter as InternalFilter } from "tone";
 import { FreqEnvelope } from "./Envelope";
 import Module, { ModuleType } from "./Base";
 import PolyModule, { PolyModuleType } from "./PolyModule";
-import { Output } from "./IO";
 import { PolyFreqEnvelope } from "./Envelope/FreqEnvelope";
 
 interface FilterInterface {
@@ -86,23 +85,15 @@ export class PolyFilter extends PolyModule<Filter, FilterInterface> {
       type: ModuleType.Filter,
     });
 
+    this.registerBasicInputs();
+    this.registerBasicOutputs();
     this.registerInputs();
-    this.registerOutputs();
   }
 
   private registerInputs() {
     this.registerInput({
-      name: "input",
-      onPlug: (output: Output) => {
-        this.audioModules.forEach((m) => {
-          output.pluggable(m.internalModule, m.voiceNo);
-        });
-      },
-    });
-
-    this.registerInput({
       name: "frequency",
-      pluggable: this.audioModules.map((m) => [m.voiceNo, m.frequency]),
+      pluggable: "frequency",
       onPlug: (output) => {
         this.conntectedEnvelope(output.pluggable);
       },
@@ -115,13 +106,6 @@ export class PolyFilter extends PolyModule<Filter, FilterInterface> {
 
       const filter = this.findVoice(envelope.voiceNo);
       filter.conntectedEnvelope(envelope);
-    });
-  }
-
-  protected registerOutputs() {
-    this.registerOutput({
-      name: "output",
-      pluggable: this.connect,
     });
   }
 }

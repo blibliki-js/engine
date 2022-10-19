@@ -120,30 +120,15 @@ export abstract class PolyBase<
       props: { ...InitialProps, ...props },
     });
 
+    this.registerBasicInputs();
+    this.registerBasicOutputs();
     this.registerInputs();
-    this.registerOutputs();
   }
 
   private registerInputs() {
     this.registerInput({
-      name: "input",
-      onPlug: (output: Output) => {
-        this.audioModules.forEach((m) =>
-          output.pluggable(m.internalModule, m.voiceNo)
-        );
-      },
-    });
-
-    this.registerInput({
       name: "midi in",
       pluggable: this.midiTriggered,
-    });
-  }
-
-  protected registerOutputs() {
-    this.registerOutput({
-      name: "output",
-      pluggable: this.connect,
     });
   }
 }

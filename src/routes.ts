@@ -16,7 +16,7 @@ export interface RouteInterface extends RouteProps {
 export function createRoute(props: RouteProps) {
   const id = uuidv4();
 
-  return { id, ...props };
+  return { ...props, id };
 }
 
 export function applyRoutes(routes: RouteInterface[]) {

@@ -2,7 +2,6 @@ import { Volume as Vol } from "tone";
 
 import Module, { ModuleType } from "../Module";
 import PolyModule, { PolyModuleType } from "./PolyModule";
-import { Output } from "./IO";
 
 export interface VolumeInterface {
   volume: number;
@@ -41,25 +40,7 @@ export class PolyVolume extends PolyModule<Volume, VolumeInterface> {
       type: ModuleType.Volume,
     });
 
-    this.registerInputs();
-    this.registerOutputs();
-  }
-
-  private registerInputs() {
-    this.registerInput({
-      name: "input",
-      onPlug: (output: Output) => {
-        this.audioModules.forEach((m) => {
-          output.pluggable(m.internalModule, m.voiceNo);
-        });
-      },
-    });
-  }
-
-  private registerOutputs() {
-    this.registerOutput({
-      name: "output",
-      pluggable: this.connect,
-    });
+    this.registerBasicInputs();
+    this.registerBasicOutputs();
   }
 }

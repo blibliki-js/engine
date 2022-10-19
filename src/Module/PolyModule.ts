@@ -1,5 +1,4 @@
 import MidiEvent from "../MidiEvent";
-import { InputNode } from "tone";
 import { v4 as uuidv4 } from "uuid";
 import { createModule } from ".";
 import Module, { ModuleInterface, ModuleType, Connectable } from "./Base";
@@ -124,32 +123,38 @@ export default abstract class PolyModule<
     };
   }
 
-  protected connect = (inputAudioModule: AudioModule) => {
+  protected connect = (
+    inputAudioModule: AudioModule,
+    attribute: string = "internalModule"
+  ) => {
     if (inputAudioModule instanceof PolyModule) {
       inputAudioModule.audioModules.forEach((m) => {
         if (m.voiceNo === undefined) throw Error("Voice error");
 
         const audioModule = this.findVoice(m.voiceNo);
-        audioModule.connect(m);
+        audioModule.connect(m, attribute);
       });
       return;
     }
 
-    this.audioModules.forEach((m) => m.connect(inputAudioModule));
+    this.audioModules.forEach((m) => m.connect(inputAudioModule, attribute));
   };
 
-  protected disconnect = (inputAudioModule: AudioModule) => {
+  protected disconnect = (
+    inputAudioModule: AudioModule,
+    attribute: string = "internalModule"
+  ) => {
     if (inputAudioModule instanceof PolyModule) {
       inputAudioModule.audioModules.forEach((m) => {
         if (m.voiceNo === undefined) throw Error("Voice error");
 
         const audioModule = this.findVoice(m.voiceNo);
-        audioModule.disconnect(m);
+        audioModule.disconnect(m, attribute);
       });
       return;
     }
 
-    this.audioModules.forEach((m) => m.disconnect(inputAudioModule));
+    this.audioModules.forEach((m) => m.disconnect(inputAudioModule, attribute));
   };
 
   protected registerInput(props: IOInterface): Input {
@@ -181,6 +186,24 @@ export default abstract class PolyModule<
     }
 
     return audioModule;
+  }
+
+  protected registerBasicOutputs() {
+    this.registerOutput({
+      name: "output",
+      onPlug: (output: Output) => {
+        this.connect(output.audioModule);
+      },
+      onUnPlug: (output: Output) => {
+        this.disconnect(output.audioModule);
+      },
+    });
+  }
+
+  protected registerBasicInputs() {
+    this.registerInput({
+      name: "input",
+    });
   }
 
   private adjustNumberOfModules() {

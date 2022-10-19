@@ -4,6 +4,7 @@ import { Oscillator as Osc, ToneOscillatorType } from "tone";
 import Module, { ModuleType } from "../Module";
 import Note from "../Note";
 import PolyModule, { PolyModuleType } from "./PolyModule";
+import { Output } from "./IO";
 
 export interface OscillatorInterface {
   noteName: string;
@@ -153,21 +154,14 @@ export class PolyOscillator extends PolyModule<
       type: ModuleType.Oscillator,
     });
 
+    this.registerBasicOutputs();
     this.registerInputs();
-    this.registerOutputs();
   }
 
   private registerInputs() {
     this.registerInput({
       name: "midi in",
       pluggable: this.midiTriggered,
-    });
-  }
-
-  private registerOutputs() {
-    this.registerOutput({
-      name: "output",
-      pluggable: this.connect,
     });
   }
 }
