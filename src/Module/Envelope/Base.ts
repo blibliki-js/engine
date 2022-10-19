@@ -3,7 +3,6 @@ import { Envelope as Env } from "tone";
 import Module, { ModuleType, Connectable, Triggerable } from "../index";
 import PolyModule, { PolyModuleType } from "../PolyModule";
 import MidiEvent from "../../MidiEvent";
-import { Output } from "../IO";
 
 export const enum EnvelopeStages {
   Attack = "attack",
@@ -36,6 +35,9 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
   extends Module<EnvelopeLike, EnvelopeInterface>
   implements Triggerable
 {
+  activeNote?: string;
+  triggeredAt: number;
+
   constructor(
     name: string,
     type: ModuleType,
@@ -89,11 +91,19 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
   }
 
   triggerAttack(midiEvent: MidiEvent) {
-    this.internalModule.triggerAttack(midiEvent.triggeredAt);
+    const { note, triggeredAt } = midiEvent;
+
+    this.activeNote = note?.fullName;
+    this.triggeredAt = triggeredAt;
+    this.internalModule.triggerAttack(triggeredAt);
   }
 
   triggerRelease(midiEvent: MidiEvent) {
-    this.internalModule.triggerRelease(midiEvent.triggeredAt);
+    const { note, triggeredAt } = midiEvent;
+
+    if (this.activeNote && this.activeNote !== note?.fullName) return;
+
+    this.internalModule.triggerRelease(triggeredAt);
   }
 
   private maxTime(stage: EnvelopeStages): number {
