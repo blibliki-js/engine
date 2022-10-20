@@ -83,8 +83,6 @@ class Module<InternalModule extends Connectable, PropsInterface>
     const output = this.outputs.find((i) => i.name === from);
     if (!output) throw Error(`Output ${from} not exist`);
 
-    console.log(`${this.name}:${from} => ${audioModule.name}:${to}`);
-
     const input = audioModule.inputs.find((i) => i.name === to);
     if (!input)
       throw Error(`Input ${to} in module ${audioModule.name} not exist`);
