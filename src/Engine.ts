@@ -1,6 +1,6 @@
 import { Context, setContext } from "tone";
 
-import { ModuleType, PolyModule } from "./Module";
+import { ModuleType } from "./Module";
 import { AudioModule, createModule } from "./Module";
 import Master from "./Module/Master";
 import VoiceScheduler from "./Module/VoiceScheduler";
@@ -113,8 +113,14 @@ class Engine {
   triggerKey(noteName: string, type: string) {}
 
   dispose() {
-    Object.values(this.modules).forEach((m) => m.dispose());
-    this.modules = {};
+    Object.values(this.modules).forEach((m) => {
+      if (m.type === "master") return;
+
+      m.dispose();
+    });
+
+    this.modules = { [this._master.id]: this._master };
+    this.routes = {};
   }
 
   findById(id: string): AudioModule {
