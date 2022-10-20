@@ -74,6 +74,7 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
   conntectedEnvelope(envelope: FreqEnvelope) {
     this._envelope = envelope;
     this._envelope.frequency = this.cutoff;
+    this._envelope.amount = this.envelopeAmount;
   }
 }
 
