@@ -72,12 +72,9 @@ class Engine {
   updatePropsModule(id: string, props: any) {
     const audioModule = this.findById(id);
 
-    const polyNumber =
-      audioModule instanceof VoiceScheduler && audioModule.polyNumber;
+    const applyRoutesRequired = this.applyRoutesRequired(audioModule, props);
     audioModule.props = props;
-    const { polyNumber: newPolyNumber } = props;
-
-    if (polyNumber !== newPolyNumber) applyRoutes(Object.values(this.routes));
+    if (applyRoutesRequired) applyRoutes(Object.values(this.routes));
 
     return audioModule.serialize();
   }
@@ -129,6 +126,13 @@ class Engine {
     if (!audioModule) throw Error(`Audio module with id ${id} not exists`);
 
     return audioModule;
+  }
+
+  private applyRoutesRequired(audioModule: AudioModule, props: any) {
+    if (!props.polyNumber) return false;
+    if (!(audioModule instanceof VoiceScheduler)) return false;
+
+    return props.polyNumber !== audioModule.polyNumber;
   }
 }
 
