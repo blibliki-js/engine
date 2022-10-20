@@ -25,7 +25,7 @@ class MidiDeviceManager {
       (dev: MidiDevice) => dev.id === id
     );
 
-    if (!device) throw Error(`Midie device with id ${id} not found`);
+    if (!device) throw Error(`Midi device with id ${id} not found`);
 
     return device;
   }
