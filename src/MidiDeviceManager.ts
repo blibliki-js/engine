@@ -1,36 +1,51 @@
 import MidiDevice from "./MidiDevice";
 
-class MidiDeviceManager {
-  private devices: Array<MidiDevice>;
-  private static instance: MidiDeviceManager;
+export default class MidiDeviceManager {
+  devices: { [Key: string]: MidiDevice } = {};
+  private initialized: boolean = false;
 
-  public static getInstance(): MidiDeviceManager {
-    if (!MidiDeviceManager.instance) {
-      MidiDeviceManager.instance = new MidiDeviceManager();
-    }
-
-    return MidiDeviceManager.instance;
+  constructor() {
+    this.initializeDevices().then(() => (this.initialized = true));
   }
 
-  async fetchDevices(): Promise<MidiDevice[]> {
-    if (this.devices) return this.devices;
-
-    this.devices = (await this._inputs()).map((input) => new MidiDevice(input));
-
-    return this.devices;
-  }
-
-  async find(id: string): Promise<MidiDevice> {
-    const device = (await this.fetchDevices()).find(
-      (dev: MidiDevice) => dev.id === id
-    );
+  find(id: string): MidiDevice {
+    const device = this.devices[id];
 
     if (!device) throw Error(`Midi device with id ${id} not found`);
 
     return device;
   }
 
-  async _inputs() {
+  onStateChange(callback: Function) {
+    navigator.requestMIDIAccess().then((access: MIDIAccess) => {
+      access.onstatechange = (e) => {
+        const isMidiEvent = e instanceof MIDIConnectionEvent;
+
+        if (!isMidiEvent) return;
+        if (e.port instanceof MIDIOutput) return;
+
+        const input = e.port as MIDIInput;
+
+        const midi = new MidiDevice(input);
+
+        callback(midi);
+      };
+    });
+  }
+
+  private async initializeDevices() {
+    if (this.initialized) return Object.values(this.devices);
+
+    (await this.inputs()).forEach((input) => {
+      if (this.devices[input.id]) return;
+
+      this.devices[input.id] = new MidiDevice(input);
+    });
+
+    return Object.values(this.devices);
+  }
+
+  private async inputs() {
     const inputs: Array<MIDIInput> = [];
 
     const access = await navigator.requestMIDIAccess();
@@ -38,24 +53,4 @@ class MidiDeviceManager {
 
     return inputs;
   }
-
-  async onStateChange(callback: Function) {
-    const access: MIDIAccess = await navigator.requestMIDIAccess();
-    await this.fetchDevices();
-
-    access.onstatechange = (e) => {
-      const isMidiEvent = e instanceof MIDIConnectionEvent;
-
-      if (!isMidiEvent) return;
-      if (e.port instanceof MIDIOutput) return;
-
-      const input = e.port as MIDIInput;
-
-      const midi = new MidiDevice(input);
-
-      callback(midi);
-    };
-  }
 }
-
-export default MidiDeviceManager.getInstance();

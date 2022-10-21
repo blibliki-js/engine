@@ -31,7 +31,7 @@ export default class MidiDevice implements MidiDeviceInterface {
 
       if (!isMidiEvent) return;
 
-      this._processEvent(e);
+      this.processEvent(e);
     };
   }
 
@@ -51,11 +51,11 @@ export default class MidiDevice implements MidiDeviceInterface {
 
   removeEventListener(callback: EventListerCallback) {
     this.eventListerCallbacks = this.eventListerCallbacks.filter(
-      (c) => c === callback
+      (c) => c !== callback
     );
   }
 
-  _processEvent(e: MIDIMessageEvent) {
+  private processEvent(e: MIDIMessageEvent) {
     const event = new MidiEvent(e);
 
     switch (event.type) {

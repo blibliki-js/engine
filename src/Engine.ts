@@ -1,4 +1,5 @@
 import { Context, setContext } from "tone";
+import MidiDeviceManager from "./MidiDeviceManager";
 
 import { ModuleType } from "./Module";
 import { AudioModule, createModule } from "./Module";
@@ -18,6 +19,7 @@ interface InitializeInterface {
 }
 
 class Engine {
+  midiDeviceManager: MidiDeviceManager;
   private static instance: Engine;
   private _master: Master;
   private context: Context;
@@ -47,6 +49,7 @@ class Engine {
     this.context = new Context(props.context);
     setContext(this.context);
     this.context.transport.start();
+    this.midiDeviceManager = new MidiDeviceManager();
 
     return {
       master: this.master,

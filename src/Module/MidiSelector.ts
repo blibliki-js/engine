@@ -1,5 +1,4 @@
-import MidiDevice from "../MidiDevice";
-import MidiDeviceManager from "../MidiDeviceManager";
+import Engine from "../Engine";
 import MidiEvent from "../MidiEvent";
 import Module, { ModuleType, DummnyInternalModule } from "./Base";
 import { Output } from "./IO";
@@ -26,6 +25,7 @@ export default class MidiSelector extends Module<
     });
 
     this.registerOutputs();
+    this.addEventListener(this.selectedId);
   }
 
   get selectedId() {
@@ -34,31 +34,29 @@ export default class MidiSelector extends Module<
 
   set selectedId(value: string | null) {
     if (this.selectedId) {
-      MidiDeviceManager.find(this.selectedId).then((midiDevice: MidiDevice) => {
-        midiDevice.removeEventListener(this.onMidiEvent);
-      });
+      const prevMidiDevice = Engine.midiDeviceManager.find(this.selectedId);
+      prevMidiDevice.removeEventListener(this.onMidiEvent);
     }
 
     this._props = { ...this.props, selectedId: value };
 
-    if (!value) return;
-
-    MidiDeviceManager.find(value).then((midiDevice: MidiDevice) => {
-      midiDevice.addEventListener(this.onMidiEvent);
-    });
+    this.addEventListener(value);
   }
 
-  onMidiEvent = (midiEvent: MidiEvent) => {
+  private registerOutputs() {
+    this.midiOutput = this.registerOutput({ name: "midi out" });
+  }
+
+  private onMidiEvent = (midiEvent: MidiEvent) => {
     this.midiOutput.connections.forEach((input) => {
       input.pluggable(midiEvent);
     });
   };
 
-  async availableDevices(): Promise<MidiDevice[]> {
-    return MidiDeviceManager.fetchDevices();
-  }
+  private addEventListener(midiId: string | null) {
+    if (!this.onMidiEvent || !midiId) return; // Ugly hack because of weird super bug
 
-  private registerOutputs() {
-    this.midiOutput = this.registerOutput({ name: "midi out" });
+    const midiDevice = Engine.midiDeviceManager.find(midiId);
+    midiDevice.addEventListener(this.onMidiEvent);
   }
 }
