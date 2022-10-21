@@ -5,7 +5,10 @@ export default class MidiDeviceManager {
   private initialized: boolean = false;
 
   constructor() {
-    this.initializeDevices().then(() => (this.initialized = true));
+    this.initializeDevices().then(() => {
+      this.listenChanges();
+      this.initialized = true;
+    });
   }
 
   find(id: string): MidiDevice {
@@ -16,7 +19,7 @@ export default class MidiDeviceManager {
     return device;
   }
 
-  onStateChange(callback: Function) {
+  onStateChange(callback: (device: MidiDevice) => void) {
     navigator.requestMIDIAccess().then((access: MIDIAccess) => {
       access.onstatechange = (e) => {
         const isMidiEvent = e instanceof MIDIConnectionEvent;
@@ -30,6 +33,17 @@ export default class MidiDeviceManager {
 
         callback(midi);
       };
+    });
+  }
+
+  private listenChanges() {
+    this.onStateChange((device) => {
+      if (device.state === "disconnected") {
+        device.disconnect();
+        delete this.devices[device.id];
+      } else {
+        this.devices[device.id] = device;
+      }
     });
   }
 
