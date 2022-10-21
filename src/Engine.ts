@@ -25,6 +25,7 @@ class Engine {
   private static instance: Engine;
   private _master: Master;
   private context: Context;
+  private propsUpdateCallbacks: { (id: string, props: any): void }[];
 
   modules: {
     [Identifier: string]: AudioModule;
@@ -37,6 +38,7 @@ class Engine {
   private constructor() {
     this.modules = {};
     this.routes = {};
+    this.propsUpdateCallbacks = [];
   }
 
   public static getInstance(): Engine {
@@ -72,6 +74,14 @@ class Engine {
     audioModule.name = name;
 
     return audioModule.serialize();
+  }
+
+  onPropsUpdate(callback: (id: string, props: any) => void) {
+    this.propsUpdateCallbacks.push(callback);
+  }
+
+  _triggerPropsUpdate(id: string, props: any) {
+    this.propsUpdateCallbacks.forEach((callback) => callback(id, props));
   }
 
   updatePropsModule(id: string, props: any) {
