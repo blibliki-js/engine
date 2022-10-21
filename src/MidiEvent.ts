@@ -1,20 +1,30 @@
 import { now } from "tone";
 import Note from "./Note";
 
-const EvenType: { [key: number]: string } = {
+const EventType: { [key: number]: string } = {
   8: "noteOff",
   9: "noteOn",
 };
 
 export default class MidiEvent {
   note?: Note;
-  triggeredAt: number;
+  readonly triggeredAt: number;
+  _type: string;
   private data: Uint8Array;
-  private _type: string;
-  private _event: MIDIMessageEvent;
+  private event: MIDIMessageEvent;
+
+  static fromNote(noteName: string, type: string) {
+    const event = new MidiEvent(
+      new MIDIMessageEvent("", { data: new Uint8Array([0, 0, 0]) })
+    );
+    event.note = new Note(noteName);
+    event._type = type;
+
+    return event;
+  }
 
   constructor(event: MIDIMessageEvent) {
-    this._event = event;
+    this.event = event;
     this.triggeredAt = now();
     this.data = event.data;
     this.defineNote();
@@ -23,7 +33,7 @@ export default class MidiEvent {
   get type() {
     if (this._type) return this._type;
 
-    let type = EvenType[this.data[0] >> 4];
+    let type = EventType[this.data[0] >> 4];
 
     if (type === "noteOn" && this.data[2] === 0) {
       type = "noteOff";
@@ -39,6 +49,6 @@ export default class MidiEvent {
   defineNote() {
     if (!this.isNote) return;
 
-    this.note = new Note(this._event);
+    this.note = new Note(this.event);
   }
 }

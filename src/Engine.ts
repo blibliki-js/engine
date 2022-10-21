@@ -1,9 +1,11 @@
 import { Context, setContext } from "tone";
 import MidiDeviceManager from "./MidiDeviceManager";
+import MidiEvent from "./MidiEvent";
 
 import { ModuleType } from "./Module";
 import { AudioModule, createModule } from "./Module";
 import Master from "./Module/Master";
+import VirtualMidi from "./Module/VirtualMidi";
 import VoiceScheduler from "./Module/VoiceScheduler";
 import { applyRoutes, createRoute, RouteInterface, RouteProps } from "./routes";
 
@@ -110,7 +112,11 @@ class Engine {
     return masterProps;
   }
 
-  triggerKey(noteName: string, type: string) {}
+  triggerVirtualMidi(id: string, noteName: string, type: string) {
+    const virtualMidi = this.findById(id) as VirtualMidi;
+
+    virtualMidi.sendMidi(MidiEvent.fromNote(noteName, type));
+  }
 
   dispose() {
     Object.values(this.modules).forEach((m) => {
