@@ -35,7 +35,7 @@ export default class MidiSelector extends Module<
   set selectedId(value: string | null) {
     if (this.selectedId) {
       const prevMidiDevice = Engine.midiDeviceManager.find(this.selectedId);
-      prevMidiDevice.removeEventListener(this.onMidiEvent);
+      prevMidiDevice?.removeEventListener(this.onMidiEvent);
     }
 
     this._props = { ...this.props, selectedId: value };
@@ -57,6 +57,6 @@ export default class MidiSelector extends Module<
     if (!this.onMidiEvent || !midiId) return; // Ugly hack because of weird super bug
 
     const midiDevice = Engine.midiDeviceManager.find(midiId);
-    midiDevice.addEventListener(this.onMidiEvent);
+    midiDevice?.addEventListener(this.onMidiEvent);
   }
 }

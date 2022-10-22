@@ -11,10 +11,10 @@ export default class MidiDeviceManager {
     });
   }
 
-  find(id: string): MidiDevice {
+  find(id: string): MidiDevice | null {
     const device = this.devices[id];
 
-    if (!device) throw Error(`Midi device with id ${id} not found`);
+    if (!device) return null;
 
     return device;
   }
