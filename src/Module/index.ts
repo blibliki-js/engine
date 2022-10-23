@@ -14,6 +14,7 @@ import VirtualMidi from "./VirtualMidi";
 import Reverb from "./Reverb";
 import Delay from "./Delay";
 import Distortion from "./Distortion";
+import BitCrusher from "./BitCrusher";
 
 export { default, ModuleType } from "./Base";
 export { default as PolyModule, PolyModuleType } from "./PolyModule";
@@ -84,6 +85,8 @@ export function moduleClassFromType(type: string) {
       return Delay;
     case ModuleType.Distortion:
       return Distortion;
+    case ModuleType.BitCrusher:
+      return BitCrusher;
     default:
       throw Error("Unknown module type");
   }

@@ -19,6 +19,7 @@ export enum ModuleType {
   Reverb = "reverb",
   Delay = "delay",
   Distortion = "distortion",
+  BitCrusher = "bitCrusher",
 }
 
 export interface Connectable {
