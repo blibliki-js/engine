@@ -22,16 +22,23 @@ export function createRoute(props: RouteProps) {
 export function applyRoutes(routes: RouteInterface[]) {
   Object.values(Engine.modules).forEach((m) => m.unplugAll());
 
-  const succesedConnections = routes.map((route) => {
-    const { sourceId, outputName, destinationId, inputName } = route;
+  const succesedConnections = routes
+    .sort((r1, r2) => {
+      if (r1.outputName === "number of voices") return -1;
+      if (r2.outputName === "number of voices") return 1;
 
-    const source = Engine.findById(sourceId);
-    const destination = Engine.findById(destinationId);
+      return 0;
+    })
+    .map((route) => {
+      const { sourceId, outputName, destinationId, inputName } = route;
 
-    source.plug(destination, outputName, inputName);
+      const source = Engine.findById(sourceId);
+      const destination = Engine.findById(destinationId);
 
-    return true;
-  });
+      source.plug(destination, outputName, inputName);
+
+      return true;
+    });
 
   if (succesedConnections.every((v) => v)) {
     console.log("######## Routes succesfully applied");
