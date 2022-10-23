@@ -11,6 +11,7 @@ import { PolyFreqEnvelope } from "./Envelope/FreqEnvelope";
 import { PolyEnvelope } from "./Envelope/Base";
 import Volume, { PolyVolume } from "./Volume";
 import VirtualMidi from "./VirtualMidi";
+import Reverb from "./Reverb";
 
 export { default, ModuleType } from "./Base";
 export { default as PolyModule, PolyModuleType } from "./PolyModule";
@@ -75,6 +76,8 @@ export function moduleClassFromType(type: string) {
       return MidiSelector;
     case ModuleType.VirtualMidi:
       return VirtualMidi;
+    case ModuleType.Reverb:
+      return Reverb;
     default:
       throw Error("Unknown module type");
   }
