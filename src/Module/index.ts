@@ -11,6 +11,10 @@ import { PolyFreqEnvelope } from "./Envelope/FreqEnvelope";
 import { PolyEnvelope } from "./Envelope/Base";
 import Volume, { PolyVolume } from "./Volume";
 import VirtualMidi from "./VirtualMidi";
+import Reverb from "./Reverb";
+import Delay from "./Delay";
+import Distortion from "./Distortion";
+import BitCrusher from "./BitCrusher";
 
 export { default, ModuleType } from "./Base";
 export { default as PolyModule, PolyModuleType } from "./PolyModule";
@@ -75,6 +79,14 @@ export function moduleClassFromType(type: string) {
       return MidiSelector;
     case ModuleType.VirtualMidi:
       return VirtualMidi;
+    case ModuleType.Reverb:
+      return Reverb;
+    case ModuleType.Delay:
+      return Delay;
+    case ModuleType.Distortion:
+      return Distortion;
+    case ModuleType.BitCrusher:
+      return BitCrusher;
     default:
       throw Error("Unknown module type");
   }

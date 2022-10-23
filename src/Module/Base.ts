@@ -16,6 +16,10 @@ export enum ModuleType {
   MidiSelector = "midiSelector",
   VirtualMidi = "virtualMidi",
   Volume = "monoVolume",
+  Reverb = "reverb",
+  Delay = "delay",
+  Distortion = "distortion",
+  BitCrusher = "bitCrusher",
 }
 
 export interface Connectable {
