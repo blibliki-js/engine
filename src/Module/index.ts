@@ -12,6 +12,7 @@ import { PolyEnvelope } from "./Envelope/Base";
 import Volume, { PolyVolume } from "./Volume";
 import VirtualMidi from "./VirtualMidi";
 import Reverb from "./Reverb";
+import Delay from "./Delay";
 
 export { default, ModuleType } from "./Base";
 export { default as PolyModule, PolyModuleType } from "./PolyModule";
@@ -78,6 +79,8 @@ export function moduleClassFromType(type: string) {
       return VirtualMidi;
     case ModuleType.Reverb:
       return Reverb;
+    case ModuleType.Delay:
+      return Delay;
     default:
       throw Error("Unknown module type");
   }

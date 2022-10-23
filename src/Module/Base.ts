@@ -17,6 +17,7 @@ export enum ModuleType {
   VirtualMidi = "virtualMidi",
   Volume = "monoVolume",
   Reverb = "reverb",
+  Delay = "delay",
 }
 
 export interface Connectable {
