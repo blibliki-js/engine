@@ -104,8 +104,8 @@ class Engine {
     return route;
   }
 
-  removeRoute(route: RouteInterface) {
-    delete this.routes[route.id];
+  removeRoute(id: string) {
+    delete this.routes[id];
     applyRoutes(Object.values(this.routes));
   }
 
