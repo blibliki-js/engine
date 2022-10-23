@@ -13,6 +13,7 @@ import Volume, { PolyVolume } from "./Volume";
 import VirtualMidi from "./VirtualMidi";
 import Reverb from "./Reverb";
 import Delay from "./Delay";
+import Distortion from "./Distortion";
 
 export { default, ModuleType } from "./Base";
 export { default as PolyModule, PolyModuleType } from "./PolyModule";
@@ -81,6 +82,8 @@ export function moduleClassFromType(type: string) {
       return Reverb;
     case ModuleType.Delay:
       return Delay;
+    case ModuleType.Distortion:
+      return Distortion;
     default:
       throw Error("Unknown module type");
   }

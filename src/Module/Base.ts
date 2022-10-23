@@ -18,6 +18,7 @@ export enum ModuleType {
   Volume = "monoVolume",
   Reverb = "reverb",
   Delay = "delay",
+  Distortion = "distortion",
 }
 
 export interface Connectable {
