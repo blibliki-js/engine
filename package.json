@@ -4,6 +4,8 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "dependencies": {
+    "@types/lodash": "^4.14.186",
+    "lodash": "^4.17.21",
     "tone": "^14.7.77",
     "uuid": "^8.3.2"
   },
