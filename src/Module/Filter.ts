@@ -1,12 +1,12 @@
 import { Filter as InternalFilter } from "tone";
 
-import { FreqEnvelope } from "./Envelope";
-import Module, { ModuleType } from "./Base";
-import PolyModule, { PolyModuleType } from "./PolyModule";
-import { PolyFreqEnvelope } from "./Envelope/FreqEnvelope";
+import { FreqEnvelope, MonoFreqEnvelope } from "./Envelope";
+import Module, { Voicable } from "./Base";
+import PolyModule from "./PolyModule";
 
-interface FilterInterface {
+interface FilterInterface extends Voicable {
   cutoff: number;
+  filterType: BiquadFilterType;
   resonance: number;
   envelopeAmount: number;
   voiceNo?: number;
@@ -18,16 +18,16 @@ const InitialProps: FilterInterface = {
   cutoff: 20000,
   resonance: 0,
   envelopeAmount: 0,
+  filterType: "lowpass",
 };
 
-export default class Filter extends Module<InternalFilter, FilterInterface> {
-  private _envelope: FreqEnvelope;
+class MonoFilter extends Module<InternalFilter, FilterInterface> {
+  private _envelope: MonoFreqEnvelope;
 
   constructor(name: string, props: FilterProps) {
     super(new InternalFilter({ type: "lowpass" }), {
       name,
       props: { ...InitialProps, ...props },
-      type: ModuleType.Filter,
     });
   }
 
@@ -71,19 +71,19 @@ export default class Filter extends Module<InternalFilter, FilterInterface> {
     this._envelope.amount = value;
   }
 
-  conntectedEnvelope(envelope: FreqEnvelope) {
+  conntectedEnvelope(envelope: MonoFreqEnvelope) {
     this._envelope = envelope;
     this._envelope.frequency = this.cutoff;
     this._envelope.amount = this.envelopeAmount;
   }
 }
 
-export class PolyFilter extends PolyModule<Filter, FilterInterface> {
+export default class Filter extends PolyModule<MonoFilter, FilterInterface> {
   constructor(name: string, props: Partial<FilterInterface>) {
-    super(PolyModuleType.Filter, {
+    super({
       name,
+      child: MonoFilter,
       props: { ...InitialProps, ...props },
-      type: ModuleType.Filter,
     });
 
     this.registerBasicInputs();
@@ -96,13 +96,13 @@ export class PolyFilter extends PolyModule<Filter, FilterInterface> {
       name: "frequency",
       pluggable: "frequency",
       onPlug: (output) => {
-        this.conntectedEnvelope(output.audioModule as PolyFreqEnvelope);
+        this.conntectedEnvelope(output.audioModule as FreqEnvelope);
       },
     });
   }
 
-  conntectedEnvelope(polyFreqEnvelope: PolyFreqEnvelope) {
-    polyFreqEnvelope.audioModules.forEach((envelope) => {
+  conntectedEnvelope(freqEnvelope: FreqEnvelope) {
+    freqEnvelope.audioModules.forEach((envelope) => {
       if (envelope.voiceNo === undefined) return;
 
       const filter = this.findVoice(envelope.voiceNo);

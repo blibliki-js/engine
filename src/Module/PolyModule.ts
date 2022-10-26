@@ -1,52 +1,39 @@
 import MidiEvent from "../MidiEvent";
 import { v4 as uuidv4 } from "uuid";
-import { createModule } from ".";
-import Module, { ModuleInterface, ModuleType, Connectable } from "./Base";
+import Module, { Connectable, Voicable } from "./Base";
 import { Input, Output, IOInterface } from "./IO";
 import { AudioModule } from "../Module";
 
-export enum PolyModuleType {
-  Oscillator = "oscillator",
-  Envelope = "envelope",
-  AmpEnvelope = "ampEnvelope",
-  FreqEnvelope = "freqEnvelope",
-  VoiceScheduler = "voiceScheduler",
-  Filter = "filter",
-  Volume = "volume",
+interface PolyModuleInterface<MonoAudioModule, PropsInterface> {
+  name: string;
+  child: new (name: string, props: PropsInterface) => MonoAudioModule;
+  props: PropsInterface;
 }
-
-interface PolyModuleInterface extends ModuleInterface {}
 
 export default abstract class PolyModule<
   MonoAudioModule extends Module<Connectable, any>,
-  PropsInterface
+  PropsInterface extends Voicable
 > {
   readonly id: string;
+  readonly child: new (name: string, props: PropsInterface) => MonoAudioModule;
   _name: string;
   audioModules: MonoAudioModule[];
   inputs: Input[] = [];
   outputs: Output[] = [];
-  readonly _type: PolyModuleType;
-  readonly childrenType: ModuleType;
   private _numberOfVoices: number;
 
-  constructor(type: PolyModuleType, props: PolyModuleInterface) {
+  constructor(params: PolyModuleInterface<MonoAudioModule, PropsInterface>) {
     this.id = uuidv4();
-    this._type = type;
-    this.childrenType = props.type;
     this.audioModules = [];
 
-    const { props: extraProps, ...basicProps } = props;
+    const { child, props: extraProps, ...basicProps } = params;
+    this.child = child;
     Object.assign(this, basicProps);
 
     this.numberOfVoices = 1;
 
     Object.assign(this, { props: extraProps });
     this.registerNumberOfVoicesInput();
-  }
-
-  get type() {
-    return this._type;
   }
 
   get name() {
@@ -57,10 +44,6 @@ export default abstract class PolyModule<
     this._name = value;
     this.audioModules.forEach((m) => (m.name = value));
   }
-
-  // Do nothing
-  // This is a little hack to avoid override type by children module
-  set type(value: PolyModuleType) {}
 
   get props() {
     if (this.audioModules.length === 0) {
@@ -117,7 +100,7 @@ export default abstract class PolyModule<
     return {
       ...this.audioModules[0].serialize(),
       id: this.id,
-      type: this.type,
+      type: this.constructor.name,
       inputs: this.inputs.map((i) => i.serialize()),
       outputs: this.outputs.map((i) => i.serialize()),
     };
@@ -224,8 +207,10 @@ export default abstract class PolyModule<
       const audioModule = this.audioModules.pop();
       audioModule?.dispose();
     } else {
-      const props = this.audioModules.length ? this.props : {};
-      const audioModule = createModule(this.name, this.childrenType, {
+      const props = this.audioModules.length
+        ? this.props
+        : ({} as PropsInterface);
+      const audioModule = new this.child(this.name, {
         ...props,
         voiceNo: this.audioModules.length,
       });

@@ -1,6 +1,6 @@
 import Engine from "../Engine";
 import MidiEvent from "../MidiEvent";
-import Module, { ModuleType, DummnyInternalModule } from "./Base";
+import Module, { DummnyInternalModule } from "./Base";
 import { Output } from "./IO";
 
 export interface VirtualMidiInterface {
@@ -21,7 +21,6 @@ export default class VirtualMidi extends Module<
     super(new DummnyInternalModule(), {
       name,
       props: { ...InitialProps, ...props },
-      type: ModuleType.VirtualMidi,
     });
 
     this.registerInputs();

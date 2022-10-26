@@ -1,6 +1,5 @@
 import { Reverb as InternalReverb } from "tone";
 
-import { ModuleType } from "./Base";
 import Effect, { EffectInterface } from "./Effect";
 
 interface ReverbInterface extends EffectInterface {
@@ -15,7 +14,7 @@ const InitialProps: Partial<ReverbInterface> = {
 
 export default class Reverb extends Effect<InternalReverb, ReverbInterface> {
   constructor(name: string, props: Partial<ReverbInterface>) {
-    super(name, ModuleType.Reverb, new InternalReverb(), {
+    super(name, new InternalReverb(), {
       ...InitialProps,
       ...props,
     });

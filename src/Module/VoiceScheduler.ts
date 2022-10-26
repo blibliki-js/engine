@@ -1,9 +1,9 @@
-import Module, { ModuleType, DummnyInternalModule } from "./Base";
+import Module, { DummnyInternalModule, Voicable } from "./Base";
 import MidiEvent from "../MidiEvent";
 import { Input, Output } from "./IO";
-import PolyModule, { PolyModuleType } from "./PolyModule";
+import PolyModule from "./PolyModule";
 
-export interface VoiceSchedulerInterface {
+export interface VoiceSchedulerInterface extends Voicable {
   polyNumber: number;
 }
 
@@ -15,10 +15,10 @@ export default class VoiceScheduler extends PolyModule<
   numberOfVoicesOut: Output;
 
   constructor(name: string, props: VoiceSchedulerInterface) {
-    super(PolyModuleType.VoiceScheduler, {
+    super({
       name,
+      child: Voice,
       props,
-      type: ModuleType.Voice,
     });
 
     this.registerInputs();
@@ -111,11 +111,9 @@ export default class VoiceScheduler extends PolyModule<
   }
 }
 
-export interface VoiceInterface {
-  voiceNo?: number;
-}
+export interface VoiceInterface extends Voicable {}
 
-export class Voice extends Module<DummnyInternalModule, VoiceInterface> {
+class Voice extends Module<DummnyInternalModule, VoiceInterface> {
   midiEvent: MidiEvent | null;
   activeNote: string | null;
   triggeredAt: number;
@@ -124,7 +122,6 @@ export class Voice extends Module<DummnyInternalModule, VoiceInterface> {
   constructor(name: string, props: VoiceInterface) {
     super(new DummnyInternalModule(), {
       name,
-      type: ModuleType.Voice,
       props,
     });
   }

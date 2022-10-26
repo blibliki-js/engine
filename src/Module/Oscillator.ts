@@ -1,18 +1,17 @@
 import MidiEvent from "../MidiEvent";
 import { Oscillator as Osc, ToneOscillatorType } from "tone";
 
-import Module, { ModuleType } from "../Module";
 import Note from "../Note";
-import PolyModule, { PolyModuleType } from "./PolyModule";
+import Module, { Voicable } from "./Base";
+import PolyModule from "./PolyModule";
 
-export interface OscillatorInterface {
+export interface OscillatorInterface extends Voicable {
   noteName: string;
   fine: number;
   coarse: number;
   wave: string;
   volume: number;
   range: number;
-  voiceNo?: number;
 }
 
 const InitialProps: OscillatorInterface = {
@@ -24,14 +23,13 @@ const InitialProps: OscillatorInterface = {
   volume: 0,
 };
 
-export default class Oscillator extends Module<Osc, OscillatorInterface> {
+class MonoOscillator extends Module<Osc, OscillatorInterface> {
   private _note: Note;
 
   constructor(name: string, props: Partial<OscillatorInterface>) {
     super(new Osc(), {
       name,
       props: { ...InitialProps, ...props },
-      type: ModuleType.Oscillator,
     });
 
     this.note = new Note("C3");
@@ -142,15 +140,15 @@ export default class Oscillator extends Module<Osc, OscillatorInterface> {
   }
 }
 
-export class PolyOscillator extends PolyModule<
-  Oscillator,
+export default class Oscillator extends PolyModule<
+  MonoOscillator,
   OscillatorInterface
 > {
   constructor(name: string, props: Partial<OscillatorInterface>) {
-    super(PolyModuleType.Oscillator, {
+    super({
       name,
+      child: MonoOscillator,
       props: { ...InitialProps, ...props },
-      type: ModuleType.Oscillator,
     });
 
     this.registerBasicOutputs();

@@ -1,6 +1,5 @@
 import { FeedbackDelay } from "tone";
 
-import { ModuleType } from "./Base";
 import Effect, { EffectInterface } from "./Effect";
 
 interface DelayInterface extends EffectInterface {
@@ -15,7 +14,7 @@ const InitialProps: Partial<DelayInterface> = {
 
 export default class Delay extends Effect<FeedbackDelay, DelayInterface> {
   constructor(name: string, props: Partial<DelayInterface>) {
-    super(name, ModuleType.Delay, new FeedbackDelay(), {
+    super(name, new FeedbackDelay(), {
       ...InitialProps,
       ...props,
     });

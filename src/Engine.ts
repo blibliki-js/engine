@@ -2,7 +2,6 @@ import { Context, setContext } from "tone";
 import MidiDeviceManager from "./MidiDeviceManager";
 import MidiEvent from "./MidiEvent";
 
-import { ModuleType } from "./Module";
 import { AudioModule, createModule } from "./Module";
 import Master from "./Module/Master";
 import VirtualMidi from "./Module/VirtualMidi";
@@ -112,11 +111,7 @@ class Engine {
   get master() {
     if (this._master) return this._master.serialize();
 
-    const masterProps = this.registerModule(
-      "Master",
-      "master",
-      ModuleType.Master
-    );
+    const masterProps = this.registerModule("Master", "Master");
     this._master = this.modules[masterProps.id] as Master;
 
     return masterProps;
@@ -130,7 +125,7 @@ class Engine {
 
   dispose() {
     Object.values(this.modules).forEach((m) => {
-      if (m.type === "master") return;
+      if (m.constructor.name === "Master") return;
 
       m.dispose();
     });

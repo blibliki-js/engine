@@ -1,6 +1,5 @@
 import { Distortion as InternalDistortion } from "tone";
 
-import { ModuleType } from "./Base";
 import Effect, { EffectInterface } from "./Effect";
 
 interface DistortionInterface extends EffectInterface {
@@ -16,7 +15,7 @@ export default class Distortion extends Effect<
   DistortionInterface
 > {
   constructor(name: string, props: Partial<DistortionInterface>) {
-    super(name, ModuleType.Distortion, new InternalDistortion(), {
+    super(name, new InternalDistortion(), {
       ...InitialProps,
       ...props,
     });

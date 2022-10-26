@@ -1,23 +1,20 @@
-import Module, { Connectable, ModuleType } from "./Base";
-import PolyModule, { PolyModuleType } from "./PolyModule";
-import Oscillator, { PolyOscillator } from "./Oscillator";
+import Module, { Connectable } from "./Base";
+import PolyModule from "./PolyModule";
+import Oscillator from "./Oscillator";
 import { Envelope, AmpEnvelope, FreqEnvelope } from "./Envelope";
-import Filter, { PolyFilter } from "./Filter";
+import Filter from "./Filter";
 import Master from "./Master";
-import VoiceScheduler, { Voice } from "./VoiceScheduler";
+import VoiceScheduler from "./VoiceScheduler";
 import MidiSelector from "./MidiSelector";
-import { PolyAmpEnvelope } from "./Envelope/AmpEnvelope";
-import { PolyFreqEnvelope } from "./Envelope/FreqEnvelope";
-import { PolyEnvelope } from "./Envelope/Base";
-import Volume, { PolyVolume } from "./Volume";
+import Volume from "./Volume";
 import VirtualMidi from "./VirtualMidi";
 import Reverb from "./Reverb";
 import Delay from "./Delay";
 import Distortion from "./Distortion";
 import BitCrusher from "./BitCrusher";
 
-export { default, ModuleType } from "./Base";
-export { default as PolyModule, PolyModuleType } from "./PolyModule";
+export { default } from "./Base";
+export { default as PolyModule } from "./PolyModule";
 export type { ModuleInterface, Connectable, Triggerable } from "./Base";
 
 export { default as Filter } from "./Filter";
@@ -43,51 +40,37 @@ export function createModule(
   return new klass(name, props);
 }
 
-export function moduleClassFromType(type: string) {
+function moduleClassFromType(type: string) {
   switch (type) {
-    case ModuleType.Oscillator:
+    case Oscillator.name:
       return Oscillator;
-    case ModuleType.Envelope:
+    case Envelope.name:
       return Envelope;
-    case ModuleType.AmpEnvelope:
+    case AmpEnvelope.name:
       return AmpEnvelope;
-    case ModuleType.FreqEnvelope:
+    case FreqEnvelope.name:
       return FreqEnvelope;
-    case ModuleType.Filter:
+    case Filter.name:
       return Filter;
-    case ModuleType.Volume:
+    case Volume.name:
       return Volume;
-    case PolyModuleType.Oscillator:
-      return PolyOscillator;
-    case PolyModuleType.Envelope:
-      return PolyEnvelope;
-    case PolyModuleType.AmpEnvelope:
-      return PolyAmpEnvelope;
-    case PolyModuleType.FreqEnvelope:
-      return PolyFreqEnvelope;
-    case PolyModuleType.Filter:
-      return PolyFilter;
-    case PolyModuleType.Volume:
-      return PolyVolume;
-    case ModuleType.Master:
+    case Master.name:
       return Master;
-    case ModuleType.Voice:
-      return Voice;
-    case PolyModuleType.VoiceScheduler:
+    case VoiceScheduler.name:
       return VoiceScheduler;
-    case ModuleType.MidiSelector:
+    case MidiSelector.name:
       return MidiSelector;
-    case ModuleType.VirtualMidi:
+    case VirtualMidi.name:
       return VirtualMidi;
-    case ModuleType.Reverb:
+    case Reverb.name:
       return Reverb;
-    case ModuleType.Delay:
+    case Delay.name:
       return Delay;
-    case ModuleType.Distortion:
+    case Distortion.name:
       return Distortion;
-    case ModuleType.BitCrusher:
+    case BitCrusher.name:
       return BitCrusher;
     default:
-      throw Error("Unknown module type");
+      throw Error(`Unknown module type ${type}`);
   }
 }

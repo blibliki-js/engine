@@ -1,6 +1,6 @@
 import Engine from "../Engine";
 import MidiEvent from "../MidiEvent";
-import Module, { ModuleType, DummnyInternalModule } from "./Base";
+import Module, { DummnyInternalModule } from "./Base";
 import { Output } from "./IO";
 
 export interface MidiSelectorInterface {
@@ -21,7 +21,6 @@ export default class MidiSelector extends Module<
     super(new DummnyInternalModule(), {
       name,
       props: { ...InitialProps, ...props },
-      type: ModuleType.MidiSelector,
     });
 
     this.registerOutputs();

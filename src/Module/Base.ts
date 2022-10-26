@@ -5,23 +5,6 @@ import { Input, Output, IOInterface } from "./IO";
 import MidiEvent from "../MidiEvent";
 import { AudioModule, PolyModule } from "../Module";
 
-export enum ModuleType {
-  Oscillator = "monoOscillator",
-  Envelope = "monoEnvelope",
-  AmpEnvelope = "monoAmpEnvelope",
-  FreqEnvelope = "monoFreqEnvelope",
-  Filter = "monoFilter",
-  Master = "master",
-  Voice = "voice",
-  MidiSelector = "midiSelector",
-  VirtualMidi = "virtualMidi",
-  Volume = "monoVolume",
-  Reverb = "reverb",
-  Delay = "delay",
-  Distortion = "distortion",
-  BitCrusher = "bitCrusher",
-}
-
 export interface Connectable {
   connect: (inputNode: InputNode) => void;
   disconnect: (inputNode?: InputNode) => void;
@@ -33,9 +16,12 @@ export interface Triggerable {
   triggerRelease: Function;
 }
 
+export interface Voicable {
+  voiceNo?: number;
+}
+
 export interface ModuleInterface {
   name: string;
-  type: ModuleType;
   props?: { [key: string]: any };
   voiceNo?: number;
 }
@@ -59,7 +45,6 @@ class Module<InternalModule extends Connectable, PropsInterface>
   name: string;
   inputs: Input[] = [];
   outputs: Output[] = [];
-  type: ModuleType;
   readonly voiceNo?: number;
   updatedAt: Date;
   _props: PropsInterface;
@@ -160,7 +145,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
     return {
       id: this.id,
       name: this.name,
-      type: this.type,
+      type: this.constructor.name,
       props: this.props,
       inputs: this.inputs.map((i) => i.serialize()),
       outputs: this.outputs.map((i) => i.serialize()),

@@ -1,7 +1,7 @@
 import { Envelope as Env } from "tone";
 
-import Module, { ModuleType, Connectable, Triggerable } from "../index";
-import PolyModule, { PolyModuleType } from "../PolyModule";
+import Module, { Connectable, Triggerable, Voicable } from "../Base";
+import PolyModule from "../PolyModule";
 import MidiEvent from "../../MidiEvent";
 
 export const enum EnvelopeStages {
@@ -16,7 +16,7 @@ const MIN_TIME = 0.01;
 const SUSTAIN_MAX_VALUE = 1;
 const SUSTAIN_MIN_VALUE = 0;
 
-export interface EnvelopeInterface {
+export interface EnvelopeInterface extends Voicable {
   attack: number;
   decay: number;
   sustain: number;
@@ -40,13 +40,11 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
 
   constructor(
     name: string,
-    type: ModuleType,
     internalModule: EnvelopeLike,
     props: EnvelopeInterface
   ) {
     super(internalModule, {
       name,
-      type,
       props: { ...InitialProps, ...props },
     });
   }
@@ -120,13 +118,12 @@ export abstract class PolyBase<
 > extends PolyModule<EnvelopeModule, EnvelopeInterface> {
   constructor(
     name: string,
-    type: ModuleType,
-    polyType: PolyModuleType,
+    child: new (name: string, props: EnvelopeInterface) => EnvelopeModule,
     props: Partial<EnvelopeInterface>
   ) {
-    super(polyType, {
+    super({
       name,
-      type,
+      child,
       props: { ...InitialProps, ...props },
     });
 
@@ -143,15 +140,15 @@ export abstract class PolyBase<
   }
 }
 
-export class Envelope extends EnvelopeModule<Env> {
+class MonoEnvelope extends EnvelopeModule<Env> {
   constructor(name: string, props: EnvelopeInterface) {
-    super(name, ModuleType.Envelope, new Env(), props);
+    super(name, new Env(), props);
   }
 }
 
-export class PolyEnvelope extends PolyBase<Envelope> {
+export class Envelope extends PolyBase<MonoEnvelope> {
   constructor(name: string, props: Partial<EnvelopeInterface>) {
-    super(name, ModuleType.Envelope, PolyModuleType.Envelope, {
+    super(name, MonoEnvelope, {
       ...InitialProps,
       ...props,
     });

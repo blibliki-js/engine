@@ -1,23 +1,21 @@
 import { Volume as Vol } from "tone";
 
-import Module, { ModuleType } from "../Module";
-import PolyModule, { PolyModuleType } from "./PolyModule";
+import Module, { Voicable } from "./Base";
+import PolyModule from "./PolyModule";
 
-export interface VolumeInterface {
+export interface VolumeInterface extends Voicable {
   volume: number;
-  voiceNo?: number;
 }
 
 const InitialProps: VolumeInterface = {
   volume: -100,
 };
 
-export default class Volume extends Module<Vol, VolumeInterface> {
+class MonoVolume extends Module<Vol, VolumeInterface> {
   constructor(name: string, props: Partial<VolumeInterface>) {
     super(new Vol(), {
       name,
       props: { ...InitialProps, ...props },
-      type: ModuleType.Volume,
     });
   }
 
@@ -32,12 +30,12 @@ export default class Volume extends Module<Vol, VolumeInterface> {
   }
 }
 
-export class PolyVolume extends PolyModule<Volume, VolumeInterface> {
+export default class Volume extends PolyModule<MonoVolume, VolumeInterface> {
   constructor(name: string, props: Partial<VolumeInterface>) {
-    super(PolyModuleType.Volume, {
+    super({
       name,
+      child: MonoVolume,
       props: { ...InitialProps, ...props },
-      type: ModuleType.Volume,
     });
 
     this.registerBasicInputs();

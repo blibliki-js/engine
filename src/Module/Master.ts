@@ -1,5 +1,5 @@
 import { Destination, getDestination } from "tone";
-import Module, { ModuleType } from "../Module";
+import Module from "./Base";
 
 export interface MasterInterface {}
 
@@ -10,7 +10,6 @@ export default class Master extends Module<
   constructor() {
     super(getDestination(), {
       name: "Master",
-      type: ModuleType.Master,
     });
 
     this.registerBasicInputs();

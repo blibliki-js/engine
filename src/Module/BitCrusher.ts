@@ -1,6 +1,5 @@
 import { BitCrusher as InternalBitCrasher } from "tone";
 
-import { ModuleType } from "./Base";
 import Effect, { EffectInterface } from "./Effect";
 
 interface BitCrusherInterface extends EffectInterface {
@@ -11,12 +10,12 @@ const InitialProps: Partial<BitCrusherInterface> = {
   bits: 16,
 };
 
-export default class Delay extends Effect<
+export default class BitCrusher extends Effect<
   InternalBitCrasher,
   BitCrusherInterface
 > {
   constructor(name: string, props: Partial<BitCrusherInterface>) {
-    super(name, ModuleType.BitCrusher, new InternalBitCrasher(), {
+    super(name, new InternalBitCrasher(), {
       ...InitialProps,
       ...props,
     });
