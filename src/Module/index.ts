@@ -1,3 +1,4 @@
+import { camelCase, upperFirst } from "lodash";
 import Module, { Connectable } from "./Base";
 import PolyModule from "./PolyModule";
 import Oscillator from "./Oscillator";
@@ -41,6 +42,8 @@ export function createModule(
 }
 
 function moduleClassFromType(type: string) {
+  type = upperFirst(camelCase(type));
+
   switch (type) {
     case Oscillator.name:
       return Oscillator;
