@@ -31,6 +31,8 @@ class MonoVolume extends Module<Vol, VolumeInterface> {
 }
 
 export default class Volume extends PolyModule<MonoVolume, VolumeInterface> {
+  static moduleName = "Volume";
+
   constructor(name: string, props: Partial<VolumeInterface>) {
     super({
       name,

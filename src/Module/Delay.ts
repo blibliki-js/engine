@@ -13,6 +13,8 @@ const InitialProps: Partial<DelayInterface> = {
 };
 
 export default class Delay extends Effect<FeedbackDelay, DelayInterface> {
+  static moduleName = "Delay";
+
   constructor(name: string, props: Partial<DelayInterface>) {
     super(name, new FeedbackDelay(), {
       ...InitialProps,

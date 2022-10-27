@@ -11,6 +11,7 @@ export default class VoiceScheduler extends PolyModule<
   Voice,
   VoiceSchedulerInterface
 > {
+  static moduleName = "VoiceScheduler";
   midiOutput: Output;
   numberOfVoicesOut: Output;
 

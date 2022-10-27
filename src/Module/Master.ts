@@ -7,6 +7,8 @@ export default class Master extends Module<
   typeof Destination,
   MasterInterface
 > {
+  static moduleName = "Master";
+
   constructor() {
     super(getDestination(), {
       name: "Master",

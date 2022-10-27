@@ -46,6 +46,8 @@ export class MonoFreqEnvelope extends Base<FrequencyEnvelope> {
 }
 
 export default class FreqEnvelope extends PolyBase<MonoFreqEnvelope> {
+  static moduleName = "FreqEnvelope";
+
   constructor(name: string, props: Partial<EnvelopeInterface>) {
     super(name, MonoFreqEnvelope, props);
 

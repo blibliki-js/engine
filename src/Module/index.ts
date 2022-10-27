@@ -45,33 +45,33 @@ function moduleClassFromType(type: string) {
   type = upperFirst(camelCase(type));
 
   switch (type) {
-    case Oscillator.name:
+    case Oscillator.moduleName:
       return Oscillator;
-    case Envelope.name:
+    case Envelope.moduleName:
       return Envelope;
-    case AmpEnvelope.name:
+    case AmpEnvelope.moduleName:
       return AmpEnvelope;
-    case FreqEnvelope.name:
+    case FreqEnvelope.moduleName:
       return FreqEnvelope;
-    case Filter.name:
+    case Filter.moduleName:
       return Filter;
-    case Volume.name:
+    case Volume.moduleName:
       return Volume;
-    case Master.name:
+    case Master.moduleName:
       return Master;
-    case VoiceScheduler.name:
+    case VoiceScheduler.moduleName:
       return VoiceScheduler;
-    case MidiSelector.name:
+    case MidiSelector.moduleName:
       return MidiSelector;
-    case VirtualMidi.name:
+    case VirtualMidi.moduleName:
       return VirtualMidi;
-    case Reverb.name:
+    case Reverb.moduleName:
       return Reverb;
-    case Delay.name:
+    case Delay.moduleName:
       return Delay;
-    case Distortion.name:
+    case Distortion.moduleName:
       return Distortion;
-    case BitCrusher.name:
+    case BitCrusher.moduleName:
       return BitCrusher;
     default:
       throw Error(`Unknown module type ${type}`);

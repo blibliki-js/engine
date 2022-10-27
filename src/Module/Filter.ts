@@ -79,6 +79,8 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
 }
 
 export default class Filter extends PolyModule<MonoFilter, FilterInterface> {
+  static moduleName = "Filter";
+
   constructor(name: string, props: Partial<FilterInterface>) {
     super({
       name,

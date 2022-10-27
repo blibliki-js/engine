@@ -125,7 +125,7 @@ class Engine {
 
   dispose() {
     Object.values(this.modules).forEach((m) => {
-      if (m.constructor.name === "Master") return;
+      if (m instanceof Master) return;
 
       m.dispose();
     });

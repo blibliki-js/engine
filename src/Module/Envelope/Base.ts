@@ -147,6 +147,8 @@ class MonoEnvelope extends EnvelopeModule<Env> {
 }
 
 export class Envelope extends PolyBase<MonoEnvelope> {
+  static moduleName = "Envelope";
+
   constructor(name: string, props: Partial<EnvelopeInterface>) {
     super(name, MonoEnvelope, {
       ...InitialProps,

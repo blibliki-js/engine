@@ -14,6 +14,8 @@ export default abstract class PolyModule<
   MonoAudioModule extends Module<Connectable, any>,
   PropsInterface extends Voicable
 > {
+  static readonly moduleName: string;
+
   readonly id: string;
   readonly child: new (name: string, props: PropsInterface) => MonoAudioModule;
   _name: string;
@@ -97,10 +99,12 @@ export default abstract class PolyModule<
     if (this.audioModules.length === 0)
       throw Error("There isn't any initialized module");
 
+    const klass = this.constructor as typeof PolyModule;
+
     return {
       ...this.audioModules[0].serialize(),
       id: this.id,
-      type: this.constructor.name,
+      type: klass.moduleName,
       inputs: this.inputs.map((i) => i.serialize()),
       outputs: this.outputs.map((i) => i.serialize()),
     };

@@ -14,6 +14,8 @@ export default class Distortion extends Effect<
   InternalDistortion,
   DistortionInterface
 > {
+  static moduleName = "Distortion";
+
   constructor(name: string, props: Partial<DistortionInterface>) {
     super(name, new InternalDistortion(), {
       ...InitialProps,

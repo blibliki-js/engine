@@ -13,6 +13,8 @@ const InitialProps: Partial<ReverbInterface> = {
 };
 
 export default class Reverb extends Effect<InternalReverb, ReverbInterface> {
+  static moduleName = "Reverb";
+
   constructor(name: string, props: Partial<ReverbInterface>) {
     super(name, new InternalReverb(), {
       ...InitialProps,

@@ -144,6 +144,8 @@ export default class Oscillator extends PolyModule<
   MonoOscillator,
   OscillatorInterface
 > {
+  static moduleName = "Oscillator";
+
   constructor(name: string, props: Partial<OscillatorInterface>) {
     super({
       name,

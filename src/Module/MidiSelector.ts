@@ -15,6 +15,7 @@ export default class MidiSelector extends Module<
   DummnyInternalModule,
   MidiSelectorInterface
 > {
+  static moduleName = "MidiSelector";
   midiOutput: Output;
 
   constructor(name: string, props: Partial<MidiSelectorInterface>) {

@@ -39,10 +39,11 @@ export class DummnyInternalModule implements Connectable {
 class Module<InternalModule extends Connectable, PropsInterface>
   implements ModuleInterface
 {
-  internalModule: InternalModule;
+  static readonly moduleName: string;
 
   readonly id: string;
   name: string;
+  internalModule: InternalModule;
   inputs: Input[] = [];
   outputs: Output[] = [];
   readonly voiceNo?: number;
@@ -142,10 +143,12 @@ class Module<InternalModule extends Connectable, PropsInterface>
   };
 
   serialize() {
+    const klass = this.constructor as typeof Module;
+
     return {
       id: this.id,
       name: this.name,
-      type: this.constructor.name,
+      type: klass.moduleName,
       props: this.props,
       inputs: this.inputs.map((i) => i.serialize()),
       outputs: this.outputs.map((i) => i.serialize()),
