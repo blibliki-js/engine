@@ -32,14 +32,16 @@ export default class MidiSelector extends Module<
   }
 
   set selectedId(value: string | null) {
-    if (this.selectedId) {
-      const prevMidiDevice = Engine.midiDeviceManager.find(this.selectedId);
-      prevMidiDevice?.removeEventListener(this.onMidiEvent);
-    }
+    this.removeEventListener();
 
     this._props = { ...this.props, selectedId: value };
 
     this.addEventListener(value);
+  }
+
+  dispose() {
+    this.removeEventListener();
+    super.dispose();
   }
 
   private registerOutputs() {
@@ -57,5 +59,12 @@ export default class MidiSelector extends Module<
 
     const midiDevice = Engine.midiDeviceManager.find(midiId);
     midiDevice?.addEventListener(this.onMidiEvent);
+  }
+
+  private removeEventListener() {
+    if (!this.selectedId) return;
+
+    const midiDevice = Engine.midiDeviceManager.find(this.selectedId);
+    midiDevice?.removeEventListener(this.onMidiEvent);
   }
 }
