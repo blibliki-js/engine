@@ -93,7 +93,12 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
 
     this.activeNote = note?.fullName;
     this.triggeredAt = triggeredAt;
-    this.internalModule.triggerAttack(triggeredAt);
+
+    if (note?.duration) {
+      this.internalModule.triggerAttackRelease(note.duration, triggeredAt);
+    } else {
+      this.internalModule.triggerAttack(triggeredAt);
+    }
   }
 
   triggerRelease(midiEvent: MidiEvent) {
