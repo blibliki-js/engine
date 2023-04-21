@@ -14,6 +14,7 @@ export interface Connectable {
 export interface Triggerable {
   triggerAttack: Function;
   triggerRelease: Function;
+  triggerAttackRelease: Function;
 }
 
 export interface Voicable {
@@ -121,7 +122,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
     this.internalModule.dispose();
   }
 
-  triggerAttack(midiEvent: MidiEvent) {
+  triggerAttack(midiEvent: MidiEvent, duration?: number) {
     throw Error("triggerAttack not implemented");
   }
 
@@ -129,10 +130,14 @@ class Module<InternalModule extends Connectable, PropsInterface>
     throw Error("triggerRelease not implemented");
   }
 
-  midiTriggered = (midiEvent: MidiEvent) => {
+  triggerAttackRelease(midiEvent: MidiEvent) {
+    throw Error("triggerAttackRelease not implemented");
+  }
+
+  midiTriggered = (midiEvent: MidiEvent, duration?: number) => {
     switch (midiEvent.type) {
       case "noteOn":
-        this.triggerAttack(midiEvent);
+        this.triggerAttack(midiEvent, duration);
         break;
       case "noteOff":
         this.triggerRelease(midiEvent);

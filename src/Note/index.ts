@@ -1,19 +1,38 @@
+import { TimeClass, Time } from "tone";
+import MidiEvent from "../MidiEvent";
 import frequencyTable from "./frequencyTable";
 
 const Notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
 const NotesLength = Notes.length;
 
+export interface INote {
+  note: string;
+  time: string;
+  velocity?: number;
+  duration?: string;
+}
+
 export default class Note {
   static _notes: Note[];
   name: string;
   octave: number;
+  time: TimeClass = Time("0:0:0");
+  velocity?: number = 1;
+  duration?: string;
 
-  constructor(eventOrString: MIDIMessageEvent | string) {
+  constructor(
+    eventOrString: INote | MIDIMessageEvent | string,
+    duration?: string
+  ) {
+    this.duration = duration;
+
     if (typeof eventOrString === "string") {
       this.fromString(eventOrString);
-    } else {
+    } else if (eventOrString instanceof MIDIMessageEvent) {
       this.fromEvent(eventOrString);
+    } else {
+      this.fromProps(eventOrString);
     }
   }
 
@@ -51,6 +70,15 @@ export default class Note {
     return this.fullName;
   }
 
+  serialize(): INote {
+    return {
+      time: this.time.toBarsBeatsSixteenths(),
+      note: this.fullName,
+      duration: this.duration,
+      velocity: 1,
+    };
+  }
+
   private fromString(string: string) {
     const matches = string.match(/(\w#?)(\d)?/) || [];
 
@@ -61,5 +89,14 @@ export default class Note {
   private fromEvent(event: MIDIMessageEvent) {
     this.name = Notes[event.data[1] % 12];
     this.octave = Math.floor(event.data[1] / 12) - 2;
+  }
+
+  private fromProps(props: INote) {
+    const { note, time, duration, velocity } = props;
+
+    this.fromString(note);
+    this.time = Time(time);
+    this.duration = duration;
+    this.velocity = velocity;
   }
 }

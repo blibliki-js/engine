@@ -1,5 +1,5 @@
 import { now } from "tone";
-import Note from "./Note";
+import Note, { INote } from "./Note";
 
 const EventType: { [key: number]: string } = {
   8: "noteOff",
@@ -13,19 +13,29 @@ export default class MidiEvent {
   private data: Uint8Array;
   private event: MIDIMessageEvent;
 
-  static fromNote(noteName: string, type: string) {
+  static fromNote(
+    noteName: string | Note | INote,
+    type: string,
+    triggeredAt?: number
+  ) {
     const event = new MidiEvent(
-      new MIDIMessageEvent("", { data: new Uint8Array([0, 0, 0]) })
+      new MIDIMessageEvent("", { data: new Uint8Array([0, 0, 0]) }),
+      triggeredAt
     );
-    event.note = new Note(noteName);
+
+    if (noteName instanceof Note) {
+      event.note = noteName;
+    } else {
+      event.note = new Note(noteName);
+    }
     event._type = type;
 
     return event;
   }
 
-  constructor(event: MIDIMessageEvent) {
+  constructor(event: MIDIMessageEvent, triggeredAt?: number) {
     this.event = event;
-    this.triggeredAt = now();
+    this.triggeredAt = triggeredAt || now();
     this.data = event.data;
     this.defineNote();
   }
