@@ -16,9 +16,11 @@ export default class MidiEvent {
   static fromNote(
     noteName: string | Note | INote,
     type: string,
+    triggeredAt?: number
   ) {
     const event = new MidiEvent(
-      new MIDIMessageEvent("", { data: new Uint8Array([0, 0, 0]) })
+      new MIDIMessageEvent("", { data: new Uint8Array([0, 0, 0]) }),
+      triggeredAt
     );
 
     if (noteName instanceof Note) {
@@ -31,9 +33,9 @@ export default class MidiEvent {
     return event;
   }
 
-  constructor(event: MIDIMessageEvent) {
+  constructor(event: MIDIMessageEvent, triggeredAt?: number) {
     this.event = event;
-    this.triggeredAt = now();
+    this.triggeredAt = triggeredAt || now();
     this.data = event.data;
     this.defineNote();
   }
