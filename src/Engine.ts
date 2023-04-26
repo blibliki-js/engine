@@ -68,6 +68,17 @@ class Engine {
     return audioModule.serialize();
   }
 
+  unregisterModule(id: string) {
+    this.modules[id].dispose();
+    const moduleRouteIds = this.moduleRouteIds(id);
+
+    moduleRouteIds.forEach((routeId) => delete this.routes[routeId]);
+    applyRoutes(Object.values(this.routes));
+    delete this.modules[id];
+
+    return moduleRouteIds;
+  }
+
   updateNameModule(id: string, name: string) {
     const audioModule = this.findById(id);
     audioModule.name = name;
@@ -147,6 +158,18 @@ class Engine {
     if (!(audioModule instanceof VoiceScheduler)) return false;
 
     return props.polyNumber !== audioModule.polyNumber;
+  }
+
+  private moduleRouteIds(id: string) {
+    const cloneRoutes = { ...this.routes };
+
+    const routeIds = Object.keys(cloneRoutes).filter((routeId) => {
+      const { sourceId, destinationId } = cloneRoutes[routeId];
+
+      return sourceId === id || destinationId === id;
+    });
+
+    return routeIds;
   }
 }
 
