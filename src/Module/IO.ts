@@ -39,11 +39,11 @@ abstract class IO {
   }
 
   plug(io: IO) {
+    this.connections.push(io);
+
     if (this.onPlug) this.onPlug(io);
 
     if (this.ioType === IOType.Output) io.plug(this);
-
-    this.connections.push(io);
   }
 
   unPlug(io: IO) {
