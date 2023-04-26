@@ -1,6 +1,6 @@
 import { Context, setContext } from "tone";
 import MidiDeviceManager from "./MidiDeviceManager";
-import MidiEvent from "./MidiEvent";
+import MidiEvent, { EType } from "./MidiEvent";
 
 import { AudioModule, createModule } from "./Module";
 import Master from "./Module/Master";
@@ -128,7 +128,7 @@ class Engine {
     return masterProps;
   }
 
-  triggerVirtualMidi(id: string, noteName: string, type: string) {
+  triggerVirtualMidi(id: string, noteName: string, type: EType) {
     const virtualMidi = this.findById(id) as VirtualMidi;
 
     virtualMidi.sendMidi(MidiEvent.fromNote(noteName, type));

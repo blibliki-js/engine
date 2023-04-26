@@ -1,21 +1,23 @@
 import { now } from "tone";
 import Note, { INote } from "./Note";
 
-const EventType: { [key: number]: string } = {
+const EventType: { [key: number]: EType } = {
   8: "noteOff",
   9: "noteOn",
 };
 
+export type EType = "noteOn" | "noteOff";
+
 export default class MidiEvent {
   note?: Note;
   readonly triggeredAt: number;
-  _type: string;
+  _type: EType;
   private data: Uint8Array;
   private event: MIDIMessageEvent;
 
   static fromNote(
     noteName: string | Note | INote,
-    type: string,
+    type: EType,
     triggeredAt?: number
   ) {
     const event = new MidiEvent(
