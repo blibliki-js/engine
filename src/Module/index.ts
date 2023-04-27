@@ -21,6 +21,9 @@ export type { ModuleInterface, Connectable, Triggerable } from "./Base";
 
 export { default as Filter } from "./Filter";
 export { default as Oscillator } from "./Oscillator";
+export { default as Sequencer } from "./Sequencer";
+export type { ISequence } from "./Sequencer";
+
 export {
   Envelope,
   AmpEnvelope,

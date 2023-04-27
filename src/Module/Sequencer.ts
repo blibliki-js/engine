@@ -1,16 +1,25 @@
-import { Part } from "tone";
+import { Part, Time } from "tone";
 import Module, { DummnyInternalModule } from "./Base";
-import Note, { INote } from "../Note";
+import { INote } from "../Note";
 import { Output } from "./IO";
 import MidiEvent from "../MidiEvent";
 
-interface ISequencer {
+export interface ISequence {
+  active: boolean;
+  time: string;
   notes: INote[];
 }
+interface ISequencer {
+  sequences: ISequence[][];
+  length: number;
+  bars: number;
+}
 
-const InitialProps: ISequencer = {
-  notes: [],
-};
+const InitialProps = () => ({
+  sequences: [],
+  length: 16,
+  bars: 1,
+});
 
 export default class Sequencer extends Module<
   DummnyInternalModule,
@@ -18,26 +27,49 @@ export default class Sequencer extends Module<
 > {
   static moduleName = "Sequencer";
   midiOutput: Output;
-  private _part: Part;
+  private part: Part<number>;
+  private barParts: Part<ISequence>[] = [];
 
   constructor(name: string, props: Partial<ISequencer>) {
     super(new DummnyInternalModule(), {
       name,
-      props: { ...InitialProps, ...props },
+      props: { ...InitialProps(), ...props },
     });
 
-    this.registerOutputs();
+    this.initializePart();
     this.start();
+    this.registerOutputs();
   }
 
-  get notes() {
-    return this._props["notes"];
+  get length() {
+    return this._props["length"];
   }
 
-  set notes(value: INote[]) {
-    const notes = value;
-    this._props = { ...this.props, notes };
-    this.updateNotesToPart();
+  set length(value: number) {
+    this._props["length"] = value;
+    this.adjustNumberOfSequences();
+    this.updateBarParts();
+  }
+
+  get bars() {
+    return this.props["bars"];
+  }
+
+  set bars(value: number) {
+    this._props["bars"] = value;
+    this.adjustNumberOfBars();
+    this.adjustNumberOfSequences();
+    this.updateBarParts();
+  }
+
+  get sequences() {
+    return this._props["sequences"];
+  }
+
+  set sequences(value: ISequence[][]) {
+    const sequences = value;
+    this._props = { ...this.props, sequences };
+    this.updateBarParts();
   }
 
   start() {
@@ -52,35 +84,83 @@ export default class Sequencer extends Module<
     this.midiOutput = this.registerOutput({ name: "midi out" });
   }
 
-  private get part() {
-    if (this._part) return this._part;
+  private initializePart() {
+    this.part = new Part(this.onPartEvent, [] as number[]);
+    this.part.loop = true;
+    this.part.loopEnd = this.loopEnd;
 
-    this._part = new Part(this.onEvent, this.notes);
-    this._part.loop = true;
-    this._part.loopEnd = this.loopEnd;
-
-    return this._part;
+    this.sequences.forEach((_, i) => {
+      this.part.add(`${i}:0:0`, i);
+    });
   }
 
-  private updateNotesToPart() {
-    this.part.clear();
+  private adjustNumberOfBars() {
+    const currentBar = this.sequences.length;
+    const num = currentBar - this.bars;
 
-    this.notes.forEach((note) => {
-      this.part.add(note.time, note);
+    if (num === 0) return;
+
+    if (num > 0) {
+      this.part?.remove(`${currentBar}:0:0`);
+      this.sequences.pop();
+    } else {
+      this.part?.add(`${currentBar}:0:0`, currentBar);
+      this.sequences.push([]);
+    }
+
+    this.adjustNumberOfBars();
+  }
+
+  private adjustNumberOfSequences(bar = 0) {
+    if (!this.bars) return;
+
+    const sequences = this.sequences[bar];
+    const num = sequences.length - this.length;
+
+    if (num === 0) {
+      if (bar === this.bars - 1) return;
+
+      this.adjustNumberOfSequences(bar + 1);
+      return;
+    }
+
+    if (num > 0) {
+      sequences.pop();
+    } else {
+      const index = sequences.length;
+      sequences.push({ active: false, time: `${bar}:0:${index}`, notes: [] });
+    }
+
+    this.adjustNumberOfSequences(bar);
+  }
+
+  private updateBarParts() {
+    this.barParts = this.sequences.map((barSeqs, bar) => {
+      const part = new Part(this.onSequenceEvent, [] as Array<ISequence>);
+      barSeqs.forEach((seq) => part.add(seq.time, seq));
+
+      return part;
     });
   }
 
   private get loopEnd() {
-    const end =
-      Math.max(
-        ...this.notes.map((note) => parseInt(note.time.split(":")[0], 10))
-      ) + 1;
-
-    return `${end}:0:0`;
+    return `${this.bars}:0:0`;
   }
 
-  private onEvent = (time: number, note: INote) => {
-    const event = MidiEvent.fromNote(note, "noteOn", time);
+  private onPartEvent = (time: number, bar: number | null) => {
+    if (bar === null) return;
+
+    const part = this.barParts[bar];
+    if (!part) return;
+
+    part.start(time);
+    part.stop(time + Time("1m").toSeconds());
+  };
+
+  private onSequenceEvent = (time: number, sequence: ISequence) => {
+    if (!sequence.active) return;
+
+    const event = MidiEvent.fromSequence(sequence, time);
 
     this.midiOutput.connections.forEach((input) => {
       input.pluggable(event);

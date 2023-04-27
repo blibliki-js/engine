@@ -1,4 +1,5 @@
-import { now, Time } from "tone";
+import { now } from "tone";
+import { ISequence } from "./Module/Sequencer";
 import Note, { INote } from "./Note";
 
 const EventType: { [key: number]: EType } = {
@@ -14,6 +15,17 @@ export default class MidiEvent {
   _type: EType;
   private data: Uint8Array;
   private event: MIDIMessageEvent;
+
+  static fromSequence(sequence: ISequence, triggeredAt: number) {
+    const event = new MidiEvent(
+      new MIDIMessageEvent("", { data: new Uint8Array([0, 0, 0]) }),
+      triggeredAt
+    );
+    event._type = "noteOn";
+    event.notes = sequence.notes.map((n) => new Note(n));
+
+    return event;
+  }
 
   static fromNote(
     noteName: string | Note | INote,
