@@ -1,4 +1,4 @@
-import { now } from "tone";
+import { now, Time } from "tone";
 import Note, { INote } from "./Note";
 
 const EventType: { [key: number]: EType } = {
@@ -9,7 +9,7 @@ const EventType: { [key: number]: EType } = {
 export type EType = "noteOn" | "noteOff";
 
 export default class MidiEvent {
-  note?: Note;
+  notes: Note[];
   readonly triggeredAt: number;
   _type: EType;
   private data: Uint8Array;
@@ -26,9 +26,9 @@ export default class MidiEvent {
     );
 
     if (noteName instanceof Note) {
-      event.note = noteName;
+      event.notes = [noteName];
     } else {
-      event.note = new Note(noteName);
+      event.notes = [new Note(noteName)];
     }
     event._type = type;
 
@@ -39,7 +39,7 @@ export default class MidiEvent {
     this.event = event;
     this.triggeredAt = triggeredAt || now();
     this.data = event.data;
-    this.defineNote();
+    this.defineNotes();
   }
 
   get type() {
@@ -58,9 +58,10 @@ export default class MidiEvent {
     return this.type === "noteOn" || this.type === "noteOff";
   }
 
-  defineNote() {
+  defineNotes() {
     if (!this.isNote) return;
+    if (this.notes) return;
 
-    this.note = new Note(this.event);
+    this.notes = [new Note(this.event)];
   }
 }

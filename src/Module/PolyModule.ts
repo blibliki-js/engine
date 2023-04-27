@@ -90,9 +90,13 @@ export default abstract class PolyModule<
     });
   }
 
-  midiTriggered = (midiEvent: MidiEvent, voiceNo: number = 0) => {
+  midiTriggered = (
+    midiEvent: MidiEvent,
+    voiceNo: number,
+    noteIndex?: number
+  ) => {
     const audioModule = this.findVoice(voiceNo);
-    audioModule?.midiTriggered(midiEvent);
+    audioModule?.midiTriggered(midiEvent, noteIndex);
   };
 
   serialize() {

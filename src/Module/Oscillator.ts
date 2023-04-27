@@ -1,5 +1,5 @@
 import MidiEvent from "../MidiEvent";
-import { Oscillator as Osc, ToneOscillatorType } from "tone";
+import { now, Oscillator as Osc, ToneOscillatorType } from "tone";
 
 import Note from "../Note";
 import Module, { Voicable } from "./Base";
@@ -112,14 +112,13 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
     this.internalModule.start();
   }
 
-  triggerAttack(midiEvent: MidiEvent) {
-    if (!midiEvent.note) return;
-    this.setNoteAt(midiEvent.note, midiEvent.triggeredAt);
-  }
+  triggerAttack = (note: Note, triggeredAt: number) => {
+    this.setNoteAt(note, triggeredAt);
+  };
 
-  triggerRelease(midiEvent: MidiEvent) {
+  triggerRelease = (note: Note) => {
     // Do nothing
-  }
+  };
 
   private updateFrequency(time?: number) {
     if (!this.note) return;

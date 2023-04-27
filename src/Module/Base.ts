@@ -4,6 +4,7 @@ import { InputNode } from "tone";
 import { Input, Output, IOInterface } from "./IO";
 import MidiEvent from "../MidiEvent";
 import { AudioModule, PolyModule } from "../Module";
+import Note from "../Note";
 
 export interface Connectable {
   connect: (inputNode: InputNode) => void;
@@ -122,30 +123,45 @@ class Module<InternalModule extends Connectable, PropsInterface>
     this.internalModule.dispose();
   }
 
-  triggerAttack(midiEvent: MidiEvent, duration?: number) {
+  triggerAttack(note: Note, triggeredAt: number) {
     throw Error("triggerAttack not implemented");
   }
 
-  triggerRelease(midiEvent: MidiEvent) {
+  triggerRelease(note: Note, triggeredAt: number) {
     throw Error("triggerRelease not implemented");
   }
 
-  triggerAttackRelease(midiEvent: MidiEvent) {
+  triggerAttackRelease(note: Note, triggeredAt: number) {
     throw Error("triggerAttackRelease not implemented");
   }
 
-  midiTriggered = (midiEvent: MidiEvent, duration?: number) => {
+  midiTriggered = (midiEvent: MidiEvent, noteIndex?: number) => {
     switch (midiEvent.type) {
       case "noteOn":
-        this.triggerAttack(midiEvent, duration);
+        this.triggerer(this.triggerAttack, midiEvent, noteIndex);
         break;
       case "noteOff":
-        this.triggerRelease(midiEvent);
+        this.triggerer(this.triggerRelease, midiEvent, noteIndex);
         break;
       default:
         throw Error("This type is not a note");
     }
   };
+
+  private triggerer(
+    trigger: Function,
+    midiEvent: MidiEvent,
+    noteIndex?: number
+  ) {
+    const { notes, triggeredAt } = midiEvent;
+
+    if (noteIndex !== undefined && this.voiceNo !== undefined) {
+      trigger(notes[noteIndex], triggeredAt);
+      return;
+    }
+
+    notes.forEach((note) => trigger(note, triggeredAt));
+  }
 
   serialize() {
     const klass = this.constructor as typeof Module;

@@ -3,6 +3,7 @@ import { Envelope as Env } from "tone";
 import Module, { Connectable, Triggerable, Voicable } from "../Base";
 import PolyModule from "../PolyModule";
 import MidiEvent from "../../MidiEvent";
+import Note from "../../Note";
 
 export const enum EnvelopeStages {
   Attack = "attack",
@@ -88,26 +89,25 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
     this.internalModule[stage] = calculatedValue;
   }
 
-  triggerAttack(midiEvent: MidiEvent) {
-    const { note, triggeredAt } = midiEvent;
+  triggerAttack = (note: Note, triggeredAt: number) => {
+    if (note.duration) return this.triggerAttackRelease(note, triggeredAt);
 
-    this.activeNote = note?.fullName;
+    this.activeNote = note.fullName;
     this.triggeredAt = triggeredAt;
+    this.internalModule.triggerAttack(triggeredAt);
+  };
 
-    if (note?.duration) {
-      this.internalModule.triggerAttackRelease(note.duration, triggeredAt);
-    } else {
-      this.internalModule.triggerAttack(triggeredAt);
-    }
-  }
+  triggerAttackRelease = (note: Note, triggeredAt: number) => {
+    this.activeNote = note.fullName;
+    this.triggeredAt = triggeredAt;
+    this.internalModule.triggerAttackRelease(note.duration, triggeredAt);
+  };
 
-  triggerRelease(midiEvent: MidiEvent) {
-    const { note, triggeredAt } = midiEvent;
-
-    if (this.activeNote && this.activeNote !== note?.fullName) return;
+  triggerRelease = (note: Note, triggeredAt: number) => {
+    if (this.activeNote && this.activeNote !== note.fullName) return;
 
     this.internalModule.triggerRelease(triggeredAt);
-  }
+  };
 
   private maxTime(stage: EnvelopeStages): number {
     return stage === EnvelopeStages.Sustain ? SUSTAIN_MAX_VALUE : MAX_TIME;

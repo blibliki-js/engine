@@ -1,5 +1,6 @@
 import Engine from "../Engine";
 import MidiEvent from "../MidiEvent";
+import Note from "../Note";
 import Module, { DummnyInternalModule } from "./Base";
 import { Output } from "./IO";
 
@@ -38,27 +39,22 @@ export default class VirtualMidi extends Module<
   }
 
   sendMidi(midiEvent: MidiEvent) {
-    this.midiTriggered(midiEvent);
     this.midiOutput.connections.forEach((input) => {
       input.pluggable(midiEvent);
     });
   }
 
-  triggerAttack(midiEvent: MidiEvent) {
-    if (!midiEvent.note) return;
-
-    this.activeNotes = [...this.activeNotes, midiEvent.note.fullName];
+  triggerAttack = (note: Note) => {
+    this.activeNotes = [...this.activeNotes, note.fullName];
     Engine._triggerPropsUpdate(this.id, this.props);
-  }
+  };
 
-  triggerRelease(midiEvent: MidiEvent) {
-    if (!midiEvent.note) return;
-
+  triggerRelease = (note: Note) => {
     this.activeNotes = this.activeNotes.filter(
-      (name) => name !== midiEvent.note!.fullName
+      (name) => name !== note.fullName
     );
     Engine._triggerPropsUpdate(this.id, this.props);
-  }
+  };
 
   serialize() {
     return {
