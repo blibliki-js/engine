@@ -1,5 +1,3 @@
-import { TimeClass, Time } from "tone";
-import MidiEvent from "../MidiEvent";
 import frequencyTable from "./frequencyTable";
 
 const Notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -8,25 +6,18 @@ const NotesLength = Notes.length;
 
 export interface INote {
   note: string;
-  time: string;
-  velocity?: number;
-  duration?: string;
+  velocity: number;
+  duration: string;
 }
 
 export default class Note {
   static _notes: Note[];
   name: string;
   octave: number;
-  time: TimeClass = Time("0:0:0");
-  velocity?: number = 1;
-  duration?: string;
+  velocity: number = 1;
+  duration: string;
 
-  constructor(
-    eventOrString: INote | MIDIMessageEvent | string,
-    duration?: string
-  ) {
-    this.duration = duration;
-
+  constructor(eventOrString: Partial<INote> | MIDIMessageEvent | string) {
     if (typeof eventOrString === "string") {
       this.fromString(eventOrString);
     } else if (eventOrString instanceof MIDIMessageEvent) {
@@ -72,10 +63,9 @@ export default class Note {
 
   serialize(): INote {
     return {
-      time: this.time.toBarsBeatsSixteenths(),
       note: this.fullName,
+      velocity: this.velocity,
       duration: this.duration,
-      velocity: 1,
     };
   }
 
@@ -91,12 +81,10 @@ export default class Note {
     this.octave = Math.floor(event.data[1] / 12) - 2;
   }
 
-  private fromProps(props: INote) {
-    const { note, time, duration, velocity } = props;
+  private fromProps(props: Partial<INote>) {
+    Object.assign(this, props);
+    if (!props.note) throw Error("note props is mandatory");
 
-    this.fromString(note);
-    this.time = Time(time);
-    this.duration = duration;
-    this.velocity = velocity;
+    this.fromString(props.note);
   }
 }
