@@ -6,8 +6,8 @@ const NotesLength = Notes.length;
 
 export interface INote {
   note: string;
-  velocity: number;
   duration: string;
+  velocity?: number;
 }
 
 export default class Note {
