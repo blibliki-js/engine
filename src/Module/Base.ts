@@ -50,7 +50,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
   outputs: Output[] = [];
   readonly voiceNo?: number;
   updatedAt: Date;
-  _props: PropsInterface;
+  _props: PropsInterface = {} as PropsInterface;
 
   constructor(internalModule: InternalModule, props: Partial<ModuleInterface>) {
     this.internalModule = internalModule;
@@ -61,7 +61,6 @@ class Module<InternalModule extends Connectable, PropsInterface>
 
   set props(value: PropsInterface) {
     if (!value) return;
-    if (!this._props) this._props = value;
 
     this.updatedAt = new Date();
 
