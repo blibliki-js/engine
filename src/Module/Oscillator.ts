@@ -1,4 +1,3 @@
-import MidiEvent from "../MidiEvent";
 import { now, Oscillator as Osc, ToneOscillatorType } from "tone";
 
 import Note from "../Note";
@@ -35,7 +34,7 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
     this.note = new Note("C3");
 
     this.internalModule.sync();
-    this.internalModule.start();
+    this.start(now());
   }
 
   get note(): Note {
@@ -108,8 +107,21 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
     this.updateFrequency();
   }
 
-  start() {
-    this.internalModule.start();
+  start(time: number) {
+    const state = this.internalModule.context.transport.state;
+    if (state !== "started") return;
+
+    const oscState = this.internalModule.state;
+
+    if (oscState === "started") {
+      this.internalModule.restart(time);
+    } else {
+      this.internalModule.start(time);
+    }
+  }
+
+  stop(time?: number) {
+    this.internalModule.stop(time);
   }
 
   triggerAttack = (note: Note, triggeredAt: number) => {
@@ -154,6 +166,14 @@ export default class Oscillator extends PolyModule<
 
     this.registerBasicOutputs();
     this.registerInputs();
+  }
+
+  start(time: number) {
+    this.audioModules.forEach((audioModule) => audioModule.start(time));
+  }
+
+  stop(time?: number) {
+    this.audioModules.forEach((audioModule) => audioModule.stop(time));
   }
 
   private registerInputs() {

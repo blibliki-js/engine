@@ -1,4 +1,4 @@
-import { Context, setContext } from "tone";
+import { Context, now, setContext } from "tone";
 import MidiDeviceManager from "./MidiDeviceManager";
 import MidiEvent, { EType } from "./MidiEvent";
 
@@ -52,6 +52,7 @@ class Engine {
     this.context = new Context(props.context);
     setContext(this.context);
     this.context.transport.start();
+
     this.midiDeviceManager = new MidiDeviceManager();
 
     return {
@@ -151,6 +152,30 @@ class Engine {
     if (!audioModule) throw Error(`Audio module with id ${id} not exists`);
 
     return audioModule;
+  }
+
+  get isStarted() {
+    return this.context.transport.state === "started";
+  }
+
+  start() {
+    const startTime = now();
+    Object.values(this.modules).forEach((audioModule) => {
+      const am = audioModule as any;
+      if (!am.start) return;
+
+      am.start(startTime);
+    });
+  }
+
+  stop() {
+    const startTime = now();
+    Object.values(this.modules).forEach((audioModule) => {
+      const am = audioModule as any;
+      if (!am.stop) return;
+
+      am.stop(startTime);
+    });
   }
 
   private applyRoutesRequired(audioModule: AudioModule, props: any) {

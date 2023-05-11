@@ -1,4 +1,4 @@
-import { Part, Time } from "tone";
+import { now, Part, Time } from "tone";
 import Module, { DummnyInternalModule } from "./Base";
 import { INote } from "../Note";
 import { Output } from "./IO";
@@ -37,7 +37,7 @@ export default class Sequencer extends Module<
     });
 
     this.initializePart();
-    this.start();
+    this.start(now());
     this.registerOutputs();
   }
 
@@ -72,8 +72,11 @@ export default class Sequencer extends Module<
     this.updateBarParts();
   }
 
-  start() {
-    this.part.start();
+  start(time: number) {
+    const state = this.part.context.transport.state;
+    if (state !== "started") return;
+
+    this.part.start(time);
   }
 
   stop() {
