@@ -11,13 +11,13 @@ export interface ISequence {
 }
 interface ISequencer {
   sequences: ISequence[][];
-  length: number;
+  steps: number;
   bars: number;
 }
 
 const InitialProps = () => ({
   sequences: [],
-  length: 16,
+  steps: 16,
   bars: 1,
 });
 
@@ -41,12 +41,12 @@ export default class Sequencer extends Module<
     this.registerOutputs();
   }
 
-  get length() {
-    return this._props["length"];
+  get steps() {
+    return this._props["steps"];
   }
 
-  set length(value: number) {
-    this._props["length"] = value;
+  set steps(value: number) {
+    this._props = { ...this.props, steps: value };
     this.adjustNumberOfSequences();
     this.updateBarParts();
   }
@@ -56,7 +56,7 @@ export default class Sequencer extends Module<
   }
 
   set bars(value: number) {
-    this._props["bars"] = value;
+    this._props = { ...this.props, bars: value };
     this.adjustNumberOfBars();
     this.adjustNumberOfSequences();
     this.updateBarParts();
@@ -97,25 +97,34 @@ export default class Sequencer extends Module<
   private adjustNumberOfBars() {
     const currentBar = this.sequences.length;
     const num = currentBar - this.bars;
+    const sequences = [...this.sequences];
 
     if (num === 0) return;
 
     if (num > 0) {
-      this.part?.remove(`${currentBar}:0:0`);
-      this.sequences.pop();
+      if (this.part) {
+        this.part.remove(`${currentBar}:0:0`);
+        this.part.loopEnd = this.loopEnd;
+      }
+      sequences.pop();
     } else {
-      this.part?.add(`${currentBar}:0:0`, currentBar);
-      this.sequences.push([]);
+      if (this.part) {
+        this.part.add(`${currentBar}:0:0`, currentBar);
+        this.part.loopEnd = this.loopEnd;
+      }
+      sequences.push([]);
     }
 
+    this.sequences = sequences;
     this.adjustNumberOfBars();
   }
 
   private adjustNumberOfSequences(bar = 0) {
     if (!this.bars) return;
 
-    const sequences = this.sequences[bar];
-    const num = sequences.length - this.length;
+    const allSequences = [...this.sequences];
+    const sequences = [...allSequences[bar]];
+    const num = sequences.length - this.steps;
 
     if (num === 0) {
       if (bar === this.bars - 1) return;
@@ -128,14 +137,16 @@ export default class Sequencer extends Module<
       sequences.pop();
     } else {
       const index = sequences.length;
-      sequences.push({ active: false, time: `${bar}:0:${index}`, notes: [] });
+      sequences.push({ active: false, time: `0:0:${index}`, notes: [] });
     }
+    allSequences[bar] = sequences;
+    this.sequences = allSequences;
 
     this.adjustNumberOfSequences(bar);
   }
 
   private updateBarParts() {
-    this.barParts = this.sequences.map((barSeqs, bar) => {
+    this.barParts = this.sequences.map((barSeqs, _) => {
       const part = new Part(this.onSequenceEvent, [] as Array<ISequence>);
       barSeqs.forEach((seq) => part.add(seq.time, seq));
 
