@@ -31,9 +31,6 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
       props: { ...InitialProps, ...props },
     });
 
-    this.note = new Note("C3");
-
-    this.internalModule.sync();
     this.start(now());
   }
 
@@ -126,9 +123,10 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
 
   triggerAttack = (note: Note, triggeredAt: number) => {
     this.setNoteAt(note, triggeredAt);
+    this.start(triggeredAt);
   };
 
-  triggerRelease = (note: Note) => {
+  triggerRelease = (note: Note, triggeredAt: number) => {
     // Do nothing
   };
 
@@ -138,10 +136,8 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
     const freq = this.note.frequency(this.range, this.coarse);
 
     if (time) {
-      this.internalModule.restart(time);
       this.internalModule.frequency.setValueAtTime(freq, time);
     } else {
-      this.internalModule.restart();
       this.internalModule.frequency.value = freq;
     }
   }

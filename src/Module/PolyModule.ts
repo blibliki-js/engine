@@ -92,7 +92,7 @@ export default abstract class PolyModule<
 
   midiTriggered = (
     midiEvent: MidiEvent,
-    voiceNo: number,
+    voiceNo: number = 0,
     noteIndex?: number
   ) => {
     const audioModule = this.findVoice(voiceNo);

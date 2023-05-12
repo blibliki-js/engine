@@ -15,7 +15,6 @@ export interface Connectable {
 export interface Triggerable {
   triggerAttack: Function;
   triggerRelease: Function;
-  triggerAttackRelease: Function;
 }
 
 export interface Voicable {
@@ -130,17 +129,28 @@ class Module<InternalModule extends Connectable, PropsInterface>
     throw Error("triggerRelease not implemented");
   }
 
-  triggerAttackRelease(note: Note, triggeredAt: number) {
-    throw Error("triggerAttackRelease not implemented");
-  }
-
   midiTriggered = (midiEvent: MidiEvent, noteIndex?: number) => {
+    const { notes, triggeredAt } = midiEvent;
+
     switch (midiEvent.type) {
       case "noteOn":
-        this.triggerer(this.triggerAttack, midiEvent, noteIndex);
+        const { duration } = notes[0];
+
+        this.triggerer(this.triggerAttack, notes, triggeredAt, noteIndex);
+
+        if (duration) {
+          const releaseTriggeredAt =
+            triggeredAt + (this.internalModule as any).toSeconds(duration);
+          this.triggerer(
+            this.triggerRelease,
+            notes,
+            releaseTriggeredAt,
+            noteIndex
+          );
+        }
         break;
       case "noteOff":
-        this.triggerer(this.triggerRelease, midiEvent, noteIndex);
+        this.triggerer(this.triggerRelease, notes, triggeredAt, noteIndex);
         break;
       default:
         throw Error("This type is not a note");
@@ -149,11 +159,10 @@ class Module<InternalModule extends Connectable, PropsInterface>
 
   private triggerer(
     trigger: Function,
-    midiEvent: MidiEvent,
+    notes: Note[],
+    triggeredAt: number,
     noteIndex?: number
   ) {
-    const { notes, triggeredAt } = midiEvent;
-
     if (noteIndex !== undefined && this.voiceNo !== undefined) {
       trigger(notes[noteIndex], triggeredAt);
       return;

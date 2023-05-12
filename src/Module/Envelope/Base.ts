@@ -90,22 +90,13 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
   }
 
   triggerAttack = (note: Note, triggeredAt: number) => {
-    if (note.duration) return this.triggerAttackRelease(note, triggeredAt);
-
     this.activeNote = note.fullName;
     this.triggeredAt = triggeredAt;
+
     this.internalModule.triggerAttack(triggeredAt);
   };
 
-  triggerAttackRelease = (note: Note, triggeredAt: number) => {
-    this.activeNote = note.fullName;
-    this.triggeredAt = triggeredAt;
-    this.internalModule.triggerAttackRelease(note.duration, triggeredAt);
-  };
-
   triggerRelease = (note: Note, triggeredAt: number) => {
-    if (this.activeNote && this.activeNote !== note.fullName) return;
-
     this.internalModule.triggerRelease(triggeredAt);
   };
 
