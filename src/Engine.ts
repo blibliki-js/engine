@@ -178,6 +178,14 @@ class Engine {
     });
   }
 
+  get bpm() {
+    return this.context.transport.bpm.value;
+  }
+
+  set bpm(value: number) {
+    this.context.transport.bpm.value = value;
+  }
+
   private applyRoutesRequired(audioModule: AudioModule, props: any) {
     if (!props.polyNumber) return false;
     if (!(audioModule instanceof VoiceScheduler)) return false;
