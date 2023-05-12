@@ -41,14 +41,23 @@ export default class Sequencer extends Module<
     this.registerOutputs();
   }
 
+  get props() {
+    return super.props;
+  }
+
+  set props(value: ISequencer) {
+    if (!this.sequences) this._props["sequences"] = [];
+
+    super.props = { ...this.props, ...value };
+    this.adjust();
+  }
+
   get steps() {
     return this._props["steps"];
   }
 
   set steps(value: number) {
     this._props = { ...this.props, steps: value };
-    this.adjustNumberOfSequences();
-    this.updateBarParts();
   }
 
   get bars() {
@@ -57,9 +66,6 @@ export default class Sequencer extends Module<
 
   set bars(value: number) {
     this._props = { ...this.props, bars: value };
-    this.adjustNumberOfBars();
-    this.adjustNumberOfSequences();
-    this.updateBarParts();
   }
 
   get sequences() {
@@ -69,7 +75,6 @@ export default class Sequencer extends Module<
   set sequences(value: ISequence[][]) {
     const sequences = value;
     this._props = { ...this.props, sequences };
-    this.updateBarParts();
   }
 
   start(time: number) {
@@ -97,6 +102,14 @@ export default class Sequencer extends Module<
     });
   }
 
+  private adjust() {
+    if (!this.part) return;
+
+    this.adjustNumberOfBars();
+    this.adjustNumberOfSteps();
+    this.updateBarParts();
+  }
+
   private adjustNumberOfBars() {
     const currentBar = this.sequences.length;
     const num = currentBar - this.bars;
@@ -105,16 +118,8 @@ export default class Sequencer extends Module<
     if (num === 0) return;
 
     if (num > 0) {
-      if (this.part) {
-        this.part.remove(`${currentBar}:0:0`);
-        this.part.loopEnd = this.loopEnd;
-      }
       sequences.pop();
     } else {
-      if (this.part) {
-        this.part.add(`${currentBar}:0:0`, currentBar);
-        this.part.loopEnd = this.loopEnd;
-      }
       sequences.push([]);
     }
 
@@ -122,7 +127,7 @@ export default class Sequencer extends Module<
     this.adjustNumberOfBars();
   }
 
-  private adjustNumberOfSequences(bar = 0) {
+  private adjustNumberOfSteps(bar = 0) {
     if (!this.bars) return;
 
     const allSequences = [...this.sequences];
@@ -132,7 +137,7 @@ export default class Sequencer extends Module<
     if (num === 0) {
       if (bar === this.bars - 1) return;
 
-      this.adjustNumberOfSequences(bar + 1);
+      this.adjustNumberOfSteps(bar + 1);
       return;
     }
 
@@ -145,7 +150,7 @@ export default class Sequencer extends Module<
     allSequences[bar] = sequences;
     this.sequences = allSequences;
 
-    this.adjustNumberOfSequences(bar);
+    this.adjustNumberOfSteps(bar);
   }
 
   private updateBarParts() {
@@ -155,6 +160,12 @@ export default class Sequencer extends Module<
 
       return part;
     });
+
+    this.part.clear();
+    this.barParts.forEach((_, bar) => {
+      this.part.add(`${bar}:0:0`, bar);
+    });
+    this.part.loopEnd = this.loopEnd;
   }
 
   private get loopEnd() {
