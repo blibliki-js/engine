@@ -61,7 +61,8 @@ class Engine {
   }
 
   registerModule(name: string, type: string, props: any = {}) {
-    const audioModule = createModule(name, type, props);
+    const audioModule = createModule(name, type, {});
+    audioModule.props = props;
     this.modules[audioModule.id] = audioModule;
 
     applyRoutes(Object.values(this.routes));
