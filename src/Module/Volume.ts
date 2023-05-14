@@ -2,6 +2,7 @@ import { Volume as Vol } from "tone";
 
 import Module, { Voicable } from "./Base";
 import PolyModule from "./PolyModule";
+import Note from "../Note";
 
 export interface VolumeInterface extends Voicable {
   volume: number;
@@ -28,6 +29,15 @@ class MonoVolume extends Module<Vol, VolumeInterface> {
 
     this.internalModule.volume.value = this.volume;
   }
+
+  triggerAttack = (note: Note, triggeredAt: number) => {
+    const db = 20 * Math.log10(note.velocity);
+    this.internalModule.volume.setValueAtTime(db, triggeredAt);
+  };
+
+  triggerRelease = (note: Note, triggeredAt: number) => {
+    // Do nothing
+  };
 }
 
 export default class Volume extends PolyModule<MonoVolume, VolumeInterface> {
@@ -42,5 +52,13 @@ export default class Volume extends PolyModule<MonoVolume, VolumeInterface> {
 
     this.registerBasicInputs();
     this.registerBasicOutputs();
+    this.registerInputs();
+  }
+
+  private registerInputs() {
+    this.registerInput({
+      name: "midi in",
+      pluggable: this.midiTriggered,
+    });
   }
 }

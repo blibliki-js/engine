@@ -133,7 +133,7 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
   private updateFrequency(time?: number) {
     if (!this.note) return;
 
-    const freq = this.note.frequency(this.range, this.coarse);
+    const freq = this.note.adjustFrequency(this.range, this.coarse);
 
     if (time) {
       this.internalModule.frequency.setValueAtTime(freq, time);

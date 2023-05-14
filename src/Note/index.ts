@@ -6,6 +6,7 @@ const NotesLength = Notes.length;
 
 export interface INote {
   note: string;
+  frequency: number;
   duration: string;
   velocity?: number;
 }
@@ -16,9 +17,14 @@ export default class Note {
   octave: number;
   velocity: number = 1;
   duration: string;
+  frequency: number;
 
-  constructor(eventOrString: Partial<INote> | MIDIMessageEvent | string) {
-    if (typeof eventOrString === "string") {
+  constructor(
+    eventOrString: Partial<INote> | MIDIMessageEvent | string | number
+  ) {
+    if (typeof eventOrString === "number") {
+      this.fromFrequency(eventOrString);
+    } else if (typeof eventOrString === "string") {
       this.fromString(eventOrString);
     } else if (eventOrString instanceof MIDIMessageEvent) {
       this.fromEvent(eventOrString);
@@ -39,7 +45,9 @@ export default class Note {
     return `${this.name}${this.octave}`;
   }
 
-  frequency(range: number = 0, coarse: number = 0) {
+  adjustFrequency(range: number = 0, coarse: number = 0) {
+    if (this.frequency) return this.frequency;
+
     let newOctave = this.octave + range;
     let coarseIndex = Notes.indexOf(this.name) + coarse;
     let nameIndex = coarseIndex;
@@ -51,7 +59,6 @@ export default class Note {
       newOctave--;
       nameIndex = NotesLength + nameIndex;
     }
-
     const newName = Notes[nameIndex];
 
     return frequencyTable[`${newName}${newOctave}`];
@@ -64,9 +71,14 @@ export default class Note {
   serialize(): INote {
     return {
       note: this.fullName,
+      frequency: this.frequency,
       velocity: this.velocity,
       duration: this.duration,
     };
+  }
+
+  private fromFrequency(frequency: number) {
+    this.frequency = frequency;
   }
 
   private fromString(string: string) {
