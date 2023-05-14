@@ -93,7 +93,7 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
     this.activeNote = note.fullName;
     this.triggeredAt = triggeredAt;
 
-    this.internalModule.triggerAttack(triggeredAt);
+    this.internalModule.triggerAttack(triggeredAt, note.velocity);
   };
 
   triggerRelease = (note: Note, triggeredAt: number) => {
