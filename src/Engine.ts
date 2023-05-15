@@ -192,6 +192,10 @@ class Engine {
     this.context.transport.bpm.value = value;
   }
 
+  updateRoutes() {
+    applyRoutes(Object.values(this.routes));
+  }
+
   private applyRoutesRequired(audioModule: AudioModule, props: any) {
     if (!props.polyNumber) return false;
     if (!(audioModule instanceof VoiceScheduler)) return false;

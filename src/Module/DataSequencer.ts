@@ -27,6 +27,7 @@ export default class DataSequencer extends Module<
 > {
   static moduleName = "DataSequencer";
   private midiOutput: Output;
+  private prevNumberOfVoices: number;
 
   constructor(name: string, props: Partial<IDataSequence>) {
     super(new DummnyInternalModule(), {
@@ -80,6 +81,11 @@ export default class DataSequencer extends Module<
 
       input.audioModule.numberOfVoices = this.numberOfVoices;
     });
+
+    if (this.prevNumberOfVoices !== this.numberOfVoices) {
+      Engine.updateRoutes();
+    }
+    this.prevNumberOfVoices = this.numberOfVoices;
   }
 
   private registerOutputs() {
