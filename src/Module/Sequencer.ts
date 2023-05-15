@@ -151,7 +151,7 @@ export default class Sequencer extends Module<
   private updateBarParts() {
     this.part.clear();
 
-    this.sequences.forEach((barSeqs, i) => {
+    this.sequences.forEach((barSeqs, _) => {
       barSeqs.forEach((seq) => this.part.add(seq.time, seq));
     });
 
