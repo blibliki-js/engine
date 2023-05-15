@@ -66,7 +66,7 @@ class Engine {
     audioModule.props = props;
     this.modules[audioModule.id] = audioModule;
 
-    applyRoutes(Object.values(this.routes));
+    this.updateRoutes();
 
     return audioModule.serialize();
   }
@@ -76,7 +76,7 @@ class Engine {
     const moduleRouteIds = this.moduleRouteIds(id);
 
     moduleRouteIds.forEach((routeId) => delete this.routes[routeId]);
-    applyRoutes(Object.values(this.routes));
+    this.updateRoutes();
     delete this.modules[id];
 
     return moduleRouteIds;
@@ -102,7 +102,7 @@ class Engine {
 
     const applyRoutesRequired = this.applyRoutesRequired(audioModule, props);
     audioModule.props = props;
-    if (applyRoutesRequired) applyRoutes(Object.values(this.routes));
+    if (applyRoutesRequired) this.updateRoutes();
 
     return audioModule.serialize();
   }
@@ -111,15 +111,15 @@ class Engine {
     const route = createRoute(props);
     const newRoutes = { ...this.routes, [route.id]: route };
 
-    applyRoutes(Object.values(newRoutes));
     this.routes = newRoutes;
+    this.updateRoutes();
 
     return route;
   }
 
   removeRoute(id: string) {
     delete this.routes[id];
-    applyRoutes(Object.values(this.routes));
+    this.updateRoutes();
   }
 
   get master() {
@@ -163,6 +163,7 @@ class Engine {
   start() {
     const startTime = now();
     this._isStarted = true;
+    this.updateRoutes();
 
     Object.values(this.modules).forEach((audioModule) => {
       const am = audioModule as any;
