@@ -27,8 +27,7 @@ export default class Sequencer extends Module<
 > {
   static moduleName = "Sequencer";
   midiOutput: Output;
-  private part: Part<number>;
-  private barParts: Part<ISequence>[] = [];
+  private part: Part<ISequence>;
 
   constructor(name: string, props: Partial<ISequencer>) {
     super(new DummnyInternalModule(), {
@@ -93,13 +92,9 @@ export default class Sequencer extends Module<
   }
 
   private initializePart() {
-    this.part = new Part(this.onPartEvent, [] as number[]);
+    this.part = new Part(this.onPartEvent, [] as ISequence[]);
     this.part.loop = true;
     this.part.loopEnd = this.loopEnd;
-
-    this.sequences.forEach((_, i) => {
-      this.part.add(`${i}:0:0`, i);
-    });
   }
 
   private adjust() {
@@ -145,7 +140,7 @@ export default class Sequencer extends Module<
       sequences.pop();
     } else {
       const index = sequences.length;
-      sequences.push({ active: false, time: `0:0:${index}`, notes: [] });
+      sequences.push({ active: false, time: `${bar}:0:${index}`, notes: [] });
     }
     allSequences[bar] = sequences;
     this.sequences = allSequences;
@@ -154,17 +149,12 @@ export default class Sequencer extends Module<
   }
 
   private updateBarParts() {
-    this.barParts = this.sequences.map((barSeqs, _) => {
-      const part = new Part(this.onSequenceEvent, [] as Array<ISequence>);
-      barSeqs.forEach((seq) => part.add(seq.time, seq));
-
-      return part;
-    });
-
     this.part.clear();
-    this.barParts.forEach((_, bar) => {
-      this.part.add(`${bar}:0:0`, bar);
+
+    this.sequences.forEach((barSeqs, i) => {
+      barSeqs.forEach((seq) => this.part.add(seq.time, seq));
     });
+
     this.part.loopEnd = this.loopEnd;
   }
 
@@ -172,17 +162,7 @@ export default class Sequencer extends Module<
     return `${this.bars}:0:0`;
   }
 
-  private onPartEvent = (time: number, bar: number | null) => {
-    if (bar === null) return;
-
-    const part = this.barParts[bar];
-    if (!part) return;
-
-    part.start(time);
-    part.stop(time + Time("1m").toSeconds());
-  };
-
-  private onSequenceEvent = (time: number, sequence: ISequence) => {
+  private onPartEvent = (time: number, sequence: ISequence) => {
     if (!sequence.active) return;
 
     const event = MidiEvent.fromSequence(sequence, time);
