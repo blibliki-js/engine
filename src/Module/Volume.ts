@@ -9,7 +9,7 @@ export interface VolumeInterface extends Voicable {
 }
 
 const InitialProps: VolumeInterface = {
-  volume: -100,
+  volume: -Infinity,
 };
 
 class MonoVolume extends Module<Vol, VolumeInterface> {
@@ -32,7 +32,7 @@ class MonoVolume extends Module<Vol, VolumeInterface> {
 
   triggerAttack = (note: Note, triggeredAt: number) => {
     const db = 20 * Math.log10(note.velocity);
-    this.internalModule.volume.setValueAtTime(db, triggeredAt);
+    this.internalModule.volume.exponentialRampToValueAtTime(db, triggeredAt);
   };
 
   triggerRelease = (note: Note, triggeredAt: number) => {

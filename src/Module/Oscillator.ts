@@ -136,7 +136,7 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
     const freq = this.note.adjustFrequency(this.range, this.coarse);
 
     if (time) {
-      this.internalModule.frequency.setValueAtTime(freq, time);
+      this.internalModule.frequency.linearRampToValueAtTime(freq, time);
     } else {
       this.internalModule.frequency.value = freq;
     }
