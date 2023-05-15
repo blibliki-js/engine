@@ -1,4 +1,4 @@
-import { now, Part } from "tone";
+import { now } from "tone";
 
 import Module, { DummnyInternalModule } from "./Base";
 import { Output } from "./IO";
@@ -26,7 +26,6 @@ export default class DataSequencer extends Module<
 > {
   static moduleName = "DataSequencer";
   private midiOutput: Output;
-  private part: Part<IDataSequence>;
 
   constructor(name: string, props: Partial<IDataSequence>) {
     super(new DummnyInternalModule(), {
@@ -34,7 +33,6 @@ export default class DataSequencer extends Module<
       props: { ...InitialProps(), ...props },
     });
 
-    this.initializePart();
     this.start(now());
     this.registerOutputs();
   }
@@ -46,21 +44,17 @@ export default class DataSequencer extends Module<
   set sequences(value: IDataSequence[]) {
     const sequences = value;
     this._props = { ...this.props, sequences };
-    this.updateParts();
     this.updateNumberOfVoices();
+    this.start(now());
   }
 
   start(time: number) {
-    const state = this.part.context.transport.state;
-    if (state !== "started") return;
-
-    this.part.start(time);
-    this.updateParts();
+    this.sequences.forEach((sequence) => {
+      this.onPartEvent(time + sequence.time, sequence);
+    });
   }
 
-  stop() {
-    this.part.stop();
-  }
+  stop() {}
 
   private onPartEvent = (time: number, sequence: IDataSequence) => {
     const { voiceNo } = sequence;
@@ -70,28 +64,6 @@ export default class DataSequencer extends Module<
       input.pluggable(event, voiceNo);
     });
   };
-
-  private initializePart() {
-    this.part = new Part(this.onPartEvent, [] as IDataSequence[]);
-    this.part.loopEnd = this.loopEnd;
-  }
-
-  private updateParts() {
-    if (!this.part) return;
-
-    this.part.clear();
-    this.part.loopEnd = this.loopEnd;
-
-    this.sequences.forEach((sequence: IDataSequence) => {
-      this.part.add(sequence.time, sequence);
-    });
-  }
-
-  private get loopEnd() {
-    const times = this.sequences.map((sequence) => sequence.time);
-
-    return times.length ? Math.max(...times) : 0;
-  }
 
   private get numberOfVoices() {
     return uniq(this.sequences.map((sequence) => sequence.voiceNo)).length;
