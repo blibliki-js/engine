@@ -4,6 +4,7 @@ import Module, { DummnyInternalModule } from "./Base";
 import { Output } from "./IO";
 import MidiEvent from "../MidiEvent";
 import { uniq } from "lodash";
+import Engine from "../Engine";
 
 interface IDataSequencer {
   sequences: IDataSequence[];
@@ -49,6 +50,8 @@ export default class DataSequencer extends Module<
   }
 
   start(time: number) {
+    if (!Engine.isStarted) return;
+
     this.sequences.forEach((sequence) => {
       this.onPartEvent(time + sequence.time, sequence);
     });

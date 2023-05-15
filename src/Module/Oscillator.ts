@@ -1,4 +1,5 @@
 import { now, Oscillator as Osc, ToneOscillatorType } from "tone";
+import Engine from "../Engine";
 
 import Note from "../Note";
 import Module, { Voicable } from "./Base";
@@ -105,8 +106,7 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
   }
 
   start(time: number) {
-    const state = this.internalModule.context.transport.state;
-    if (state !== "started") return;
+    if (!Engine.isStarted) return;
 
     const oscState = this.internalModule.state;
 

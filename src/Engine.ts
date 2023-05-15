@@ -25,6 +25,7 @@ class Engine {
   private _master: Master;
   private context: Context;
   private propsUpdateCallbacks: { (id: string, props: any): void }[];
+  private _isStarted: boolean = false;
 
   modules: {
     [Identifier: string]: AudioModule;
@@ -156,11 +157,13 @@ class Engine {
   }
 
   get isStarted() {
-    return this.context.transport.state === "started";
+    return this.context.transport.state === "started" && this._isStarted;
   }
 
   start() {
     const startTime = now();
+    this._isStarted = true;
+
     Object.values(this.modules).forEach((audioModule) => {
       const am = audioModule as any;
       if (!am.start) return;
@@ -177,6 +180,8 @@ class Engine {
 
       am.stop(startTime);
     });
+
+    this._isStarted = false;
   }
 
   get bpm() {

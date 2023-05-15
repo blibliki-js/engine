@@ -3,6 +3,7 @@ import Module, { DummnyInternalModule } from "./Base";
 import { INote } from "../Note";
 import { Output } from "./IO";
 import MidiEvent from "../MidiEvent";
+import Engine from "../Engine";
 
 export interface ISequence {
   active: boolean;
@@ -77,8 +78,7 @@ export default class Sequencer extends Module<
   }
 
   start(time: number) {
-    const state = this.part.context.transport.state;
-    if (state !== "started") return;
+    if (!Engine.isStarted) return;
 
     this.part.start(time);
   }
