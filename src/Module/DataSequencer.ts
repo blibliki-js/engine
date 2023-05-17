@@ -1,9 +1,9 @@
-import { now } from "tone";
+import { Loop, now } from "tone";
 
 import Module, { DummnyInternalModule } from "./Base";
 import { Output } from "./IO";
 import MidiEvent from "../MidiEvent";
-import { uniq } from "lodash";
+import { sortBy, uniq } from "lodash";
 import Engine from "../Engine";
 
 interface IDataSequencer {
@@ -28,6 +28,7 @@ export default class DataSequencer extends Module<
   static moduleName = "DataSequencer";
   private midiOutput: Output;
   private prevNumberOfVoices: number;
+  private loop: Loop;
 
   constructor(name: string, props: Partial<IDataSequence>) {
     super(new DummnyInternalModule(), {
@@ -44,7 +45,7 @@ export default class DataSequencer extends Module<
   }
 
   set sequences(value: IDataSequence[]) {
-    const sequences = value;
+    const sequences = sortBy(value, (seq) => -seq.time);
     this._props = { ...this.props, sequences };
     this.updateNumberOfVoices();
     this.start(now());
@@ -52,13 +53,32 @@ export default class DataSequencer extends Module<
 
   start(time: number) {
     if (!Engine.isStarted) return;
+    Engine.updateRoutes();
 
-    this.sequences.forEach((sequence) => {
-      this.onPartEvent(time + sequence.time, sequence);
-    });
+    const loopLength = 0.1;
+    const tempSequences = [...this.sequences];
+    const iterate = (maxTime: number) => {
+      const sequence = tempSequences.pop();
+      if (!sequence) return;
+
+      const seqTime = time + sequence.time;
+      this.onPartEvent(seqTime, sequence);
+      if (seqTime > maxTime) return;
+
+      iterate(maxTime);
+    };
+
+    this.loop = new Loop((t) => {
+      iterate(time + t + loopLength);
+    }, loopLength).start(time);
   }
 
-  stop() {}
+  stop() {
+    if (!this.loop) return;
+
+    this.loop.stop();
+    this.loop.dispose();
+  }
 
   private onPartEvent = (time: number, sequence: IDataSequence) => {
     const { voiceNo } = sequence;
