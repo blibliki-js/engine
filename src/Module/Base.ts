@@ -21,9 +21,9 @@ export interface Voicable {
   voiceNo?: number;
 }
 
-export interface ModuleInterface {
+export interface ModuleInterface<PropsInterface> {
   name: string;
-  props?: { [key: string]: any };
+  props: PropsInterface;
   voiceNo?: number;
 }
 
@@ -38,7 +38,7 @@ export class DummnyInternalModule implements Connectable {
 }
 
 class Module<InternalModule extends Connectable, PropsInterface>
-  implements ModuleInterface
+  implements ModuleInterface<PropsInterface>
 {
   static readonly moduleName: string;
 
@@ -51,7 +51,10 @@ class Module<InternalModule extends Connectable, PropsInterface>
   updatedAt: Date;
   _props: PropsInterface = {} as PropsInterface;
 
-  constructor(internalModule: InternalModule, props: Partial<ModuleInterface>) {
+  constructor(
+    internalModule: InternalModule,
+    props: Partial<ModuleInterface<PropsInterface>>
+  ) {
     this.internalModule = internalModule;
     this.id = uuidv4();
 

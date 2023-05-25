@@ -24,7 +24,7 @@ export default abstract class Effect<
   ) {
     super(internalModule, {
       name,
-      props: { ...InitialProps, ...props },
+      props: { ...InitialProps, ...props } as ModuleInterface,
     });
 
     this.registerBasicInputs();
