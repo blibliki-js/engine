@@ -65,7 +65,9 @@ class Engine {
     });
   }
 
-  addModule(name: string, type: string, props: any = {}) {
+  addModule(params: { name: string; type: string; props?: any }) {
+    const { name, type, props = {} } = params;
+
     const audioModule = createModule(name, type, {});
     audioModule.props = props;
     this.modules[audioModule.id] = audioModule;
@@ -129,7 +131,7 @@ class Engine {
   get master() {
     if (this._master) return this._master.serialize();
 
-    const masterProps = this.addModule("Master", "Master");
+    const masterProps = this.addModule({ name: "Master", type: "Master" });
     this._master = this.modules[masterProps.id] as Master;
 
     return masterProps;
