@@ -52,7 +52,19 @@ The props structure vary per audioModule.
 {
   id: string,
   name: string,
-  props: Object
+  props: Object,
+  inputs: [{
+    id: string,
+    name: string,
+    moduleId: string,
+    moduleName: string
+  }],
+  outputs: [{
+    id: string,
+    name: string,
+    moduleId: string,
+    moduleName: string
+  }],
 }
 ```
 
