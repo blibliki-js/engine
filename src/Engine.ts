@@ -50,15 +50,19 @@ class Engine {
   }
 
   initialize(props: InitializeInterface) {
-    this.context = new Context(props.context);
-    setContext(this.context);
-    this.context.transport.start();
+    return new Promise((resolve) => {
+      if (this.context) return resolve({ master: this.master });
 
-    this.midiDeviceManager = new MidiDeviceManager();
+      this.context = new Context(props.context);
+      setContext(this.context);
+      this.context.transport.start();
 
-    return {
-      master: this.master,
-    };
+      this.midiDeviceManager = new MidiDeviceManager();
+
+      setTimeout(() => {
+        resolve({ master: this.master });
+      }, 0);
+    });
   }
 
   registerModule(name: string, type: string, props: any = {}) {
@@ -144,7 +148,7 @@ class Engine {
       m.dispose();
     });
 
-    this.modules = { [this._master.id]: this._master };
+    this.modules = this._master ? { [this._master.id]: this._master } : {};
     this.routes = {};
   }
 
@@ -157,7 +161,11 @@ class Engine {
   }
 
   get isStarted() {
-    return this.context.transport.state === "started" && this._isStarted;
+    return (
+      this.context !== undefined &&
+      this.context.transport.state === "started" &&
+      this._isStarted
+    );
   }
 
   start() {
