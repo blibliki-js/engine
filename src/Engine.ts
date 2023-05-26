@@ -65,7 +65,7 @@ class Engine {
     });
   }
 
-  registerModule(name: string, type: string, props: any = {}) {
+  addModule(name: string, type: string, props: any = {}) {
     const audioModule = createModule(name, type, {});
     audioModule.props = props;
     this.modules[audioModule.id] = audioModule;
@@ -75,7 +75,7 @@ class Engine {
     return audioModule.serialize();
   }
 
-  unregisterModule(id: string) {
+  removeModule(id: string) {
     this.modules[id].dispose();
     const moduleRouteIds = this.moduleRouteIds(id);
 
@@ -129,7 +129,7 @@ class Engine {
   get master() {
     if (this._master) return this._master.serialize();
 
-    const masterProps = this.registerModule("Master", "Master");
+    const masterProps = this.addModule("Master", "Master");
     this._master = this.modules[masterProps.id] as Master;
 
     return masterProps;
