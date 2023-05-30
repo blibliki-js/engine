@@ -90,7 +90,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
 
   connect = (
     inputAudioModule: AudioModule,
-    attribute: string = "internalModule"
+    attribute = "internalModule"
   ) => {
     if (inputAudioModule instanceof PolyModule) {
       inputAudioModule.audioModules.forEach((m) => {
@@ -106,7 +106,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
 
   disconnect = (
     inputAudioModule: AudioModule,
-    attribute: string = "internalModule"
+    attribute = "internalModule"
   ) => {
     if (inputAudioModule instanceof PolyModule) {
       inputAudioModule.audioModules.forEach((m) => {

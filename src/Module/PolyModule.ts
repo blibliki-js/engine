@@ -92,7 +92,7 @@ export default abstract class PolyModule<
 
   midiTriggered = (
     midiEvent: MidiEvent,
-    voiceNo: number = 0,
+    voiceNo = 0,
     noteIndex?: number
   ) => {
     const audioModule = this.findVoice(voiceNo);
@@ -116,7 +116,7 @@ export default abstract class PolyModule<
 
   protected connect = (
     inputAudioModule: AudioModule,
-    attribute: string = "internalModule"
+    attribute = "internalModule"
   ) => {
     if (inputAudioModule instanceof PolyModule) {
       inputAudioModule.audioModules.forEach((m) => {
@@ -133,7 +133,7 @@ export default abstract class PolyModule<
 
   protected disconnect = (
     inputAudioModule: AudioModule,
-    attribute: string = "internalModule"
+    attribute = "internalModule"
   ) => {
     if (inputAudioModule instanceof PolyModule) {
       inputAudioModule.audioModules.forEach((m) => {
@@ -226,7 +226,7 @@ export default abstract class PolyModule<
       if (audioModule instanceof PolyModule)
         throw Error("Polymodule not supported");
 
-      this.audioModules.push(audioModule as MonoAudioModule);
+      this.audioModules.push(audioModule );
     }
 
     this.adjustNumberOfModules();

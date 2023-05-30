@@ -25,7 +25,7 @@ class Engine {
   private _master: Master;
   private context: Context;
   private propsUpdateCallbacks: { (id: string, props: any): void }[];
-  private _isStarted: boolean = false;
+  private _isStarted = false;
 
   modules: {
     [Identifier: string]: AudioModule;

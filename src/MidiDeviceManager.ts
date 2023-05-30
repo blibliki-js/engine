@@ -2,7 +2,7 @@ import MidiDevice from "./MidiDevice";
 
 export default class MidiDeviceManager {
   devices: { [Key: string]: MidiDevice } = {};
-  private initialized: boolean = false;
+  private initialized = false;
 
   constructor() {
     this.initializeDevices().then(() => {
