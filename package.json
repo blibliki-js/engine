@@ -11,7 +11,8 @@
   },
   "scripts": {
     "start": "tsc -w -p tsconfig.json",
-    "build": "rm -rf build && tsc"
+    "build": "rm -rf build && tsc",
+    "lint": "eslint src"
   },
   "eslintConfig": {
     "extends": []
