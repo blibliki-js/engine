@@ -1,4 +1,4 @@
-import { now, Part, Time } from "tone";
+import { now, Part } from "tone";
 import Module, { DummnyInternalModule } from "./Base";
 import { INote } from "../Note";
 import { Output } from "./IO";
