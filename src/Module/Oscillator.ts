@@ -126,7 +126,7 @@ class MonoOscillator extends Module<Osc, OscillatorInterface> {
     this.start(triggeredAt);
   };
 
-  triggerRelease = (note: Note, triggeredAt: number) => {
+  triggerRelease = () => {
     // Do nothing
   };
 
