@@ -5,10 +5,12 @@ export default class MidiDeviceManager {
   private initialized = false;
 
   constructor() {
-    this.initializeDevices().then(() => {
-      this.listenChanges();
-      this.initialized = true;
-    });
+    this.initializeDevices()
+      .then(() => {
+        this.listenChanges();
+        this.initialized = true;
+      })
+      .catch(() => {});
   }
 
   find(id: string): MidiDevice | null {
@@ -20,20 +22,23 @@ export default class MidiDeviceManager {
   }
 
   onStateChange(callback: (device: MidiDevice) => void) {
-    navigator.requestMIDIAccess().then((access: MIDIAccess) => {
-      access.onstatechange = (e) => {
-        const isMidiEvent = e instanceof MIDIConnectionEvent;
+    navigator
+      .requestMIDIAccess()
+      .then((access: MIDIAccess) => {
+        access.onstatechange = (e) => {
+          const isMidiEvent = e instanceof MIDIConnectionEvent;
 
-        if (!isMidiEvent) return;
-        if (e.port instanceof MIDIOutput) return;
+          if (!isMidiEvent) return;
+          if (e.port instanceof MIDIOutput) return;
 
-        const input = e.port as MIDIInput;
+          const input = e.port as MIDIInput;
 
-        const midi = new MidiDevice(input);
+          const midi = new MidiDevice(input);
 
-        callback(midi);
-      };
-    });
+          callback(midi);
+        };
+      })
+      .catch(() => {});
   }
 
   private listenChanges() {
