@@ -6,6 +6,11 @@ import MidiEvent from "../MidiEvent";
 import { AudioModule, PolyModule } from "../Module";
 import Note from "../Note";
 
+export interface Startable {
+  start(time: number): void;
+  stop(time: number): void;
+}
+
 export interface Connectable {
   connect: (inputNode: InputNode) => void;
   disconnect: (inputNode?: InputNode) => void;

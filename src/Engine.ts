@@ -8,6 +8,7 @@ import VirtualMidi from "./Module/VirtualMidi";
 import VoiceScheduler from "./Module/VoiceScheduler";
 import { applyRoutes, createRoute, RouteInterface, RouteProps } from "./routes";
 import { AnyObject } from "./types";
+import { Startable } from "./Module/Base";
 
 type LatencyHint = "interactive" | "playback" | "balanced";
 
@@ -177,7 +178,7 @@ class Engine {
     this.updateRoutes();
 
     Object.values(this.modules).forEach((audioModule) => {
-      const am = audioModule as any;
+      const am = audioModule as unknown as Startable;
       if (!am.start) return;
 
       am.start(startTime);
@@ -187,7 +188,7 @@ class Engine {
   stop() {
     const startTime = now();
     Object.values(this.modules).forEach((audioModule) => {
-      const am = audioModule as any;
+      const am = audioModule as unknown as Startable;
       if (!am.stop) return;
 
       am.stop(startTime);

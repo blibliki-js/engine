@@ -2,7 +2,7 @@ import { now, Oscillator as Osc, ToneOscillatorType } from "tone";
 import Engine from "../Engine";
 
 import Note from "../Note";
-import Module, { Voicable } from "./Base";
+import Module, { Startable, Voicable } from "./Base";
 import PolyModule from "./PolyModule";
 
 export interface OscillatorInterface extends Voicable {
@@ -23,7 +23,10 @@ const InitialProps: OscillatorInterface = {
   volume: 0,
 };
 
-class MonoOscillator extends Module<Osc, OscillatorInterface> {
+class MonoOscillator
+  extends Module<Osc, OscillatorInterface>
+  implements Startable
+{
   private _note: Note;
 
   constructor(name: string, props: Partial<OscillatorInterface>) {
