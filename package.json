@@ -12,7 +12,8 @@
   "scripts": {
     "start": "tsc -w -p tsconfig.json",
     "build": "rm -rf build && tsc",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "ts:check": "tsc --noEmit"
   },
   "eslintConfig": {
     "extends": []
