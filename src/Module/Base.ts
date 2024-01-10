@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { InputNode } from "tone";
+import { InputNode, Time } from "tone";
 
 import { Input, Output, IOInterface } from "./IO";
 import MidiEvent from "../MidiEvent";
@@ -18,8 +18,8 @@ export interface Connectable {
 }
 
 export interface Triggerable {
-  triggerAttack: Function;
-  triggerRelease: Function;
+  triggerAttack: (note: Note, triggeredAt: number) => void;
+  triggerRelease: (note: Note, triggeredAt: number) => void;
 }
 
 export interface Voicable {
@@ -97,10 +97,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
     this.outputs.forEach((o) => o.unPlugAll());
   }
 
-  connect = (
-    inputAudioModule: AudioModule,
-    attribute = "internalModule"
-  ) => {
+  connect = (inputAudioModule: AudioModule, attribute = "internalModule") => {
     if (inputAudioModule instanceof PolyModule) {
       inputAudioModule.audioModules.forEach((m) => {
         this.internalModule.connect((m as any)[attribute] as InputNode);
@@ -133,26 +130,26 @@ class Module<InternalModule extends Connectable, PropsInterface>
     this.internalModule.dispose();
   }
 
-  triggerAttack(note: Note, triggeredAt: number) {
+  triggerAttack = (note: Note, triggeredAt: number): void => {
     throw Error("triggerAttack not implemented");
-  }
+  };
 
-  triggerRelease(note: Note, triggeredAt: number) {
+  triggerRelease = (note: Note, triggeredAt: number): void => {
     throw Error("triggerRelease not implemented");
-  }
+  };
 
   midiTriggered = (midiEvent: MidiEvent, noteIndex?: number) => {
     const { notes, triggeredAt } = midiEvent;
 
     switch (midiEvent.type) {
-      case "noteOn":
+      case "noteOn": {
         const { duration } = notes[0];
 
         this.triggerer(this.triggerAttack, notes, triggeredAt, noteIndex);
 
         if (duration) {
-          const releaseTriggeredAt =
-            triggeredAt + (this.internalModule as any).toSeconds(duration);
+          const releaseTriggeredAt = triggeredAt + Time(duration).toSeconds();
+
           this.triggerer(
             this.triggerRelease,
             notes,
@@ -161,6 +158,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
           );
         }
         break;
+      }
       case "noteOff":
         this.triggerer(this.triggerRelease, notes, triggeredAt, noteIndex);
         break;
@@ -170,7 +168,7 @@ class Module<InternalModule extends Connectable, PropsInterface>
   };
 
   private triggerer(
-    trigger: Function,
+    trigger: (note: Note, triggeredAt: number) => void,
     notes: Note[],
     triggeredAt: number,
     noteIndex?: number
