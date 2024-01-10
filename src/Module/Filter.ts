@@ -13,7 +13,7 @@ interface FilterInterface extends Voicable {
   voiceNo?: number;
 }
 
-interface FilterProps extends Partial<FilterInterface> {}
+type FilterProps = Partial<FilterInterface>
 
 const InitialProps: FilterInterface = {
   cutoff: 20000,

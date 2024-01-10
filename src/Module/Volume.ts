@@ -35,7 +35,7 @@ class MonoVolume extends Module<Vol, VolumeInterface> {
     this.internalModule.volume.exponentialRampToValueAtTime(db, triggeredAt);
   };
 
-  triggerRelease = (note: Note, triggeredAt: number) => {
+  triggerRelease = () => {
     // Do nothing
   };
 }

@@ -7,6 +7,8 @@ import Master from "./Module/Master";
 import VirtualMidi from "./Module/VirtualMidi";
 import VoiceScheduler from "./Module/VoiceScheduler";
 import { applyRoutes, createRoute, RouteInterface, RouteProps } from "./routes";
+import { AnyObject } from "./types";
+import { Startable } from "./Module/Base";
 
 type LatencyHint = "interactive" | "playback" | "balanced";
 
@@ -24,8 +26,8 @@ class Engine {
   private static instance: Engine;
   private _master: Master;
   private context: Context;
-  private propsUpdateCallbacks: { (id: string, props: any): void }[];
-  private _isStarted: boolean = false;
+  private propsUpdateCallbacks: { (id: string, props: AnyObject): void }[];
+  private _isStarted = false;
 
   modules: {
     [Identifier: string]: AudioModule;
@@ -65,7 +67,7 @@ class Engine {
     });
   }
 
-  addModule(params: { name: string; type: string; props?: any }) {
+  addModule(params: { name: string; type: string; props?: AnyObject }) {
     const { name, type, props = {} } = params;
 
     const audioModule = createModule(name, type, {});
@@ -95,15 +97,15 @@ class Engine {
     return audioModule.serialize();
   }
 
-  onPropsUpdate(callback: (id: string, props: any) => void) {
+  onPropsUpdate(callback: (id: string, props: AnyObject) => void) {
     this.propsUpdateCallbacks.push(callback);
   }
 
-  _triggerPropsUpdate(id: string, props: any) {
+  _triggerPropsUpdate(id: string, props: AnyObject) {
     this.propsUpdateCallbacks.forEach((callback) => callback(id, props));
   }
 
-  updatePropsModule(id: string, props: any) {
+  updatePropsModule(id: string, props: AnyObject) {
     const audioModule = this.findById(id);
 
     const applyRoutesRequired = this.applyRoutesRequired(audioModule, props);
@@ -176,7 +178,7 @@ class Engine {
     this.updateRoutes();
 
     Object.values(this.modules).forEach((audioModule) => {
-      const am = audioModule as any;
+      const am = audioModule as unknown as Startable;
       if (!am.start) return;
 
       am.start(startTime);
@@ -186,7 +188,7 @@ class Engine {
   stop() {
     const startTime = now();
     Object.values(this.modules).forEach((audioModule) => {
-      const am = audioModule as any;
+      const am = audioModule as unknown as Startable;
       if (!am.stop) return;
 
       am.stop(startTime);
@@ -207,7 +209,7 @@ class Engine {
     applyRoutes(Object.values(this.routes));
   }
 
-  private applyRoutesRequired(audioModule: AudioModule, props: any) {
+  private applyRoutesRequired(audioModule: AudioModule, props: AnyObject) {
     if (!props.polyNumber) return false;
     if (!(audioModule instanceof VoiceScheduler)) return false;
 

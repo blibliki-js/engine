@@ -15,7 +15,7 @@ export default class Note {
   static _notes: Note[];
   name: string;
   octave: number;
-  velocity: number = 1;
+  velocity = 1;
   duration: string;
   frequency: number;
 
@@ -33,7 +33,7 @@ export default class Note {
     }
   }
 
-  static notes(octave: number = 3) {
+  static notes(octave = 3) {
     return Notes.map((note: string) => new Note(`${note}${octave}`));
   }
 
@@ -45,11 +45,11 @@ export default class Note {
     return `${this.name}${this.octave}`;
   }
 
-  adjustFrequency(range: number = 0, coarse: number = 0) {
+  adjustFrequency(range = 0, coarse = 0) {
     if (this.frequency) return this.frequency;
 
     let newOctave = this.octave + range;
-    let coarseIndex = Notes.indexOf(this.name) + coarse;
+    const coarseIndex = Notes.indexOf(this.name) + coarse;
     let nameIndex = coarseIndex;
 
     if (coarseIndex >= NotesLength) {

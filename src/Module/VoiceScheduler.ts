@@ -81,7 +81,7 @@ export default class VoiceScheduler extends PolyModule<
     };
   }
 
-  private findFreeVoices(num: number = 1): Voice[] {
+  private findFreeVoices(num = 1): Voice[] {
     let voices = this.audioModules.filter((v) => !v.activeNote).slice(0, num);
 
     if (voices.length === 0) {
@@ -118,7 +118,7 @@ export default class VoiceScheduler extends PolyModule<
   }
 }
 
-export interface VoiceInterface extends Voicable {}
+export type VoiceInterface = Voicable
 
 class Voice extends Module<DummnyInternalModule, VoiceInterface> {
   midiEvent: MidiEvent | null;
