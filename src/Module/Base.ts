@@ -33,13 +33,17 @@ export interface ModuleInterface<PropsInterface> {
 }
 
 export class DummnyInternalModule implements Connectable {
-  connect(inputNode: InputNode) {
+  connect() {
     throw Error("This module is not connectable");
   }
 
-  disconnect(inputNode?: InputNode) {}
+  disconnect() {
+    throw Error("This module is not connectable");
+  }
 
-  dispose() {}
+  dispose() {
+    // do nothing
+  }
 }
 
 class Module<InternalModule extends Connectable, PropsInterface>
