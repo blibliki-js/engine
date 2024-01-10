@@ -46,7 +46,7 @@ export class DummnyInternalModule implements Connectable {
   }
 }
 
-class Module<InternalModule extends Connectable, PropsInterface>
+abstract class Module<InternalModule extends Connectable, PropsInterface>
   implements ModuleInterface<PropsInterface>
 {
   static readonly moduleName: string;
