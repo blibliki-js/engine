@@ -14,7 +14,6 @@ import Delay from "./Delay";
 import Distortion from "./Distortion";
 import BitCrusher from "./BitCrusher";
 import Sequencer from "./Sequencer";
-import DataSequencer from "./DataSequencer";
 
 export { default } from "./Base";
 export { default as PolyModule } from "./PolyModule";
@@ -23,9 +22,7 @@ export type { ModuleInterface, Connectable, Triggerable } from "./Base";
 export { default as Filter } from "./Filter";
 export { default as Oscillator } from "./Oscillator";
 export { default as Sequencer } from "./Sequencer";
-export { default as DataSequencer } from "./DataSequencer";
 export type { ISequence } from "./Sequencer";
-export type { IDataSequence } from "./DataSequencer";
 
 export {
   Envelope,
@@ -82,8 +79,6 @@ function moduleClassFromType(type: string) {
       return BitCrusher;
     case Sequencer.moduleName:
       return Sequencer;
-    case DataSequencer.moduleName:
-      return DataSequencer;
     default:
       throw Error(`Unknown module type ${type}`);
   }
