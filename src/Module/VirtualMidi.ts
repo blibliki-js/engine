@@ -2,7 +2,7 @@ import Engine from "../Engine";
 import MidiEvent from "../MidiEvent";
 import Note from "../Note";
 import Module, { DummnyInternalModule } from "./Base";
-import { Output } from "./IO";
+import { MidiOutput } from "./IO";
 
 export interface VirtualMidiInterface {
   activeNotes: string[];
@@ -17,7 +17,7 @@ export default class VirtualMidi extends Module<
   VirtualMidiInterface
 > {
   static moduleName = "VirtualMidi";
-  midiOutput: Output;
+  midiOutput: MidiOutput;
 
   constructor(name: string, props: VirtualMidiInterface) {
     super(new DummnyInternalModule(), {
@@ -39,9 +39,7 @@ export default class VirtualMidi extends Module<
   }
 
   sendMidi(midiEvent: MidiEvent) {
-    this.midiOutput.connections.forEach((input) => {
-      input.pluggable(midiEvent);
-    });
+    this.midiOutput.onMidiEvent(midiEvent);
   }
 
   triggerAttack = (note: Note) => {
@@ -64,13 +62,13 @@ export default class VirtualMidi extends Module<
   }
 
   private registerInputs() {
-    this.registerInput({
+    this.registerMidiInput({
       name: "midi in",
-      pluggable: this.midiTriggered,
+      onMidiEvent: this.onMidiEvent,
     });
   }
 
   private registerOutputs() {
-    this.midiOutput = this.registerOutput({ name: "midi out" });
+    this.midiOutput = this.registerMidiOutput({ name: "midi out" });
   }
 }

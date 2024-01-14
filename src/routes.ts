@@ -20,7 +20,7 @@ export function createRoute(props: RouteProps) {
 }
 
 export function applyRoutes(routes: RouteInterface[]) {
-  Object.values(Engine.modules).forEach((m) => m.unplugAll());
+  Object.values(Engine.modules).forEach((m) => m.unPlugAll());
 
   const succesedConnections = routes
     .sort((r1, r2) => {

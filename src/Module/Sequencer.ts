@@ -1,7 +1,7 @@
 import { now, Part } from "tone";
 import Module, { DummnyInternalModule } from "./Base";
 import { INote } from "../Note";
-import { Output } from "./IO";
+import { MidiOutput } from "./IO";
 import MidiEvent from "../MidiEvent";
 import Engine from "../Engine";
 
@@ -27,7 +27,7 @@ export default class Sequencer extends Module<
   ISequencer
 > {
   static moduleName = "Sequencer";
-  midiOutput: Output;
+  midiOutput: MidiOutput;
   private part: Part<ISequence>;
 
   constructor(name: string, props: Partial<ISequencer>) {
@@ -88,7 +88,7 @@ export default class Sequencer extends Module<
   }
 
   private registerOutputs() {
-    this.midiOutput = this.registerOutput({ name: "midi out" });
+    this.midiOutput = this.registerMidiOutput({ name: "midi out" });
   }
 
   private initializePart() {
@@ -167,8 +167,6 @@ export default class Sequencer extends Module<
 
     const event = MidiEvent.fromSequence(sequence, time);
 
-    this.midiOutput.connections.forEach((input) => {
-      input.pluggable(event);
-    });
+    this.midiOutput.onMidiEvent(event);
   };
 }

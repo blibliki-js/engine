@@ -1,7 +1,7 @@
 import Engine from "../Engine";
 import MidiEvent from "../MidiEvent";
 import Module, { DummnyInternalModule } from "./Base";
-import { Output } from "./IO";
+import { MidiOutput } from "./IO";
 
 export interface MidiSelectorInterface {
   selectedId: string | null;
@@ -16,7 +16,7 @@ export default class MidiSelector extends Module<
   MidiSelectorInterface
 > {
   static moduleName = "MidiSelector";
-  midiOutput: Output;
+  midiOutput: MidiOutput;
 
   constructor(name: string, props: Partial<MidiSelectorInterface>) {
     super(new DummnyInternalModule(), {
@@ -46,14 +46,8 @@ export default class MidiSelector extends Module<
   }
 
   private registerOutputs() {
-    this.midiOutput = this.registerOutput({ name: "midi out" });
+    this.midiOutput = this.registerMidiOutput({ name: "midi out" });
   }
-
-  private onMidiEvent = (midiEvent: MidiEvent) => {
-    this.midiOutput.connections.forEach((input) => {
-      input.pluggable(midiEvent);
-    });
-  };
 
   private addEventListener(midiId: string | null) {
     if (!this.onMidiEvent || !midiId) return; // Ugly hack because of weird super bug
@@ -62,10 +56,14 @@ export default class MidiSelector extends Module<
     midiDevice?.addEventListener(this.onMidiEvent);
   }
 
+  private _onMidiEvent = (midiEvent: MidiEvent) => {
+    this.midiOutput.onMidiEvent(midiEvent);
+  };
+
   private removeEventListener() {
     if (!this.selectedId) return;
 
     const midiDevice = Engine.midiDeviceManager.find(this.selectedId);
-    midiDevice?.removeEventListener(this.onMidiEvent);
+    midiDevice?.removeEventListener(this._onMidiEvent);
   }
 }

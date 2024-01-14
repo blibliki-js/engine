@@ -1,7 +1,18 @@
 import { v4 as uuidv4 } from "uuid";
 import { InputNode, Time } from "tone";
 
-import { Input, Output, IOInterface } from "./IO";
+import {
+  IOCollection,
+  AudioInput,
+  AudioOutput,
+  MidiInput,
+  IMidiInput,
+  IAudioInput,
+  IAudioOutput,
+  IOType,
+  MidiOutput,
+  IMidiOutput,
+} from "./IO";
 import MidiEvent from "../MidiEvent";
 import { AudioModule, PolyModule } from "../Module";
 import Note from "../Note";
@@ -54,8 +65,8 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
   readonly id: string;
   name: string;
   internalModule: InternalModule;
-  inputs: Input[] = [];
-  outputs: Output[] = [];
+  inputs: IOCollection<AudioInput | MidiInput>;
+  outputs: IOCollection<AudioOutput | MidiOutput>;
   readonly voiceNo?: number;
   updatedAt: Date;
   _props: PropsInterface = {} as PropsInterface;
@@ -66,6 +77,9 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
   ) {
     this.internalModule = internalModule;
     this.id = uuidv4();
+
+    this.inputs = new IOCollection<AudioInput | MidiInput>(this);
+    this.outputs = new IOCollection<AudioOutput>(this);
 
     Object.assign(this, props);
   }
@@ -83,62 +97,50 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
   }
 
   plug(audioModule: AudioModule, from: string, to: string) {
-    const output = this.outputs.find((i) => i.name === from);
+    if (audioModule instanceof PolyModule) {
+      audioModule.audioModules.forEach((m) => this.plug(m, from, to));
+      return;
+    }
+
+    const output = this.outputs.findByName(from);
     if (!output) throw Error(`Output ${from} not exist`);
 
-    const input = audioModule.inputs.find((i) => i.name === to);
-    if (!input)
-      throw Error(`Input ${to} in module ${audioModule.name} not exist`);
+    const input = audioModule.inputs.findByName(to);
+    if (!input) throw Error(`Input ${to} not exist`);
 
-    output.plug(input);
+    if (!(input instanceof AudioInput))
+      throw Error("You cant plug audio with midi io");
+
+    if (output instanceof AudioOutput && input instanceof AudioInput) {
+      output.plug(input);
+    } else if (output instanceof MidiOutput && input instanceof MidiInput) {
+      output.plug(input);
+    } else {
+      throw Error("This output could not plugged to this input");
+    }
   }
 
-  unplugAll() {
-    this.outputs.forEach((o) => o.unPlugAll());
+  unPlugAll() {
+    this.outputs.unPlugAll();
   }
-
-  connect = (inputAudioModule: AudioModule, attribute = "internalModule") => {
-    if (inputAudioModule instanceof PolyModule) {
-      inputAudioModule.audioModules.forEach((m) => {
-        this.internalModule.connect((m as any)[attribute] as InputNode);
-      });
-      return;
-    }
-
-    this.internalModule.connect(
-      (inputAudioModule as any)[attribute] as InputNode
-    );
-  };
-
-  disconnect = (
-    inputAudioModule: AudioModule,
-    attribute = "internalModule"
-  ) => {
-    if (inputAudioModule instanceof PolyModule) {
-      inputAudioModule.audioModules.forEach((m) => {
-        this.internalModule.disconnect((m as any)[attribute] as InputNode);
-      });
-      return;
-    }
-
-    this.internalModule.disconnect(
-      (inputAudioModule as any)[attribute] as InputNode
-    );
-  };
 
   dispose() {
+    this.inputs.unPlugAll();
+    this.outputs.unPlugAll();
     this.internalModule.dispose();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   triggerAttack = (note: Note, triggeredAt: number): void => {
     throw Error("triggerAttack not implemented");
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   triggerRelease = (note: Note, triggeredAt: number): void => {
     throw Error("triggerRelease not implemented");
   };
 
-  midiTriggered = (midiEvent: MidiEvent, noteIndex?: number) => {
+  onMidiEvent = (midiEvent: MidiEvent, noteIndex?: number) => {
     const { notes, triggeredAt } = midiEvent;
 
     switch (midiEvent.type) {
@@ -189,40 +191,45 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
       name: this.name,
       type: klass.moduleName,
       props: this.props,
-      inputs: this.inputs.map((i) => i.serialize()),
-      outputs: this.outputs.map((i) => i.serialize()),
+      inputs: this.inputs.serialize(),
+      outputs: this.outputs.serialize(),
     };
   }
 
-  protected registerInput(props: IOInterface): Input {
-    const input = new Input(this, props);
-    this.inputs.push(input);
-
-    return input;
+  protected registerMidiInput(props: Omit<IMidiInput, "ioType">): MidiInput {
+    return this.inputs.add({ ...props, ioType: IOType.MidiInput });
   }
 
-  protected registerOutput(props: IOInterface): Output {
-    const output = new Output(this, props);
-    this.outputs.push(output);
+  protected registerAudioInput(props: Omit<IAudioInput, "ioType">): AudioInput {
+    return this.inputs.add({ ...props, ioType: IOType.AudioInput });
+  }
 
-    return output;
+  protected registerMidiOutput(props: Omit<IMidiOutput, "ioType">): MidiOutput {
+    return this.outputs.add({ ...props, ioType: IOType.MidiOutput });
+  }
+
+  protected registerAudioOutput(
+    props: Omit<IAudioOutput, "ioType">
+  ): AudioOutput {
+    return this.outputs.add({ ...props, ioType: IOType.AudioOutput });
   }
 
   protected registerBasicOutputs() {
-    this.registerOutput({
+    this.registerAudioOutput({
       name: "output",
-      onPlug: (output: Output) => {
-        this.connect(output.audioModule);
-      },
-      onUnPlug: (output: Output) => {
-        this.disconnect(output.audioModule);
-      },
+      internalModule: this.internalModule,
     });
   }
 
   protected registerBasicInputs() {
-    this.registerInput({
+    this.registerAudioInput({
       name: "input",
+      internalModule: this.internalModule as unknown as InputNode,
+    });
+
+    this.registerMidiInput({
+      name: "midi input",
+      onMidiEvent: this.onMidiEvent,
     });
   }
 }

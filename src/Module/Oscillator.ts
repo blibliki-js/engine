@@ -35,6 +35,7 @@ class MonoOscillator
       props: { ...InitialProps, ...props },
     });
 
+    this.registerBasicOutputs();
     this.start(now());
   }
 
@@ -164,7 +165,6 @@ export default class Oscillator extends PolyModule<
     });
 
     this.registerBasicOutputs();
-    this.registerInputs();
   }
 
   start(time: number) {
@@ -173,12 +173,5 @@ export default class Oscillator extends PolyModule<
 
   stop(time?: number) {
     this.audioModules.forEach((audioModule) => audioModule.stop(time));
-  }
-
-  private registerInputs() {
-    this.registerInput({
-      name: "midi in",
-      pluggable: this.midiTriggered,
-    });
   }
 }
