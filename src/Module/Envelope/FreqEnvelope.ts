@@ -1,8 +1,6 @@
 import { FrequencyEnvelope } from "tone";
 
 import Filter from "../Filter";
-import { Output } from "../IO";
-
 import Base, { EnvelopeInterface, PolyBase } from "./Base";
 
 interface FreqEnvelopeInterface extends Partial<EnvelopeInterface> {
@@ -57,13 +55,6 @@ export default class FreqEnvelope extends PolyBase<MonoFreqEnvelope> {
   protected registerOutputs() {
     this.registerOutput({
       name: "frequency",
-      pluggable: this,
-      onPlug: (output: Output) => {
-        this.connect(output.audioModule, output.pluggable);
-      },
-      onUnPlug: (output: Output) => {
-        this.disconnect(output.audioModule, output.pluggable);
-      },
     });
   }
 }

@@ -1,6 +1,6 @@
 import { Filter as InternalFilter, FilterRollOff } from "tone";
 
-import { FreqEnvelope, MonoFreqEnvelope } from "./Envelope";
+import { MonoFreqEnvelope } from "./Envelope";
 import Module, { Voicable } from "./Base";
 import PolyModule from "./PolyModule";
 
@@ -13,7 +13,7 @@ interface FilterInterface extends Voicable {
   voiceNo?: number;
 }
 
-type FilterProps = Partial<FilterInterface>
+type FilterProps = Partial<FilterInterface>;
 
 const InitialProps: FilterInterface = {
   cutoff: 20000,
@@ -31,6 +31,9 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
       name,
       props: { ...InitialProps, ...props },
     });
+
+    this.registerBasicInputs();
+    this.registerBasicOutputs();
   }
 
   get cutoff() {
@@ -90,12 +93,6 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
 
     this._envelope.amount = value;
   }
-
-  conntectedEnvelope(envelope: MonoFreqEnvelope) {
-    this._envelope = envelope;
-    this._envelope.frequency = this.cutoff;
-    this._envelope.amount = this.envelopeAmount;
-  }
 }
 
 export default class Filter extends PolyModule<MonoFilter, FilterInterface> {
@@ -110,25 +107,5 @@ export default class Filter extends PolyModule<MonoFilter, FilterInterface> {
 
     this.registerBasicInputs();
     this.registerBasicOutputs();
-    this.registerInputs();
-  }
-
-  private registerInputs() {
-    this.registerInput({
-      name: "frequency",
-      pluggable: "frequency",
-      onPlug: (output) => {
-        this.conntectedEnvelope(output.audioModule as FreqEnvelope);
-      },
-    });
-  }
-
-  conntectedEnvelope(freqEnvelope: FreqEnvelope) {
-    freqEnvelope.audioModules.forEach((envelope) => {
-      if (envelope.voiceNo === undefined) return;
-
-      const filter = this.findVoice(envelope.voiceNo);
-      filter?.conntectedEnvelope(envelope);
-    });
   }
 }

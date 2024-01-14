@@ -124,14 +124,6 @@ export abstract class PolyBase<
 
     this.registerBasicInputs();
     this.registerBasicOutputs();
-    this.registerInputs();
-  }
-
-  private registerInputs() {
-    this.registerInput({
-      name: "midi in",
-      pluggable: this.midiTriggered,
-    });
   }
 }
 

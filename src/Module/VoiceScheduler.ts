@@ -1,7 +1,7 @@
 import Module, { DummnyInternalModule, Voicable } from "./Base";
 import MidiEvent from "../MidiEvent";
-import { Input, Output } from "./IO";
 import PolyModule from "./PolyModule";
+import { MidiOutput } from "./IO";
 
 export interface VoiceSchedulerInterface extends Voicable {
   polyNumber: number;
@@ -12,8 +12,7 @@ export default class VoiceScheduler extends PolyModule<
   VoiceSchedulerInterface
 > {
   static moduleName = "VoiceScheduler";
-  midiOutput: Output;
-  numberOfVoicesOut: Output;
+  midiOutput: MidiOutput;
 
   constructor(name: string, props: VoiceSchedulerInterface) {
     super({
@@ -29,20 +28,13 @@ export default class VoiceScheduler extends PolyModule<
 
   set polyNumber(value: number) {
     super.numberOfVoices = value;
-    if (!this.numberOfVoicesOut) return;
-
-    this.numberOfVoicesOut.connections.forEach((input) => {
-      if (input.audioModule instanceof Module) return;
-
-      input.audioModule.numberOfVoices = value;
-    });
   }
 
   get polyNumber() {
     return this.numberOfVoices;
   }
 
-  midiTriggered = (midiEvent: MidiEvent) => {
+  onMidiEvent = (midiEvent: MidiEvent) => {
     let voices: Array<Voice | undefined>;
 
     switch (midiEvent.type) {
@@ -65,9 +57,7 @@ export default class VoiceScheduler extends PolyModule<
       if (!voice) return;
 
       voice.midiTriggered(midiEvent, i);
-      this.midiOutput.connections.forEach((input) => {
-        input.pluggable(midiEvent, voice.voiceNo, i);
-      });
+      this.midiOutput.onMidiEvent(midiEvent, voice.voiceNo);
     });
   };
 
@@ -98,33 +88,23 @@ export default class VoiceScheduler extends PolyModule<
   }
 
   private registerInputs() {
-    this.registerInput({
+    this.registerMidiInput({
       name: "midi in",
-      pluggable: this.midiTriggered,
+      onMidiEvent: this.onMidiEvent,
     });
   }
 
   private registerOutputs() {
-    this.numberOfVoicesOut = this.registerOutput({
-      name: "number of voices",
-      onPlug: (input: Input) => {
-        if (input.audioModule instanceof Module) return;
-
-        input.audioModule.numberOfVoices = this.numberOfVoices;
-      },
-    });
-
-    this.midiOutput = this.registerOutput({ name: "midi out" });
+    this.midiOutput = this.registerMidiOutput({ name: "midi out" });
   }
 }
 
-export type VoiceInterface = Voicable
+export type VoiceInterface = Voicable;
 
 class Voice extends Module<DummnyInternalModule, VoiceInterface> {
   midiEvent: MidiEvent | null;
   activeNote: string | null;
   triggeredAt: number;
-  midiOutput: Output;
 
   constructor(name: string, props: VoiceInterface) {
     super(new DummnyInternalModule(), {

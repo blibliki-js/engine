@@ -18,6 +18,9 @@ class MonoVolume extends Module<Vol, VolumeInterface> {
       name,
       props: { ...InitialProps, ...props },
     });
+
+    this.registerBasicInputs();
+    this.registerBasicOutputs();
   }
 
   get volume() {
@@ -52,13 +55,5 @@ export default class Volume extends PolyModule<MonoVolume, VolumeInterface> {
 
     this.registerBasicInputs();
     this.registerBasicOutputs();
-    this.registerInputs();
-  }
-
-  private registerInputs() {
-    this.registerInput({
-      name: "midi in",
-      pluggable: this.midiTriggered,
-    });
   }
 }
