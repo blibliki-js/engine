@@ -1,18 +1,18 @@
 import { now } from "tone";
-import { ISequence } from "./modules";
-import Note, { INote } from "./core/Note";
+import { ISequence } from "../../modules";
+import Note, { INote } from "../Note";
 
-const EventType: { [key: number]: EType } = {
+const EventType: { [key: number]: MidiEventType } = {
   8: "noteOff",
   9: "noteOn",
 };
 
-export type EType = "noteOn" | "noteOff";
+export type MidiEventType = "noteOn" | "noteOff";
 
 export default class MidiEvent {
   notes: Note[];
   readonly triggeredAt: number;
-  _type: EType;
+  _type: MidiEventType;
   private data: Uint8Array;
   private event: MIDIMessageEvent;
 
@@ -29,7 +29,7 @@ export default class MidiEvent {
 
   static fromNote(
     noteName: string | Note | INote,
-    type: EType,
+    type: MidiEventType,
     triggeredAt?: number
   ) {
     const event = new MidiEvent(

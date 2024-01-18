@@ -1,4 +1,4 @@
-import MidiEvent from "../MidiEvent";
+import { MidiEvent } from "../core/midi";
 import Module, {
   PolyModule,
   DummnyInternalModule,

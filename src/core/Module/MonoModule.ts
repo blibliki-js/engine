@@ -13,7 +13,7 @@ import {
   MidiOutput,
   IMidiOutput,
 } from "../IO";
-import MidiEvent from "../../MidiEvent";
+import { MidiEvent } from "../../core/midi";
 import { AudioModule, PolyModule } from "./index";
 import Note from "../../core/Note";
 

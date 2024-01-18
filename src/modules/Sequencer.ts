@@ -2,7 +2,7 @@ import { now, Part } from "tone";
 import Module, { DummnyInternalModule } from "../core/Module";
 import { INote } from "../core/Note";
 import { MidiOutput } from "../core/IO";
-import MidiEvent from "../MidiEvent";
+import { MidiEvent } from "../core/midi";
 import Engine from "../Engine";
 
 export interface ISequence {

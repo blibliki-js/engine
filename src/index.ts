@@ -1,10 +1,9 @@
 export { default } from "./Engine";
-export { default as MidiDevice } from "./MidiDevice";
-export { default as MidiDeviceManager } from "./MidiDeviceManager";
+export { MidiDevice, MidiDeviceManager } from "./core/midi";
 export { default as Note } from "./core/Note";
 
+export type { MidiDeviceInterface } from "./core/midi";
 export type { INote } from "./core/Note";
-export type { MidiDeviceInterface } from "./MidiDevice";
 export type { ModuleInterface, AudioModule } from "./core/Module";
 export type { ISequence } from "./modules";
 

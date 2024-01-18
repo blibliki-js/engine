@@ -1,4 +1,4 @@
-import MidiEvent from "../../MidiEvent";
+import { MidiEvent } from "../midi";
 import { v4 as uuidv4 } from "uuid";
 import Module, { Connectable, Voicable } from "./MonoModule";
 import {

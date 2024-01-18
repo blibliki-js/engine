@@ -1,5 +1,5 @@
 import Engine from "../Engine";
-import MidiEvent from "../MidiEvent";
+import { MidiEvent } from "../core/midi";
 import Note from "../core/Note";
 import Module, { DummnyInternalModule } from "../core/Module";
 import { MidiOutput } from "../core/IO";
