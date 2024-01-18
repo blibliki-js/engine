@@ -1,7 +1,7 @@
 import { now, Oscillator as Osc, ToneOscillatorType } from "tone";
 import Engine from "../Engine";
 
-import Note from "../Note";
+import Note from "../core/Note";
 import Module, { PolyModule, Startable, Voicable } from "../core/Module";
 
 export interface OscillatorInterface extends Voicable {

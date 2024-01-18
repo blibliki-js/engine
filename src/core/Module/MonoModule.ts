@@ -15,7 +15,7 @@ import {
 } from "../IO";
 import MidiEvent from "../../MidiEvent";
 import { AudioModule, PolyModule } from "./index";
-import Note from "../../Note";
+import Note from "../../core/Note";
 
 export interface Startable {
   start(time: number): void;

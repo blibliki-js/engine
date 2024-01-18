@@ -6,7 +6,7 @@ import Module, {
   Triggerable,
   Voicable,
 } from "../../core/Module";
-import Note from "../../Note";
+import Note from "../../core/Note";
 
 export const enum EnvelopeStages {
   Attack = "attack",

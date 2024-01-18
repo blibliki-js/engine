@@ -1,6 +1,6 @@
 import { now } from "tone";
 import { ISequence } from "./modules";
-import Note, { INote } from "./Note";
+import Note, { INote } from "./core/Note";
 
 const EventType: { [key: number]: EType } = {
   8: "noteOff",

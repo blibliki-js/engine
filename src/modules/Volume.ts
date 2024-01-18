@@ -1,7 +1,7 @@
 import { Volume as Vol } from "tone";
 
 import Module, { PolyModule, Voicable } from "../core/Module";
-import Note from "../Note";
+import Note from "../core/Note";
 
 export interface VolumeInterface extends Voicable {
   volume: number;
