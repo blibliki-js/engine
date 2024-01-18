@@ -2,13 +2,10 @@ import { Context, now, setContext } from "tone";
 import MidiDeviceManager from "./MidiDeviceManager";
 import MidiEvent, { EType } from "./MidiEvent";
 
-import { AudioModule, createModule } from "./Module";
-import Master from "./Module/Master";
-import VirtualMidi from "./Module/VirtualMidi";
-import VoiceScheduler from "./Module/VoiceScheduler";
+import { AudioModule, Startable } from "./core/Module";
+import { Master, createModule, VirtualMidi, VoiceScheduler } from "./modules";
 import { applyRoutes, createRoute, RouteInterface, RouteProps } from "./routes";
 import { AnyObject } from "./types";
-import { Startable } from "./Module/Base";
 
 type LatencyHint = "interactive" | "playback" | "balanced";
 

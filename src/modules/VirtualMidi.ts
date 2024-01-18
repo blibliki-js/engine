@@ -1,7 +1,7 @@
 import Engine from "../Engine";
 import MidiEvent from "../MidiEvent";
 import Note from "../Note";
-import Module, { DummnyInternalModule } from "./Base";
+import Module, { DummnyInternalModule } from "../core/Module";
 import { MidiOutput } from "../core/IO";
 
 export interface VirtualMidiInterface {

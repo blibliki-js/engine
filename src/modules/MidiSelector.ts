@@ -1,6 +1,6 @@
 import Engine from "../Engine";
 import MidiEvent from "../MidiEvent";
-import Module, { DummnyInternalModule } from "./Base";
+import Module, { DummnyInternalModule } from "../core/Module";
 import { MidiOutput } from "../core/IO";
 
 export interface MidiSelectorInterface {

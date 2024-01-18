@@ -1,8 +1,6 @@
 import { camelCase, upperFirst } from "lodash";
-import Module, { Connectable } from "./Base";
-import PolyModule from "./PolyModule";
-import Oscillator from "./Oscillator";
 import { Envelope, AmpEnvelope, FreqEnvelope } from "./Envelope";
+import Oscillator from "./Oscillator";
 import Filter from "./Filter";
 import Master from "./Master";
 import VoiceScheduler from "./VoiceScheduler";
@@ -14,13 +12,13 @@ import Delay from "./Delay";
 import Distortion from "./Distortion";
 import BitCrusher from "./BitCrusher";
 import Sequencer from "./Sequencer";
+import { AudioModule } from "../core/Module";
 
-export { default } from "./Base";
-export { default as PolyModule } from "./PolyModule";
-export type { ModuleInterface, Connectable, Triggerable } from "./Base";
-
+export { default as Master } from "./Master";
 export { default as Filter } from "./Filter";
 export { default as Oscillator } from "./Oscillator";
+export { default as VirtualMidi } from "./VirtualMidi";
+export { default as VoiceScheduler } from "./VoiceScheduler";
 export { default as Sequencer } from "./Sequencer";
 export type { ISequence } from "./Sequencer";
 
@@ -30,10 +28,6 @@ export {
   FreqEnvelope,
   EnvelopeStages,
 } from "./Envelope";
-
-export type AudioModule =
-  | Module<Connectable, any>
-  | PolyModule<Module<Connectable, any>, any>;
 
 export function createModule(
   name: string,

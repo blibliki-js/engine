@@ -1,5 +1,5 @@
 import { Signal } from "tone";
-import Module, { Connectable } from "./Base";
+import Module, { Connectable } from "../core/Module";
 
 interface EffectLike extends Connectable {
   wet: Signal<"normalRange">;

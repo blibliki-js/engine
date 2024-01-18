@@ -1,6 +1,6 @@
-import MidiEvent from "../MidiEvent";
+import MidiEvent from "../../MidiEvent";
 import { v4 as uuidv4 } from "uuid";
-import Module, { Connectable, Voicable } from "./Base";
+import Module, { Connectable, Voicable } from "./MonoModule";
 import {
   IOCollection,
   ForwardInput,
@@ -12,8 +12,8 @@ import {
   IForwardOutput,
   MidiOutput,
   MidiInput,
-} from "../core/IO";
-import { AudioModule } from "../Module";
+} from "../IO";
+import { AudioModule } from "./index";
 
 interface PolyModuleInterface<MonoAudioModule, PropsInterface> {
   name: string;

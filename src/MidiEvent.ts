@@ -1,5 +1,5 @@
 import { now } from "tone";
-import { ISequence } from "./Module/Sequencer";
+import { ISequence } from "./modules";
 import Note, { INote } from "./Note";
 
 const EventType: { [key: number]: EType } = {

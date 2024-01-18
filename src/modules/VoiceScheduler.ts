@@ -1,6 +1,9 @@
-import Module, { DummnyInternalModule, Voicable } from "./Base";
 import MidiEvent from "../MidiEvent";
-import PolyModule from "./PolyModule";
+import Module, {
+  PolyModule,
+  DummnyInternalModule,
+  Voicable,
+} from "../core/Module";
 import { MidiOutput } from "../core/IO";
 
 export interface VoiceSchedulerInterface extends Voicable {

@@ -1,5 +1,5 @@
 import IONode, { IOType, IIONode } from "./Node";
-import Module, { Connectable, PolyModule } from "../../Module";
+import Module, { Connectable, PolyModule } from "../Module";
 import { AnyObject } from "../../types";
 
 export interface IForwardInput extends IIONode {

@@ -1,8 +1,7 @@
 import { Filter as InternalFilter, FilterRollOff } from "tone";
 
 import { MonoFreqEnvelope } from "./Envelope";
-import Module, { Voicable } from "./Base";
-import PolyModule from "./PolyModule";
+import Module, { PolyModule, Voicable } from "../core/Module";
 
 interface FilterInterface extends Voicable {
   cutoff: number;

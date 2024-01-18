@@ -1,5 +1,5 @@
 import { Destination, getDestination } from "tone";
-import Module from "./Base";
+import Module from "../core/Module";
 
 export interface MasterInterface {}
 

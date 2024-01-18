@@ -1,6 +1,6 @@
 import { InputNode } from "tone";
 import IONode, { IOType, IIONode } from "./Node";
-import MonoModule, { Connectable } from "../../Module/index";
+import MonoModule, { Connectable } from "../Module/index";
 import { AnyObject } from "../../types";
 
 export type AudioIO = AudioInput | AudioOutput;

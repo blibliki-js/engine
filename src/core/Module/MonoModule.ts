@@ -12,10 +12,10 @@ import {
   IOType,
   MidiOutput,
   IMidiOutput,
-} from "../core/IO";
-import MidiEvent from "../MidiEvent";
-import { AudioModule, PolyModule } from "../Module";
-import Note from "../Note";
+} from "../IO";
+import MidiEvent from "../../MidiEvent";
+import { AudioModule, PolyModule } from "./index";
+import Note from "../../Note";
 
 export interface Startable {
   start(time: number): void;
