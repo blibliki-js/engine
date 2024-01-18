@@ -37,6 +37,8 @@ export type {
   IAudioOutput,
   IMidiInput,
   IMidiOutput,
+  IForwardInput,
+  IForwardOutput,
   IAnyInput,
   IAnyOutput,
   IIOSerialize,

@@ -12,7 +12,7 @@ import {
   IOType,
   MidiOutput,
   IMidiOutput,
-} from "./IO";
+} from "../core/IO";
 import MidiEvent from "../MidiEvent";
 import { AudioModule, PolyModule } from "../Module";
 import Note from "../Note";

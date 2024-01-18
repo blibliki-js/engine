@@ -1,6 +1,4 @@
-import { AudioModule } from "../index";
-import { default as MonoModule } from "../Base";
-import PolyModule from "../PolyModule";
+import MonoModule, { AudioModule, PolyModule } from "../../Module";
 import IO, { IOType } from "./Node";
 import { AudioInput, AudioOutput } from "./AudioNode";
 import { MidiInput, MidiOutput } from "./MidiNode";

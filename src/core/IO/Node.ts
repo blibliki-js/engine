@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { AudioModule } from "../index";
+import { AudioModule } from "../../Module";
 
 export interface IIONode {
   name: string;

@@ -1,7 +1,7 @@
 import { now, Part } from "tone";
 import Module, { DummnyInternalModule } from "./Base";
 import { INote } from "../Note";
-import { MidiOutput } from "./IO";
+import { MidiOutput } from "../core/IO";
 import MidiEvent from "../MidiEvent";
 import Engine from "../Engine";
 

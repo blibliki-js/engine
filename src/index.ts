@@ -8,4 +8,4 @@ export type { MidiDeviceInterface } from "./MidiDevice";
 export type { ModuleInterface, AudioModule, ISequence } from "./Module";
 
 export type { RouteInterface } from "./routes";
-export type { IIOSerialize as IOProps } from "./Module/IO";
+export type { IIOSerialize as IOProps } from "./core/IO";

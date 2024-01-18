@@ -1,4 +1,4 @@
-import { AudioModule } from "..";
+import { AudioModule } from "../../Module";
 import Event from "../../MidiEvent";
 import IONode, { IOType, IIONode } from "./Node";
 

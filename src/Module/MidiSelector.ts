@@ -1,7 +1,7 @@
 import Engine from "../Engine";
 import MidiEvent from "../MidiEvent";
 import Module, { DummnyInternalModule } from "./Base";
-import { MidiOutput } from "./IO";
+import { MidiOutput } from "../core/IO";
 
 export interface MidiSelectorInterface {
   selectedId: string | null;

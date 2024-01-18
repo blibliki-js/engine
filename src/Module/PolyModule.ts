@@ -8,11 +8,12 @@ import {
   IOType,
   IMidiInput,
   IMidiOutput,
+  IForwardInput,
+  IForwardOutput,
   MidiOutput,
   MidiInput,
-} from "./IO";
+} from "../core/IO";
 import { AudioModule } from "../Module";
-import { IForwardInput, IForwardOutput } from "./IO/ForwardNode";
 
 interface PolyModuleInterface<MonoAudioModule, PropsInterface> {
   name: string;
