@@ -8,7 +8,6 @@ export type {
   Connectable,
   Triggerable,
   Startable,
-  Voicable,
 } from "./MonoModule";
 
 export type AudioModule =

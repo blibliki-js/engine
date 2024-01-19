@@ -33,10 +33,6 @@ export interface Triggerable {
   triggerRelease: (note: Note, triggeredAt: number) => void;
 }
 
-export interface Voicable {
-  voiceNo?: number;
-}
-
 export interface ModuleInterface<PropsInterface> {
   name: string;
   props: PropsInterface;

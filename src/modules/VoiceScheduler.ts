@@ -1,12 +1,8 @@
 import { MidiEvent } from "../core/midi";
-import Module, {
-  PolyModule,
-  DummnyInternalModule,
-  Voicable,
-} from "../core/Module";
+import Module, { PolyModule, DummnyInternalModule } from "../core/Module";
 import { MidiOutput } from "../core/IO";
 
-export interface VoiceSchedulerInterface extends Voicable {
+export interface VoiceSchedulerInterface {
   polyNumber: number;
 }
 
@@ -66,7 +62,6 @@ export default class VoiceScheduler extends PolyModule<
 
   serialize() {
     const serialize = super.serialize();
-    delete serialize.props.voiceNo;
 
     return {
       ...serialize,
@@ -102,14 +97,12 @@ export default class VoiceScheduler extends PolyModule<
   }
 }
 
-export type VoiceInterface = Voicable;
-
-class Voice extends Module<DummnyInternalModule, VoiceInterface> {
+class Voice extends Module<DummnyInternalModule, VoiceSchedulerInterface> {
   midiEvent: MidiEvent | null;
   activeNote: string | null;
   triggeredAt: number;
 
-  constructor(name: string, props: VoiceInterface) {
+  constructor(name: string, props: VoiceSchedulerInterface) {
     super(new DummnyInternalModule(), {
       name,
       props,

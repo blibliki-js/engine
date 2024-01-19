@@ -4,7 +4,6 @@ import Module, {
   PolyModule,
   Connectable,
   Triggerable,
-  Voicable,
 } from "../../core/Module";
 import Note from "../../core/Note";
 
@@ -20,12 +19,11 @@ const MIN_TIME = 0.01;
 const SUSTAIN_MAX_VALUE = 1;
 const SUSTAIN_MIN_VALUE = 0;
 
-export interface EnvelopeInterface extends Voicable {
+export interface EnvelopeInterface {
   attack: number;
   decay: number;
   sustain: number;
   release: number;
-  voiceNo?: number;
 }
 
 const InitialProps: EnvelopeInterface = {
@@ -113,7 +111,7 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
 }
 
 export abstract class PolyBase<
-  EnvelopeModule extends Module<Connectable, any>
+  EnvelopeModule extends Module<Connectable, EnvelopeInterface>
 > extends PolyModule<EnvelopeModule, EnvelopeInterface> {
   constructor(
     name: string,

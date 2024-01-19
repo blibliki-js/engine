@@ -1,9 +1,9 @@
 import { Volume as Vol } from "tone";
 
-import Module, { PolyModule, Voicable } from "../core/Module";
+import Module, { PolyModule } from "../core/Module";
 import Note from "../core/Note";
 
-export interface VolumeInterface extends Voicable {
+export interface VolumeInterface {
   volume: number;
 }
 

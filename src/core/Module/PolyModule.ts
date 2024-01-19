@@ -1,6 +1,6 @@
 import { MidiEvent } from "../midi";
 import { v4 as uuidv4 } from "uuid";
-import Module, { Connectable, Voicable } from "./MonoModule";
+import Module, { Connectable } from "./MonoModule";
 import {
   IOCollection,
   ForwardInput,
@@ -23,7 +23,7 @@ interface PolyModuleInterface<MonoAudioModule, PropsInterface> {
 
 export default abstract class PolyModule<
   MonoAudioModule extends Module<Connectable, PropsInterface>,
-  PropsInterface extends Voicable
+  PropsInterface
 > {
   static readonly moduleName: string;
 

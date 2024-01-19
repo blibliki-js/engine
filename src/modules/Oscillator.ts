@@ -2,9 +2,9 @@ import { now, Oscillator as Osc, ToneOscillatorType } from "tone";
 import Engine from "../Engine";
 
 import Note from "../core/Note";
-import Module, { PolyModule, Startable, Voicable } from "../core/Module";
+import Module, { PolyModule, Startable } from "../core/Module";
 
-export interface OscillatorInterface extends Voicable {
+export interface OscillatorInterface {
   noteName: string;
   fine: number;
   coarse: number;
