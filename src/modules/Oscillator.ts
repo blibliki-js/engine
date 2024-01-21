@@ -35,6 +35,7 @@ class MonoOscillator
     });
 
     this.registerBasicOutputs();
+    this.registerDefaultMidiInput();
     this.start(now());
   }
 
@@ -164,6 +165,7 @@ export default class Oscillator extends PolyModule<
     });
 
     this.registerBasicOutputs();
+    this.registerInput({ name: "midi input" });
   }
 
   start(time: number) {
