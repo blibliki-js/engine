@@ -4,6 +4,8 @@ const Notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
 const NotesLength = Notes.length;
 
+const MIDI_OCTAVE_SYTSTEM = 2;
+
 export interface INote {
   note: string;
   frequency: number;
@@ -43,6 +45,19 @@ export default class Note {
 
   get fullName() {
     return `${this.name}${this.octave}`;
+  }
+
+  midiData(noteOn: boolean = true): Uint8Array {
+    const statusByte = noteOn ? 0x90 : 0x80;
+    return new Uint8Array([statusByte, 0, this.velocity * 100]);
+  }
+
+  get midiNumber(): number {
+    return (this.octave + MIDI_OCTAVE_SYTSTEM) * 12 + this.noteIndex;
+  }
+
+  get noteIndex(): number {
+    return Notes.indexOf(this.name);
   }
 
   adjustFrequency(range = 0, coarse = 0) {

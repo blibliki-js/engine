@@ -32,16 +32,14 @@ export default class MidiEvent {
     type: MidiEventType,
     triggeredAt?: number
   ) {
+    const note = noteName instanceof Note ? noteName : new Note(noteName);
+
     const event = new MidiEvent(
-      new MIDIMessageEvent("", { data: new Uint8Array([0, 0, 0]) }),
+      new MIDIMessageEvent("", { data: note.midiData }),
       triggeredAt
     );
 
-    if (noteName instanceof Note) {
-      event.notes = [noteName];
-    } else {
-      event.notes = [new Note(noteName)];
-    }
+    event.notes = [note];
     event._type = type;
 
     return event;
