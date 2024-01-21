@@ -104,9 +104,6 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
     const input = audioModule.inputs.findByName(to);
     if (!input) throw Error(`Input ${to} not exist`);
 
-    if (!(input instanceof AudioInput))
-      throw Error("You cant plug audio with midi io");
-
     if (output instanceof AudioOutput && input instanceof AudioInput) {
       output.plug(input);
     } else if (output instanceof MidiOutput && input instanceof MidiInput) {
