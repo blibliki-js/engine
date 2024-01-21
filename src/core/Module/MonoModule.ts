@@ -220,6 +220,10 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
       internalModule: this.internalModule as unknown as InputNode,
     });
 
+    this.registerDefaultMidiInput();
+  }
+
+  protected registerDefaultMidiInput() {
     this.registerMidiInput({
       name: "midi input",
       onMidiEvent: this.onMidiEvent,
