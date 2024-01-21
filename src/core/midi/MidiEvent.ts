@@ -3,11 +3,12 @@ import { ISequence } from "../../modules";
 import Note, { INote } from "../Note";
 
 const EventType: { [key: number]: MidiEventType } = {
-  8: "noteOff",
-  9: "noteOn",
+  0x80: "noteOff",
+  0x90: "noteOn",
+  0xb0: "cc",
 };
 
-export type MidiEventType = "noteOn" | "noteOff";
+export type MidiEventType = "noteOn" | "noteOff" | "cc";
 
 export default class MidiEvent {
   notes: Note[];
@@ -29,20 +30,25 @@ export default class MidiEvent {
 
   static fromNote(
     noteName: string | Note | INote,
-    type: MidiEventType,
+    noteOn: boolean = true,
     triggeredAt?: number
   ) {
     const note = noteName instanceof Note ? noteName : new Note(noteName);
 
     const event = new MidiEvent(
-      new MIDIMessageEvent("", { data: note.midiData }),
+      new MIDIMessageEvent("", { data: note.midiData(noteOn) }),
       triggeredAt
     );
-
     event.notes = [note];
-    event._type = type;
 
     return event;
+  }
+
+  static fromCC(cc: number, value: number, triggeredAt?: number) {
+    return new MidiEvent(
+      new MIDIMessageEvent("", { data: new Uint8Array([0xb0, cc, value]) }),
+      triggeredAt
+    );
   }
 
   constructor(event: MIDIMessageEvent, triggeredAt?: number) {
@@ -52,12 +58,24 @@ export default class MidiEvent {
     this.defineNotes();
   }
 
+  get statusByte(): number {
+    return this.data[0];
+  }
+
+  get firstData(): number {
+    return this.data[1];
+  }
+
+  get secondData(): number {
+    return this.data[2];
+  }
+
   get type() {
     if (this._type) return this._type;
 
-    let type = EventType[this.data[0] >> 4];
+    let type = EventType[this.statusByte & 0xf0];
 
-    if (type === "noteOn" && this.data[2] === 0) {
+    if (type === "noteOn" && this.secondData === 0) {
       type = "noteOff";
     }
 
