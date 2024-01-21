@@ -1,5 +1,5 @@
 import { Context, now, setContext } from "tone";
-import { MidiEvent, MidiEventType, MidiDeviceManager } from "./core/midi";
+import { MidiEvent, MidiDeviceManager } from "./core/midi";
 
 import { AudioModule, Startable } from "./core/Module";
 import { Master, createModule, VirtualMidi, VoiceScheduler } from "./modules";
