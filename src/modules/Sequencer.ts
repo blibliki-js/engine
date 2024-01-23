@@ -165,8 +165,8 @@ export default class Sequencer extends Module<
   private onPartEvent = (time: number, sequence: ISequence) => {
     if (!sequence.active) return;
 
-    const event = MidiEvent.fromSequence(sequence, time);
-
-    this.midiOutput.onMidiEvent(event);
+    MidiEvent.fromSequence(sequence, time).forEach((event) => {
+      this.midiOutput.onMidiEvent(event);
+    });
   };
 }

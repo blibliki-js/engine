@@ -4,7 +4,7 @@ import IONode, { IOType, IIONode } from "./Node";
 
 export interface IMidiInput extends IIONode {
   ioType: IOType.MidiInput;
-  onMidiEvent: (event: MidiEvent, noteIndex?: number) => void;
+  onMidiEvent: (event: MidiEvent) => void;
 }
 export interface IMidiOutput extends IIONode {
   ioType: IOType.MidiOutput;
@@ -13,7 +13,7 @@ export interface IMidiOutput extends IIONode {
 export class MidiInput extends IONode implements IMidiInput {
   declare ioType: IOType.MidiInput;
   declare connections: MidiOutput[];
-  onMidiEvent: (event: MidiEvent, noteIndex?: number) => void;
+  onMidiEvent: (event: MidiEvent) => void;
 
   constructor(plugableModule: AudioModule, props: IMidiInput) {
     super(plugableModule, props);
@@ -46,9 +46,9 @@ export class MidiOutput extends IONode implements IMidiOutput {
     super.plug(io, plugOther);
   }
 
-  onMidiEvent = (event: MidiEvent, noteIndex?: number) => {
+  onMidiEvent = (event: MidiEvent) => {
     this.connections.forEach((input) => {
-      input.onMidiEvent(event, noteIndex);
+      input.onMidiEvent(event);
     });
   };
 }

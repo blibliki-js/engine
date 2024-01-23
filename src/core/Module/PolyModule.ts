@@ -106,9 +106,9 @@ export default abstract class PolyModule<
     this.audioModules.forEach((m) => m.dispose());
   }
 
-  onMidiEvent = (midiEvent: MidiEvent, voiceNo = 0, noteIndex?: number) => {
+  onMidiEvent = (midiEvent: MidiEvent, voiceNo = 0) => {
     const audioModule = this.findVoice(voiceNo);
-    audioModule?.onMidiEvent(midiEvent, noteIndex);
+    audioModule?.onMidiEvent(midiEvent);
   };
 
   serialize() {

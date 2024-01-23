@@ -11,40 +11,36 @@ const EventType: { [key: number]: MidiEventType } = {
 export type MidiEventType = "noteOn" | "noteOff" | "cc";
 
 export default class MidiEvent {
-  notes: Note[];
+  note: Note;
+  voiceNo?: number;
   readonly triggeredAt: number;
   _type: MidiEventType;
   private data: Uint8Array;
   private event: MIDIMessageEvent;
 
-  static fromSequence(sequence: ISequence, triggeredAt: number) {
-    const event = new MidiEvent(
-      new MIDIMessageEvent("", { data: new Uint8Array([0, 0, 0]) }),
-      triggeredAt
+  static fromSequence(sequence: ISequence, triggeredAt: number): MidiEvent[] {
+    return sequence.notes.map((noteName) =>
+      this.fromNote(noteName, true, triggeredAt)
     );
-    event._type = "noteOn";
-    event.notes = sequence.notes.map((n) => new Note(n));
-
-    return event;
   }
 
   static fromNote(
     noteName: string | Note | INote,
     noteOn: boolean = true,
     triggeredAt?: number
-  ) {
+  ): MidiEvent {
     const note = noteName instanceof Note ? noteName : new Note(noteName);
 
     const event = new MidiEvent(
       new MIDIMessageEvent("", { data: note.midiData(noteOn) }),
       triggeredAt
     );
-    event.notes = [note];
+    event.note = note;
 
     return event;
   }
 
-  static fromCC(cc: number, value: number, triggeredAt?: number) {
+  static fromCC(cc: number, value: number, triggeredAt?: number): MidiEvent {
     return new MidiEvent(
       new MIDIMessageEvent("", { data: new Uint8Array([0xb0, cc, value]) }),
       triggeredAt
@@ -88,8 +84,8 @@ export default class MidiEvent {
 
   defineNotes() {
     if (!this.isNote) return;
-    if (this.notes) return;
+    if (this.note) return;
 
-    this.notes = [new Note(this.event)];
+    this.note = new Note(this.event);
   }
 }

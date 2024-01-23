@@ -34,30 +34,27 @@ export default class VoiceScheduler extends PolyModule<
   }
 
   onMidiEvent = (midiEvent: MidiEvent) => {
-    let voices: Array<Voice | undefined>;
+    let voice: Voice | undefined;
 
     switch (midiEvent.type) {
       case "noteOn":
-        voices = this.findFreeVoices(midiEvent.notes.length);
+        voice = this.findFreeVoice();
 
         break;
       case "noteOff":
-        voices = midiEvent.notes.map((note) => {
-          return this.audioModules.find((v) => v.activeNote === note.fullName);
-        });
+        voice = this.audioModules.find(
+          (v) => v.activeNote === midiEvent.note.fullName
+        );
         break;
       default:
         throw Error("This type is not a note");
     }
 
-    if (voices.length === 0) return;
+    if (!voice) return;
 
-    voices.forEach((voice, i) => {
-      if (!voice) return;
-
-      voice.midiTriggered(midiEvent, i);
-      this.midiOutput.onMidiEvent(midiEvent, voice.voiceNo);
-    });
+    voice.midiTriggered(midiEvent);
+    midiEvent.voiceNo = voice.voiceNo;
+    this.midiOutput.onMidiEvent(midiEvent);
   };
 
   serialize() {
@@ -69,20 +66,19 @@ export default class VoiceScheduler extends PolyModule<
     };
   }
 
-  private findFreeVoices(num = 1): Voice[] {
-    let voices = this.audioModules.filter((v) => !v.activeNote).slice(0, num);
+  private findFreeVoice(): Voice {
+    let voice = this.audioModules.find((v) => !v.activeNote);
 
-    if (voices.length === 0) {
-      voices = this.audioModules
-        .sort((a, b) => {
-          if (!a || !b) return 0;
+    // If no available voice, get the one with the lowest triggeredAt
+    if (!voice) {
+      voice = this.audioModules.sort((a, b) => {
+        if (!a || !b) return 0;
 
-          return a.triggeredAt - b.triggeredAt;
-        })
-        .slice(0, num);
+        return a.triggeredAt - b.triggeredAt;
+      })[0];
     }
 
-    return voices;
+    return voice;
   }
 
   private registerInputs() {
@@ -109,12 +105,10 @@ class Voice extends Module<DummnyInternalModule, VoiceSchedulerInterface> {
     });
   }
 
-  midiTriggered = (midiEvent: MidiEvent, noteIndex?: number) => {
+  midiTriggered = (midiEvent: MidiEvent) => {
     if (this.voiceNo === undefined) throw Error("Voice without voiceNo");
-    if (noteIndex === undefined) return;
 
-    const { triggeredAt, notes, type } = midiEvent;
-    const note = notes[noteIndex];
+    const { triggeredAt, note, type } = midiEvent;
 
     if (!note) return;
     const noteName = note.fullName;

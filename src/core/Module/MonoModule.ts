@@ -133,29 +133,24 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
     throw Error("triggerRelease not implemented");
   };
 
-  onMidiEvent = (midiEvent: MidiEvent, noteIndex?: number) => {
-    const { notes, triggeredAt } = midiEvent;
+  onMidiEvent = (midiEvent: MidiEvent) => {
+    const { note, triggeredAt } = midiEvent;
 
     switch (midiEvent.type) {
       case "noteOn": {
-        const { duration } = notes[0];
+        const { duration } = note;
 
-        this.triggerer(this.triggerAttack, notes, triggeredAt, noteIndex);
+        this.triggerer(this.triggerAttack, note, triggeredAt);
 
         if (duration) {
           const releaseTriggeredAt = triggeredAt + Time(duration).toSeconds();
 
-          this.triggerer(
-            this.triggerRelease,
-            notes,
-            releaseTriggeredAt,
-            noteIndex
-          );
+          this.triggerer(this.triggerRelease, note, releaseTriggeredAt);
         }
         break;
       }
       case "noteOff":
-        this.triggerer(this.triggerRelease, notes, triggeredAt, noteIndex);
+        this.triggerer(this.triggerRelease, note, triggeredAt);
         break;
       default:
         throw Error("This type is not a note");
@@ -164,16 +159,10 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
 
   private triggerer(
     trigger: (note: Note, triggeredAt: number) => void,
-    notes: Note[],
-    triggeredAt: number,
-    noteIndex?: number
+    note: Note,
+    triggeredAt: number
   ) {
-    if (noteIndex !== undefined && this.voiceNo !== undefined) {
-      trigger(notes[noteIndex], triggeredAt);
-      return;
-    }
-
-    notes.forEach((note) => trigger(note, triggeredAt));
+    trigger(note, triggeredAt);
   }
 
   serialize() {

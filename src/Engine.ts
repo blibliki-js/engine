@@ -135,10 +135,10 @@ class Engine {
     return masterProps;
   }
 
-  triggerVirtualMidi(id: string, noteName: string, noteOn: boolean = true) {
+  triggerVirtualMidi(id: string, noteName: string, type: "noteOn" | "noteOff") {
     const virtualMidi = this.findById(id) as VirtualMidi;
 
-    virtualMidi.sendMidi(MidiEvent.fromNote(noteName, noteOn));
+    virtualMidi.sendMidi(MidiEvent.fromNote(noteName, type === "noteOn"));
   }
 
   dispose() {
