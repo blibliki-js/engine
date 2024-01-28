@@ -14,6 +14,7 @@ import {
   MidiInput,
 } from "../IO";
 import { AudioModule } from "./index";
+import { plugCompatibleIO } from "../IO/Node";
 
 interface PolyModuleInterface<MonoAudioModule, PropsInterface> {
   name: string;
@@ -82,19 +83,13 @@ export default abstract class PolyModule<
   }
 
   plug(audioModule: AudioModule, from: string, to: string) {
-    if (audioModule instanceof PolyModule) {
-      this.audioModules.forEach((mSrc) => {
-        if (mSrc.voiceNo === undefined) throw Error("Missing voiceNo");
+    const output = this.outputs.findByName(from);
+    if (!output) throw Error(`Output ${from} not exist`);
 
-        const mDest = audioModule.findVoice(mSrc.voiceNo);
-        if (!mDest) return;
+    const input = audioModule.inputs.findByName(to);
+    if (!input) throw Error(`Input ${to} not exist`);
 
-        mSrc.plug(mDest, from, to);
-      });
-      return;
-    }
-
-    this.audioModules.forEach((m) => m.plug(audioModule, from, to));
+    plugCompatibleIO(input, output);
   }
 
   unPlugAll() {
@@ -106,7 +101,8 @@ export default abstract class PolyModule<
     this.audioModules.forEach((m) => m.dispose());
   }
 
-  onMidiEvent = (midiEvent: MidiEvent, voiceNo = 0) => {
+  onMidiEvent = (midiEvent: MidiEvent) => {
+    const voiceNo = midiEvent.voiceNo || 0;
     const audioModule = this.findVoice(voiceNo);
     audioModule?.onMidiEvent(midiEvent);
   };
@@ -161,7 +157,10 @@ export default abstract class PolyModule<
 
   protected registerBasicInputs() {
     this.registerInput({ name: "input" });
-    this.registerInput({ name: "midi input" });
+    this.registerMidiInput({
+      name: "midi input",
+      onMidiEvent: this.onMidiEvent,
+    });
   }
 
   private adjustNumberOfModules() {

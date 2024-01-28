@@ -1,5 +1,15 @@
 import { v4 as uuidv4 } from "uuid";
 import { AudioModule } from "../Module";
+import {
+  AnyInput,
+  AnyOuput,
+  AudioInput,
+  AudioOutput,
+  ForwardInput,
+  ForwardOutput,
+  MidiInput,
+  MidiOutput,
+} from ".";
 
 export interface IIONode {
   name: string;
@@ -23,12 +33,56 @@ export enum IOType {
   ForwardOutput = "forwardOutput",
 }
 
+export function plugCompatibleIO(input: AnyInput, output: AnyOuput) {
+  if (input instanceof AudioInput && output instanceof AudioOutput) {
+    input.plug(output);
+  } else if (input instanceof MidiInput && output instanceof MidiOutput) {
+    input.plug(output);
+  } else if (input instanceof ForwardInput && output instanceof ForwardOutput) {
+    input.plug(output);
+  } else if (input instanceof ForwardInput && output instanceof MidiOutput) {
+    input.plug(output);
+  } else if (input instanceof ForwardInput && output instanceof AudioOutput) {
+    input.plug(output);
+  } else if (input instanceof AudioInput && output instanceof ForwardOutput) {
+    input.plug(output);
+  } else if (input instanceof MidiInput && output instanceof ForwardOutput) {
+    input.plug(output);
+  } else {
+    throw Error("Input and output type is not compatible");
+  }
+}
+
+export function unPlugCompatibleIO(input: AnyInput, output: AnyOuput) {
+  if (input instanceof AudioInput && output instanceof AudioOutput) {
+    input.unPlug(output);
+  } else if (input instanceof MidiInput && output instanceof MidiOutput) {
+    input.unPlug(output);
+  } else if (input instanceof ForwardInput && output instanceof ForwardOutput) {
+    input.unPlug(output);
+  } else if (input instanceof ForwardInput && output instanceof MidiOutput) {
+    input.unPlug(output);
+  } else if (input instanceof ForwardInput && output instanceof AudioOutput) {
+    input.unPlug(output);
+  } else if (input instanceof AudioInput && output instanceof ForwardOutput) {
+    input.unPlug(output);
+  } else if (input instanceof MidiInput && output instanceof ForwardOutput) {
+    input.unPlug(output);
+  } else {
+    throw Error("Input and output type is not compatible");
+  }
+}
+
 export default abstract class IONode implements IIONode {
   id: string;
   ioType!: IOType;
   name!: string;
   plugableModule: AudioModule;
   connections: IONode[] = [];
+
+  static unPlugAll(io: IONode): void {
+    io.connections.forEach((otherIO) => io.unPlug(otherIO));
+  }
 
   constructor(plugableModule: AudioModule, props: IIONode) {
     this.id = uuidv4();
@@ -49,9 +103,7 @@ export default abstract class IONode implements IIONode {
     if (plugOther) io.unPlug(this, false);
   }
 
-  unPlugAll() {
-    this.connections.forEach((c) => this.unPlug(c));
-  }
+  abstract unPlugAll(): void;
 
   serialize(): IIOSerialize {
     return {

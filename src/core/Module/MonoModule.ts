@@ -14,8 +14,9 @@ import {
   IMidiOutput,
 } from "../IO";
 import { MidiEvent } from "../../core/midi";
-import { AudioModule, PolyModule } from "./index";
+import { AudioModule } from "./index";
 import Note from "../../core/Note";
+import { plugCompatibleIO } from "../IO/Node";
 
 export interface Startable {
   start(time: number): void;
@@ -93,24 +94,13 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
   }
 
   plug(audioModule: AudioModule, from: string, to: string) {
-    if (audioModule instanceof PolyModule) {
-      audioModule.audioModules.forEach((m) => this.plug(m, from, to));
-      return;
-    }
-
     const output = this.outputs.findByName(from);
     if (!output) throw Error(`Output ${from} not exist`);
 
     const input = audioModule.inputs.findByName(to);
     if (!input) throw Error(`Input ${to} not exist`);
 
-    if (output instanceof AudioOutput && input instanceof AudioInput) {
-      output.plug(input);
-    } else if (output instanceof MidiOutput && input instanceof MidiInput) {
-      output.plug(input);
-    } else {
-      throw Error("This output could not plugged to this input");
-    }
+    plugCompatibleIO(input, output);
   }
 
   unPlugAll() {
@@ -134,6 +124,9 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
   };
 
   onMidiEvent = (midiEvent: MidiEvent) => {
+    if (midiEvent.voiceNo !== undefined && midiEvent.voiceNo !== this.voiceNo)
+      return;
+
     const { note, triggeredAt } = midiEvent;
 
     switch (midiEvent.type) {

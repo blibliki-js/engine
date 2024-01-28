@@ -1,6 +1,12 @@
-import IONode, { IOType, IIONode } from "./Node";
+import IONode, {
+  IOType,
+  IIONode,
+  plugCompatibleIO,
+  unPlugCompatibleIO,
+} from "./Node";
 import Module, { Connectable, PolyModule } from "../Module";
 import { AnyObject } from "../../types";
+import { AnyInput, AnyOuput } from ".";
 
 export interface IForwardInput extends IIONode {
   ioType: IOType.ForwardInput;
@@ -22,15 +28,71 @@ export class ForwardInput extends IONode implements IForwardInput {
     this.checkNameValidity();
   }
 
-  plug(io: ForwardOutput, plugOther: boolean = true) {
-    super.plug(io, plugOther);
+  get subInputs() {
+    return this.plugableModule.audioModules.map((am) => {
+      const input = am.inputs.findByName(this.name);
+      if (!input) throw Error(`Could not forward input ${this.name}`);
+
+      return input;
+    });
   }
 
-  unPlug(io: ForwardOutput, plugOther: boolean = true) {
-    super.plug(io, plugOther);
+  get subModules() {
+    return this.plugableModule.audioModules;
   }
 
-  checkNameValidity() {
+  subModule(voiceNo: number) {
+    const mod = this.subModules.find((m) => m.voiceNo === voiceNo);
+    if (!mod) throw Error(`Submodule with voiceNo ${voiceNo} not found`);
+
+    return mod;
+  }
+
+  subInput(voiceNo: number) {
+    const input = this.subModule(voiceNo).inputs.findByName(this.name);
+    if (!input) throw Error(`Could not forward input ${this.name}`);
+
+    return input;
+  }
+
+  plug(io: AnyOuput, plugOther: boolean = true) {
+    super.plug(io, plugOther);
+
+    if (io instanceof ForwardOutput) {
+      this.subModules.forEach((am) => {
+        const input = am.inputs.findByName(this.name);
+        if (!input) throw Error(`Could not forward input ${this.name}`);
+
+        const output = io.subOutput(am.voiceNo as number);
+        plugCompatibleIO(input, output);
+      });
+    } else {
+      this.subInputs.forEach((input) => plugCompatibleIO(input, io));
+    }
+  }
+
+  unPlug(io: AnyOuput, plugOther: boolean = true) {
+    super.unPlug(io, plugOther);
+    if (!plugOther) return;
+
+    if (io instanceof ForwardOutput) {
+      this.subModules.forEach((am) => {
+        const input = am.inputs.findByName(this.name);
+        if (!input) throw Error(`Could not forward input ${this.name}`);
+
+        const output = io.subOutput(am.voiceNo as number);
+        unPlugCompatibleIO(input, output);
+      });
+    } else {
+      this.subInputs.forEach((input) => unPlugCompatibleIO(input, io));
+    }
+  }
+
+  unPlugAll() {
+    IONode.unPlugAll(this);
+  }
+
+  private checkNameValidity() {
     const input = this.plugableModule.audioModules[0].inputs.findByName(
       this.name
     );
@@ -52,15 +114,73 @@ export class ForwardOutput extends IONode implements IForwardOutput {
     this.checkNameValidity();
   }
 
-  plug(io: ForwardInput, plugOther: boolean = true) {
-    super.plug(io, plugOther);
+  get subOutputs() {
+    return this.subModules.map((am) => {
+      const output = am.outputs.findByName(this.name);
+      if (!output) throw Error(`Could not forward input ${this.name}`);
+
+      return output;
+    });
   }
 
-  unPlug(io: ForwardInput, plugOther: boolean = true) {
-    super.plug(io, plugOther);
+  get subModules() {
+    return this.plugableModule.audioModules;
   }
 
-  checkNameValidity() {
+  subModule(voiceNo: number) {
+    const mod = this.subModules.find((m) => m.voiceNo === voiceNo);
+    if (!mod) throw Error(`Submodule with voiceNo ${voiceNo} not found`);
+
+    return mod;
+  }
+
+  subOutput(voiceNo: number) {
+    const output = this.subModule(voiceNo).outputs.findByName(this.name);
+    if (!output) throw Error(`Could not forward input ${this.name}`);
+
+    return output;
+  }
+
+  plug(io: AnyInput, plugOther: boolean = true) {
+    super.plug(io, plugOther);
+
+    if (io instanceof ForwardInput) {
+      this.subModules.forEach((am) => {
+        const output = am.outputs.findByName(this.name);
+        if (!output) throw Error(`Could not forward output ${this.name}`);
+
+        const input = io.subInput(am.voiceNo as number);
+
+        plugCompatibleIO(input, output);
+      });
+    } else {
+      this.subOutputs.forEach((output) => plugCompatibleIO(io, output));
+    }
+  }
+
+  unPlug(io: AnyInput, plugOther: boolean = true) {
+    super.unPlug(io, plugOther);
+    if (!plugOther) return;
+
+    if (io instanceof ForwardInput) {
+      this.subModules.forEach((am) => {
+        const output = am.outputs.findByName(this.name);
+        if (!output) throw Error(`Could not forward output ${this.name}`);
+
+        const input = io.subInput(am.voiceNo as number);
+
+        unPlugCompatibleIO(input, output);
+      });
+    } else {
+      this.subOutputs.forEach((output) => unPlugCompatibleIO(io, output));
+    }
+  }
+
+  unPlugAll() {
+    IONode.unPlugAll(this);
+  }
+
+  private checkNameValidity() {
     const output = this.plugableModule.audioModules[0].outputs.findByName(
       this.name
     );
