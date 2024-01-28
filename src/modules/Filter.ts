@@ -1,6 +1,4 @@
 import { Filter as InternalFilter, FilterRollOff } from "tone";
-
-import { MonoFreqEnvelope } from "./Envelope";
 import Module, { PolyModule } from "../core/Module";
 
 interface FilterInterface {
@@ -22,8 +20,6 @@ const InitialProps: FilterInterface = {
 };
 
 class MonoFilter extends Module<InternalFilter, FilterInterface> {
-  private _envelope: MonoFreqEnvelope;
-
   constructor(name: string, props: FilterProps) {
     super(new InternalFilter({ type: "lowpass" }), {
       name,
@@ -40,12 +36,7 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
 
   set cutoff(value: number) {
     this._props = { ...this.props, cutoff: value };
-
-    if (this._envelope) {
-      this._envelope.frequency = value;
-    } else {
-      this.internalModule.frequency.value = value;
-    }
+    this.internalModule.frequency.value = value;
   }
 
   get filterType() {
@@ -86,10 +77,6 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
 
   set envelopeAmount(value: number) {
     this._props = { ...this.props, envelopeAmount: value };
-
-    if (!this._envelope) return;
-
-    this._envelope.amount = value;
   }
 }
 
