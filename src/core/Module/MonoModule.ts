@@ -207,7 +207,7 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
 
   protected registerDefaultMidiInput() {
     this.registerMidiInput({
-      name: "midi input",
+      name: "midi in",
       onMidiEvent: this.onMidiEvent,
     });
   }

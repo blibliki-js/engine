@@ -165,7 +165,7 @@ export default class Oscillator extends PolyModule<
     });
 
     this.registerBasicOutputs();
-    this.registerInput({ name: "midi input" });
+    this.registerInput({ name: "midi in" });
   }
 
   start(time: number) {

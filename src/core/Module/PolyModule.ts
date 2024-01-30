@@ -158,7 +158,7 @@ export default abstract class PolyModule<
   protected registerBasicInputs() {
     this.registerInput({ name: "input" });
     this.registerMidiInput({
-      name: "midi input",
+      name: "midi in",
       onMidiEvent: this.onMidiEvent,
     });
   }
