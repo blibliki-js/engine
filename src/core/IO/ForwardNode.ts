@@ -57,6 +57,7 @@ export class ForwardInput extends IONode implements IForwardInput {
 
   plug(io: AnyOuput, plugOther: boolean = true) {
     super.plug(io, plugOther);
+    if (!plugOther && io instanceof ForwardOutput) return;
 
     if (io instanceof ForwardOutput) {
       this.subModules.forEach((am) => {
@@ -73,7 +74,7 @@ export class ForwardInput extends IONode implements IForwardInput {
 
   unPlug(io: AnyOuput, plugOther: boolean = true) {
     super.unPlug(io, plugOther);
-    if (!plugOther) return;
+    if (!plugOther && io instanceof ForwardOutput) return;
 
     if (io instanceof ForwardOutput) {
       this.subModules.forEach((am) => {
@@ -143,6 +144,7 @@ export class ForwardOutput extends IONode implements IForwardOutput {
 
   plug(io: AnyInput, plugOther: boolean = true) {
     super.plug(io, plugOther);
+    if (!plugOther && io instanceof ForwardInput) return;
 
     if (io instanceof ForwardInput) {
       this.subModules.forEach((am) => {
@@ -160,7 +162,7 @@ export class ForwardOutput extends IONode implements IForwardOutput {
 
   unPlug(io: AnyInput, plugOther: boolean = true) {
     super.unPlug(io, plugOther);
-    if (!plugOther) return;
+    if (!plugOther && io instanceof ForwardInput) return;
 
     if (io instanceof ForwardInput) {
       this.subModules.forEach((am) => {
