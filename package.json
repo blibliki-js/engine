@@ -15,7 +15,8 @@
     "build": "parcel build",
     "watch": "parcel watch",
     "lint": "eslint src",
-    "ts:check": "tsc --noEmit"
+    "ts:check": "tsc --noEmit",
+    "test": "jest"
   },
   "eslintConfig": {
     "extends": []
