@@ -36,6 +36,10 @@
   "devDependencies": {
     "@parcel/packager-ts": "2.11.0",
     "@parcel/transformer-typescript-types": "2.11.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/jest": "^29.2.0",
     "@types/node": "^16.7.13",
     "@types/uuid": "^8.3.4",
@@ -45,6 +49,7 @@
     "jest": "^29.2.2",
     "parcel": "^2.11.0",
     "prettier": "^2.7.1",
+    "rollup": "^4.10.0",
     "ts-jest": "^29.0.3",
     "typescript": "^5.2.2",
     "typescript-language-server": "^4.0.0"
