@@ -48,13 +48,5 @@ export default class FreqEnvelope extends PolyBase<MonoFreqEnvelope> {
 
   constructor(name: string, props: Partial<EnvelopeInterface>) {
     super(name, MonoFreqEnvelope, props);
-
-    this.registerOutputs();
-  }
-
-  protected registerOutputs() {
-    this.registerOutput({
-      name: "frequency",
-    });
   }
 }

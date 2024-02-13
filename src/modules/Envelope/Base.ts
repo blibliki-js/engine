@@ -49,6 +49,9 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
       name,
       props: { ...InitialProps, ...props },
     });
+
+    this.registerBasicInputs();
+    this.registerBasicOutputs();
   }
 
   get attack() {
