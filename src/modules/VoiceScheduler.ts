@@ -13,8 +13,15 @@ export default class VoiceScheduler extends PolyModule<
   static moduleName = "VoiceScheduler";
   midiOutput: MidiOutput;
 
-  constructor(name: string, props: VoiceSchedulerInterface) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: VoiceSchedulerInterface;
+  }) {
+    const { id, name, props } = params;
+
     super({
+      id,
       name,
       child: Voice,
       props,
@@ -98,8 +105,15 @@ class Voice extends Module<DummnyInternalModule, VoiceSchedulerInterface> {
   activeNote: string | null;
   triggeredAt: number;
 
-  constructor(name: string, props: VoiceSchedulerInterface) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: VoiceSchedulerInterface;
+  }) {
+    const { id, name, props } = params;
+
     super(new DummnyInternalModule(), {
+      id,
       name,
       props,
     });

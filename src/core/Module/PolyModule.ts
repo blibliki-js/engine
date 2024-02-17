@@ -15,10 +15,16 @@ import {
 } from "../IO";
 import { AudioModule } from "./index";
 import { plugCompatibleIO } from "../IO/Node";
+import { deterministicId } from "../../utils";
 
 interface PolyModuleInterface<MonoAudioModule, PropsInterface> {
+  id?: string;
   name: string;
-  child: new (name: string, props: PropsInterface) => MonoAudioModule;
+  child: new (params: {
+    id?: string;
+    name: string;
+    props: PropsInterface;
+  }) => MonoAudioModule;
   props: PropsInterface;
 }
 
@@ -29,7 +35,11 @@ export default abstract class PolyModule<
   static readonly moduleName: string;
 
   readonly id: string;
-  readonly child: new (name: string, props: PropsInterface) => MonoAudioModule;
+  readonly child: new (params: {
+    id?: string;
+    name: string;
+    props: PropsInterface;
+  }) => MonoAudioModule;
   _name: string;
   audioModules: MonoAudioModule[];
   inputs: IOCollection<ForwardInput | MidiInput>;
@@ -37,7 +47,9 @@ export default abstract class PolyModule<
   private _numberOfVoices: number;
 
   constructor(params: PolyModuleInterface<MonoAudioModule, PropsInterface>) {
-    this.id = uuidv4();
+    this.id = params.id || uuidv4();
+    delete params.id;
+
     this.audioModules = [];
 
     const { child, props: extraProps, ...basicProps } = params;
@@ -170,16 +182,21 @@ export default abstract class PolyModule<
       const audioModule = this.audioModules.pop();
       audioModule?.dispose();
     } else {
-      const props = this.audioModules.length
-        ? this.props
-        : ({} as PropsInterface);
-      const audioModule = new this.child(this.name, {
-        ...props,
-        voiceNo: this.audioModules.length,
+      const voiceNo = this.audioModules.length;
+      const id = deterministicId(this.id, voiceNo.toString());
+      const props = voiceNo === 0 ? ({} as PropsInterface) : this.props;
+      const audioModule = new this.child({
+        id,
+        name: this.name,
+        props: {
+          ...props,
+          voiceNo,
+        },
       });
 
-      if (audioModule instanceof PolyModule)
+      if (audioModule instanceof PolyModule) {
         throw Error("Polymodule not supported");
+      }
 
       this.audioModules.push(audioModule);
     }

@@ -17,12 +17,16 @@ export default abstract class Effect<
   InternalEffect extends EffectLike,
   ModuleInterface extends EffectInterface
 > extends Module<InternalEffect, ModuleInterface> {
-  constructor(
-    name: string,
-    internalModule: InternalEffect,
-    props: Partial<ModuleInterface>
-  ) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    internalModule: InternalEffect;
+    props: Partial<ModuleInterface>;
+  }) {
+    const { id, name, internalModule, props } = params;
+
     super(internalModule, {
+      id,
       name,
       props: { ...InitialProps, ...props } as ModuleInterface,
     });

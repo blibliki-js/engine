@@ -30,8 +30,14 @@ export default class Sequencer extends Module<
   midiOutput: MidiOutput;
   private part: Part<ISequence>;
 
-  constructor(name: string, props: Partial<ISequencer>) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<ISequencer>;
+  }) {
+    const { id, name, props } = params;
     super(new DummnyInternalModule(), {
+      id,
       name,
       props: { ...InitialProps(), ...props },
     });

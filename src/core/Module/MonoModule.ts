@@ -17,6 +17,7 @@ import { MidiEvent } from "../../core/midi";
 import { AudioModule } from "./index";
 import Note from "../../core/Note";
 import { plugCompatibleIO } from "../IO/Node";
+import { AtLeast } from "../../types";
 
 export interface Startable {
   start(time: number): void;
@@ -35,6 +36,7 @@ export interface Triggerable {
 }
 
 export interface ModuleInterface<PropsInterface> {
+  id: string;
   name: string;
   props: PropsInterface;
   voiceNo?: number;
@@ -70,13 +72,14 @@ abstract class Module<InternalModule extends Connectable, PropsInterface>
 
   constructor(
     internalModule: InternalModule,
-    props: Partial<ModuleInterface<PropsInterface>>
+    props: AtLeast<ModuleInterface<PropsInterface>, "name">
   ) {
     this.internalModule = internalModule;
-    this.id = uuidv4();
+    this.id = props.id || uuidv4();
+    delete props.id;
 
     this.inputs = new IOCollection<AudioInput | MidiInput>(this);
-    this.outputs = new IOCollection<AudioOutput>(this);
+    this.outputs = new IOCollection<AudioOutput | MidiOutput>(this);
 
     Object.assign(this, props);
   }

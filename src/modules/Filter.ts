@@ -20,8 +20,11 @@ const InitialProps: FilterInterface = {
 };
 
 class MonoFilter extends Module<InternalFilter, FilterInterface> {
-  constructor(name: string, props: FilterProps) {
+  constructor(params: { id?: string; name: string; props: FilterProps }) {
+    const { id, name, props } = params;
+
     super(new InternalFilter({ type: "lowpass" }), {
+      id,
       name,
       props: { ...InitialProps, ...props },
     });
@@ -83,8 +86,15 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
 export default class Filter extends PolyModule<MonoFilter, FilterInterface> {
   static moduleName = "Filter";
 
-  constructor(name: string, props: Partial<FilterInterface>) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<FilterInterface>;
+  }) {
+    const { id, name, props } = params;
+
     super({
+      id,
       name,
       child: MonoFilter,
       props: { ...InitialProps, ...props },

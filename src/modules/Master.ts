@@ -9,8 +9,9 @@ export default class Master extends Module<
 > {
   static moduleName = "Master";
 
-  constructor() {
+  constructor({ id }: { id?: string }) {
     super(getDestination(), {
+      id,
       name: "Master",
     });
 

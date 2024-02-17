@@ -19,8 +19,14 @@ export default class VirtualMidi extends Module<
   static moduleName = "VirtualMidi";
   midiOutput: MidiOutput;
 
-  constructor(name: string, props: VirtualMidiInterface) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: VirtualMidiInterface;
+  }) {
+    const { id, name, props } = params;
     super(new DummnyInternalModule(), {
+      id,
       name,
       props: { ...InitialProps, ...props },
     });

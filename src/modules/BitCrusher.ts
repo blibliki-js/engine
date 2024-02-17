@@ -16,10 +16,21 @@ export default class BitCrusher extends Effect<
 > {
   static moduleName = "BitCrusher";
 
-  constructor(name: string, props: Partial<BitCrusherInterface>) {
-    super(name, new InternalBitCrasher(), {
-      ...InitialProps,
-      ...props,
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<BitCrusherInterface>;
+  }) {
+    const { id, name, props } = params;
+
+    super({
+      id,
+      name,
+      internalModule: new InternalBitCrasher(),
+      props: {
+        ...InitialProps,
+        ...props,
+      },
     });
   }
 

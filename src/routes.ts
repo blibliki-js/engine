@@ -1,12 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 
 import Engine from "./";
+import { fromPairs } from "lodash";
+import { plugCompatibleIO } from "./core/IO/Node";
 
 export interface RouteProps {
   sourceId: string;
-  outputName: string;
   destinationId: string;
-  inputName: string;
 }
 
 export interface RouteInterface extends RouteProps {
@@ -20,25 +20,31 @@ export function createRoute(props: RouteProps) {
 }
 
 export function applyRoutes(routes: RouteInterface[]) {
-  Object.values(Engine.modules).forEach((m) => m.unPlugAll());
+  const audioModules = Object.values(Engine.modules);
+  audioModules.forEach((m) => m.unPlugAll());
+  const inputs = fromPairs(
+    audioModules
+      .map((am) => am.inputs.collection)
+      .flat()
+      .map((io) => [io.id, io])
+  );
+  const outputs = fromPairs(
+    audioModules
+      .map((am) => am.outputs.collection)
+      .flat()
+      .map((io) => [io.id, io])
+  );
 
-  const succesedConnections = routes
-    .sort((r1, r2) => {
-      if (r1.outputName === "number of voices") return -1;
-      if (r2.outputName === "number of voices") return 1;
+  const succesedConnections = routes.map((route) => {
+    const { sourceId, destinationId } = route;
 
-      return 0;
-    })
-    .map((route) => {
-      const { sourceId, outputName, destinationId, inputName } = route;
+    const source = outputs[sourceId];
+    const destination = inputs[destinationId];
 
-      const source = Engine.findById(sourceId);
-      const destination = Engine.findById(destinationId);
+    plugCompatibleIO(destination, source);
 
-      source.plug(destination, outputName, inputName);
-
-      return true;
-    });
+    return true;
+  });
 
   if (succesedConnections.every((v) => v)) {
     console.log("######## Routes succesfully applied");

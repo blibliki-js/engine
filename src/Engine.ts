@@ -20,7 +20,6 @@ interface InitializeInterface {
 class Engine {
   midiDeviceManager: MidiDeviceManager;
   private static instance: Engine;
-  private _master: Master;
   private context: Context;
   private propsUpdateCallbacks: { (id: string, props: AnyObject): void }[];
   private _isStarted = false;
@@ -49,7 +48,7 @@ class Engine {
 
   initialize(props: InitializeInterface) {
     return new Promise((resolve) => {
-      if (this.context) return resolve({ master: this.master });
+      if (this.context) return resolve({});
 
       this.context = new Context(props.context);
       setContext(this.context);
@@ -58,15 +57,20 @@ class Engine {
       this.midiDeviceManager = new MidiDeviceManager();
 
       setTimeout(() => {
-        resolve({ master: this.master });
+        resolve({});
       }, 0);
     });
   }
 
-  addModule(params: { name: string; type: string; props?: AnyObject }) {
-    const { name, type, props = {} } = params;
+  addModule(params: {
+    id?: string;
+    name: string;
+    type: string;
+    props?: AnyObject;
+  }) {
+    const { id, name, type, props = {} } = params;
 
-    const audioModule = createModule(name, type, {});
+    const audioModule = createModule({ id, name, type, props: {} });
     audioModule.props = props;
     this.modules[audioModule.id] = audioModule;
 
@@ -126,15 +130,6 @@ class Engine {
     this.updateRoutes();
   }
 
-  get master() {
-    if (this._master) return this._master.serialize();
-
-    const masterProps = this.addModule({ name: "Master", type: "Master" });
-    this._master = this.modules[masterProps.id] as Master;
-
-    return masterProps;
-  }
-
   triggerVirtualMidi(id: string, noteName: string, type: "noteOn" | "noteOff") {
     const virtualMidi = this.findById(id) as VirtualMidi;
 
@@ -148,7 +143,7 @@ class Engine {
       m.dispose();
     });
 
-    this.modules = this._master ? { [this._master.id]: this._master } : {};
+    this.modules = {};
     this.routes = {};
   }
 

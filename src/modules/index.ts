@@ -29,14 +29,18 @@ export {
   EnvelopeStages,
 } from "./Envelope";
 
-export function createModule(
-  name: string,
-  type: string,
-  props: any
-): AudioModule {
+export interface ICreateModule {
+  id?: string;
+  name: string;
+  type: string;
+  props: any;
+}
+
+export function createModule(params: ICreateModule): AudioModule {
+  const { id, type, name, props } = params;
   const klass = moduleClassFromType(type);
 
-  return new klass(name, props);
+  return new klass({ id, name, props });
 }
 
 function moduleClassFromType(type: string) {

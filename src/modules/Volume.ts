@@ -12,8 +12,15 @@ const InitialProps: VolumeInterface = {
 };
 
 class MonoVolume extends Module<Vol, VolumeInterface> {
-  constructor(name: string, props: Partial<VolumeInterface>) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<VolumeInterface>;
+  }) {
+    const { id, name, props } = params;
+
     super(new Vol(), {
+      id,
       name,
       props: { ...InitialProps, ...props },
     });
@@ -45,8 +52,15 @@ class MonoVolume extends Module<Vol, VolumeInterface> {
 export default class Volume extends PolyModule<MonoVolume, VolumeInterface> {
   static moduleName = "Volume";
 
-  constructor(name: string, props: Partial<VolumeInterface>) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<VolumeInterface>;
+  }) {
+    const { id, name, props } = params;
+
     super({
+      id,
       name,
       child: MonoVolume,
       props: { ...InitialProps, ...props },

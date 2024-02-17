@@ -40,12 +40,16 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
   activeNote?: string;
   triggeredAt: number;
 
-  constructor(
-    name: string,
-    internalModule: EnvelopeLike,
-    props: EnvelopeInterface
-  ) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    internalModule: EnvelopeLike;
+    props: EnvelopeInterface;
+  }) {
+    const { id, name, props, internalModule } = params;
+
     super(internalModule, {
+      id,
       name,
       props: { ...InitialProps, ...props },
     });
@@ -116,12 +120,19 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
 export abstract class PolyBase<
   EnvelopeModule extends Module<Connectable, EnvelopeInterface>
 > extends PolyModule<EnvelopeModule, EnvelopeInterface> {
-  constructor(
-    name: string,
-    child: new (name: string, props: EnvelopeInterface) => EnvelopeModule,
-    props: Partial<EnvelopeInterface>
-  ) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    child: new (params: {
+      id?: string;
+      name: string;
+      props: EnvelopeInterface;
+    }) => EnvelopeModule;
+    props: Partial<EnvelopeInterface>;
+  }) {
+    const { id, name, child, props } = params;
     super({
+      id,
       name,
       child,
       props: { ...InitialProps, ...props },
@@ -133,18 +144,30 @@ export abstract class PolyBase<
 }
 
 class MonoEnvelope extends EnvelopeModule<Env> {
-  constructor(name: string, props: EnvelopeInterface) {
-    super(name, new Env(), props);
+  constructor(params: { id?: string; name: string; props: EnvelopeInterface }) {
+    const { id, name, props } = params;
+    super({ id, name, internalModule: new Env(), props });
   }
 }
 
 export class Envelope extends PolyBase<MonoEnvelope> {
   static moduleName = "Envelope";
 
-  constructor(name: string, props: Partial<EnvelopeInterface>) {
-    super(name, MonoEnvelope, {
-      ...InitialProps,
-      ...props,
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<EnvelopeInterface>;
+  }) {
+    const { id, name, props } = params;
+
+    super({
+      id,
+      name,
+      child: MonoEnvelope,
+      props: {
+        ...InitialProps,
+        ...props,
+      },
     });
   }
 }

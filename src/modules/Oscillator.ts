@@ -28,8 +28,15 @@ class MonoOscillator
 {
   private _note: Note;
 
-  constructor(name: string, props: Partial<OscillatorInterface>) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<OscillatorInterface>;
+  }) {
+    const { id, name, props } = params;
+
     super(new Osc(), {
+      id,
       name,
       props: { ...InitialProps, ...props },
     });
@@ -157,8 +164,15 @@ export default class Oscillator extends PolyModule<
 > {
   static moduleName = "Oscillator";
 
-  constructor(name: string, props: Partial<OscillatorInterface>) {
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<OscillatorInterface>;
+  }) {
+    const { id, name, props } = params;
+
     super({
+      id,
       name,
       child: MonoOscillator,
       props: { ...InitialProps, ...props },

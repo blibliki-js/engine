@@ -15,10 +15,21 @@ const InitialProps: Partial<ReverbInterface> = {
 export default class Reverb extends Effect<InternalReverb, ReverbInterface> {
   static moduleName = "Reverb";
 
-  constructor(name: string, props: Partial<ReverbInterface>) {
-    super(name, new InternalReverb(), {
-      ...InitialProps,
-      ...props,
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<ReverbInterface>;
+  }) {
+    const { id, name, props } = params;
+
+    super({
+      id,
+      name,
+      internalModule: new InternalReverb(),
+      props: {
+        ...InitialProps,
+        ...props,
+      },
     });
   }
 

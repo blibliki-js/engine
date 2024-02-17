@@ -16,10 +16,17 @@ export class MonoFreqEnvelope extends Base<FrequencyEnvelope> {
   private _amount: number;
   filter: Filter;
 
-  constructor(name: string, props: EnvelopeInterface) {
-    super(name, new FrequencyEnvelope(), {
-      ...InitialProps,
-      ...props,
+  constructor(params: { id?: string; name: string; props: EnvelopeInterface }) {
+    const { id, name, props } = params;
+
+    super({
+      id,
+      name,
+      internalModule: new FrequencyEnvelope(),
+      props: {
+        ...InitialProps,
+        ...props,
+      },
     });
   }
 
@@ -46,7 +53,12 @@ export class MonoFreqEnvelope extends Base<FrequencyEnvelope> {
 export default class FreqEnvelope extends PolyBase<MonoFreqEnvelope> {
   static moduleName = "FreqEnvelope";
 
-  constructor(name: string, props: Partial<EnvelopeInterface>) {
-    super(name, MonoFreqEnvelope, props);
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<EnvelopeInterface>;
+  }) {
+    const { id, name, props } = params;
+    super({ id, name, child: MonoFreqEnvelope, props });
   }
 }

@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { AudioModule } from "../Module";
 import {
   AnyInput,
@@ -10,6 +9,7 @@ import {
   MidiInput,
   MidiOutput,
 } from ".";
+import { deterministicId } from "../../utils";
 
 export interface IIONode {
   name: string;
@@ -85,8 +85,8 @@ export default abstract class IONode implements IIONode {
   }
 
   constructor(plugableModule: AudioModule, props: IIONode) {
-    this.id = uuidv4();
     this.plugableModule = plugableModule;
+    this.id = deterministicId(plugableModule.id, props.name);
 
     Object.assign(this, props);
   }

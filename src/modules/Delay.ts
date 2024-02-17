@@ -15,10 +15,21 @@ const InitialProps: Partial<DelayInterface> = {
 export default class Delay extends Effect<FeedbackDelay, DelayInterface> {
   static moduleName = "Delay";
 
-  constructor(name: string, props: Partial<DelayInterface>) {
-    super(name, new FeedbackDelay(), {
-      ...InitialProps,
-      ...props,
+  constructor(params: {
+    id?: string;
+    name: string;
+    props: Partial<DelayInterface>;
+  }) {
+    const { id, name, props } = params;
+
+    super({
+      id,
+      name,
+      internalModule: new FeedbackDelay(),
+      props: {
+        ...InitialProps,
+        ...props,
+      },
     });
   }
 
