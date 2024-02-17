@@ -7,6 +7,7 @@
   "types": "dist/build/index.d.ts",
   "dependencies": {
     "@types/lodash": "^4.14.186",
+    "crypto-js": "^4.2.0",
     "lodash": "^4.17.21",
     "tone": "^14.7.77",
     "uuid": "^8.3.2"
@@ -38,6 +39,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@types/crypto-js": "^4.2.2",
     "@types/jest": "^29.2.0",
     "@types/node": "^16.7.13",
     "@types/uuid": "^8.3.4",
