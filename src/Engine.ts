@@ -2,7 +2,7 @@ import { Context, now, setContext } from "tone";
 import { MidiEvent, MidiDeviceManager } from "./core/midi";
 
 import { AudioModule, Startable } from "./core/Module";
-import { Master, createModule, VirtualMidi, VoiceScheduler } from "./modules";
+import { createModule, VirtualMidi, VoiceScheduler } from "./modules";
 import { applyRoutes, createRoute, RouteInterface, RouteProps } from "./routes";
 import { AnyObject } from "./types";
 
@@ -138,8 +138,6 @@ class Engine {
 
   dispose() {
     Object.values(this.modules).forEach((m) => {
-      if (m instanceof Master) return;
-
       m.dispose();
     });
 

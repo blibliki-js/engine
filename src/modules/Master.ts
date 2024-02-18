@@ -17,4 +17,9 @@ export default class Master extends Module<
 
     this.registerBasicInputs();
   }
+
+  dispose(): void {
+    this.inputs.unPlugAll();
+    this.outputs.unPlugAll();
+  }
 }
