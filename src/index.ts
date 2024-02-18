@@ -7,5 +7,5 @@ export type { INote } from "./core/Note";
 export type { ModuleInterface, AudioModule } from "./core/Module";
 export type { ISequence } from "./modules";
 
-export type { RouteInterface } from "./routes";
+export type { RouteInterface, RouteProps } from "./routes";
 export type { IIOSerialize as IOProps } from "./core/IO";

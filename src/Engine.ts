@@ -4,7 +4,7 @@ import { MidiEvent, MidiDeviceManager } from "./core/midi";
 import { AudioModule, Startable } from "./core/Module";
 import { createModule, VirtualMidi, VoiceScheduler } from "./modules";
 import { applyRoutes, createRoute, RouteInterface, RouteProps } from "./routes";
-import { AnyObject } from "./types";
+import { AnyObject, Optional } from "./types";
 
 type LatencyHint = "interactive" | "playback" | "balanced";
 
@@ -115,7 +115,7 @@ class Engine {
     return audioModule.serialize();
   }
 
-  addRoute(props: RouteProps) {
+  addRoute(props: Optional<RouteInterface, "id">) {
     const route = createRoute(props);
     const newRoutes = { ...this.routes, [route.id]: route };
 
