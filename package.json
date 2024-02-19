@@ -1,6 +1,6 @@
 {
   "name": "@blibliki/engine",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "source": "src/index.ts",
   "main": "dist/main.cjs.js",
   "module": "dist/main.esm.js",
