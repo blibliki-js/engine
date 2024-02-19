@@ -3,7 +3,7 @@ import { MidiEvent, MidiDeviceManager } from "./core/midi";
 
 import { AudioModule, Startable } from "./core/Module";
 import { createModule, VirtualMidi, VoiceScheduler } from "./modules";
-import { applyRoutes, createRoute, RouteInterface, RouteProps } from "./routes";
+import { applyRoutes, createRoute, RouteInterface } from "./routes";
 import { AnyObject, Optional } from "./types";
 
 type LatencyHint = "interactive" | "playback" | "balanced";
