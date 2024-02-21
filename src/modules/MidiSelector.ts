@@ -59,10 +59,10 @@ export default class MidiSelector extends Module<
     if (!this.onMidiEvent || !midiId) return; // Ugly hack because of weird super bug
 
     const midiDevice = Engine.midiDeviceManager.find(midiId);
-    midiDevice?.addEventListener(this.onMidiEvent);
+    midiDevice?.addEventListener(this.forwardMidiEvent);
   }
 
-  private _onMidiEvent = (midiEvent: MidiEvent) => {
+  private forwardMidiEvent = (midiEvent: MidiEvent) => {
     this.midiOutput.onMidiEvent(midiEvent);
   };
 
@@ -70,6 +70,6 @@ export default class MidiSelector extends Module<
     if (!this.selectedId) return;
 
     const midiDevice = Engine.midiDeviceManager.find(this.selectedId);
-    midiDevice?.removeEventListener(this._onMidiEvent);
+    midiDevice?.removeEventListener(this.forwardMidiEvent);
   }
 }
