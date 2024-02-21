@@ -48,16 +48,18 @@ export default class VirtualMidi extends Module<
     this.midiOutput.onMidiEvent(midiEvent);
   }
 
-  triggerAttack = (note: Note) => {
+  triggerAttack = (note: Note, triggerAttack: number) => {
     this.activeNotes = [...this.activeNotes, note.fullName];
     Engine._triggerPropsUpdate(this.id, this.props);
+    this.sendMidi(MidiEvent.fromNote(note, true, triggerAttack));
   };
 
-  triggerRelease = (note: Note) => {
+  triggerRelease = (note: Note, triggerAttack: number) => {
     this.activeNotes = this.activeNotes.filter(
       (name) => name !== note.fullName
     );
     Engine._triggerPropsUpdate(this.id, this.props);
+    this.sendMidi(MidiEvent.fromNote(note, false, triggerAttack));
   };
 
   serialize() {
