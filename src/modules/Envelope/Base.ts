@@ -105,7 +105,10 @@ export default abstract class EnvelopeModule<EnvelopeLike extends Env>
   };
 
   triggerRelease = (note: Note, triggeredAt: number) => {
+    if (this.activeNote && this.activeNote !== note.fullName) return;
+
     this.internalModule.triggerRelease(triggeredAt);
+    this.activeNote = undefined;
   };
 
   private maxTime(stage: EnvelopeStages): number {
