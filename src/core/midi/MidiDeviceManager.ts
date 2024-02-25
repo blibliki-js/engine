@@ -1,10 +1,13 @@
-import MidiDevice from "./MidiDevice";
+import ComputerKeyboardInput from "./ComputerKeyboardInput";
+import MidiDevice, { IMidiInput } from "./MidiDevice";
 
 export default class MidiDeviceManager {
   devices: { [Key: string]: MidiDevice } = {};
   private initialized = false;
+  private computerKeyboardInput: ComputerKeyboardInput;
 
   constructor() {
+    this.computerKeyboardInput = new ComputerKeyboardInput();
     this.initializeDevices()
       .then(() => {
         this.listenChanges();
@@ -31,7 +34,7 @@ export default class MidiDeviceManager {
           if (!isMidiEvent) return;
           if (e.port instanceof MIDIOutput) return;
 
-          const input = e.port as MIDIInput;
+          const input = e.port as unknown as IMidiInput;
 
           const midi = new MidiDevice(input);
 
@@ -58,14 +61,16 @@ export default class MidiDeviceManager {
     (await this.inputs()).forEach((input) => {
       if (this.devices[input.id]) return;
 
-      this.devices[input.id] = new MidiDevice(input);
+      this.devices[input.id] = new MidiDevice(input as IMidiInput);
     });
 
     return Object.values(this.devices);
   }
 
   private async inputs() {
-    const inputs: Array<MIDIInput> = [];
+    const inputs: Array<MIDIInput | ComputerKeyboardInput> = [
+      this.computerKeyboardInput,
+    ];
 
     const access = await navigator.requestMIDIAccess();
     access.inputs.forEach((input) => inputs.push(input));
