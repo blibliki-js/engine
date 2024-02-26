@@ -21,7 +21,7 @@
     "start": "tsc -w -p tsconfig.json",
     "build": "rollup -c",
     "lint": "eslint src",
-    "ts:check": "tsc --noEmit",
+    "tsc": "tsc --noEmit",
     "test": "jest"
   },
   "devDependencies": {
