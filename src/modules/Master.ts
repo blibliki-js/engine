@@ -15,7 +15,10 @@ export default class Master extends Module<
       name: "Master",
     });
 
-    this.registerBasicInputs();
+    this.registerAudioInput({
+      name: "input",
+      internalModule: this.internalModule,
+    });
   }
 
   dispose(): void {
