@@ -1,4 +1,4 @@
-import { Filter as InternalFilter, FilterRollOff } from "tone";
+import { Filter as InternalFilter, FilterRollOff, Add, Multiply } from "tone";
 import Module, { PolyModule } from "../core/Module";
 
 interface FilterInterface {
@@ -11,8 +11,10 @@ interface FilterInterface {
 
 type FilterProps = Partial<FilterInterface>;
 
+const MAX_FREQ = 20000;
+
 const InitialProps: FilterInterface = {
-  cutoff: 20000,
+  cutoff: MAX_FREQ,
   resonance: 0,
   envelopeAmount: 0,
   slope: -24,
@@ -20,6 +22,9 @@ const InitialProps: FilterInterface = {
 };
 
 class MonoFilter extends Module<InternalFilter, FilterInterface> {
+  private _cutoff: Add;
+  private _amount: Multiply;
+
   constructor(params: { id?: string; name: string; props: FilterProps }) {
     const { id, name, props } = params;
 
@@ -29,8 +34,15 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
       props: { ...InitialProps, ...props },
     });
 
+    this._cutoff = new Add(this.cutoff);
+    this._cutoff.connect(this.internalModule.frequency);
+
+    this._amount = new Multiply();
+    this._amount.connect(this._cutoff);
+    this.updateAmountFactor();
+
     this.registerBasicInputs();
-    this.registerBasicOutputs();
+    this.registerOutputs();
   }
 
   get cutoff() {
@@ -38,8 +50,12 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
   }
 
   set cutoff(value: number) {
+    if (this._cutoff) {
+      this._cutoff.addend.value = value;
+    }
+
     this._props = { ...this.props, cutoff: value };
-    this.internalModule.frequency.value = value;
+    this.updateAmountFactor();
   }
 
   get filterType() {
@@ -80,6 +96,27 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
 
   set envelopeAmount(value: number) {
     this._props = { ...this.props, envelopeAmount: value };
+    this.updateAmountFactor();
+  }
+
+  private registerOutputs() {
+    this.registerBasicOutputs();
+
+    this.registerAudioInput({
+      name: "cutoff",
+      internalModule: this._amount,
+    });
+  }
+
+  private updateAmountFactor() {
+    if (!this._amount) return;
+
+    const value =
+      this.envelopeAmount > 0
+        ? this.envelopeAmount * Math.abs(MAX_FREQ - this.cutoff)
+        : this.envelopeAmount * Math.abs(1 - this.cutoff);
+
+    this._amount.factor.value = value;
   }
 }
 
@@ -101,6 +138,11 @@ export default class Filter extends PolyModule<MonoFilter, FilterInterface> {
     });
 
     this.registerBasicInputs();
+    this.registerOutputs();
+  }
+
+  private registerOutputs() {
     this.registerBasicOutputs();
+    this.registerInput({ name: "cutoff" });
   }
 }
