@@ -20,6 +20,7 @@ import { deterministicId } from "../../utils";
 interface PolyModuleInterface<MonoAudioModule, PropsInterface> {
   id?: string;
   name: string;
+  numberOfVoices?: number;
   child: new (params: {
     id?: string;
     name: string;
@@ -56,7 +57,7 @@ export default abstract class PolyModule<
     this.child = child;
     Object.assign(this, basicProps);
 
-    this.numberOfVoices = 1;
+    this.numberOfVoices = params.numberOfVoices || 1;
     this.inputs = new IOCollection<ForwardInput>(this);
     this.outputs = new IOCollection<ForwardOutput>(this);
 
@@ -129,6 +130,7 @@ export default abstract class PolyModule<
       ...this.audioModules[0].serialize(),
       id: this.id,
       type: klass.moduleName,
+      numberOfVoices: this.numberOfVoices,
       inputs: this.inputs.serialize(),
       outputs: this.outputs.serialize(),
     };

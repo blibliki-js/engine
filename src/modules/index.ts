@@ -32,6 +32,7 @@ export {
 export interface ICreateModule {
   id?: string;
   name: string;
+  numberOfVoices?: number;
   type: string;
   props: any;
 }

@@ -1,8 +1,8 @@
 import { Context, now, setContext } from "tone";
 import { MidiEvent, MidiDeviceManager } from "./core/midi";
 
-import { AudioModule, Startable } from "./core/Module";
-import { createModule, VirtualMidi, VoiceScheduler } from "./modules";
+import { AudioModule, PolyModule, Startable } from "./core/Module";
+import { createModule, VirtualMidi } from "./modules";
 import { applyRoutes, createRoute, RouteInterface } from "./routes";
 import { AnyObject, Optional } from "./types";
 
@@ -15,6 +15,15 @@ interface ContextInterface {
 
 interface InitializeInterface {
   context?: Partial<ContextInterface>;
+}
+
+export interface UpdateModuleProps {
+  id: string;
+  changes: {
+    name?: string;
+    numberOfVoices?: number;
+    props?: AnyObject;
+  };
 }
 
 class Engine {
@@ -65,12 +74,21 @@ class Engine {
   addModule(params: {
     id?: string;
     name: string;
+    numberOfVoices?: number;
     type: string;
     props?: AnyObject;
   }) {
-    const { id, name, type, props = {} } = params;
+    const { id, name, numberOfVoices, type, props = {} } = params;
 
-    const audioModule = createModule({ id, name, type, props: {} });
+    const audioModule = createModule({
+      id,
+      name,
+      type,
+      props: {},
+    });
+    if (audioModule instanceof PolyModule && numberOfVoices) {
+      audioModule.numberOfVoices = numberOfVoices;
+    }
     audioModule.props = props;
     this.modules[audioModule.id] = audioModule;
 
@@ -90,9 +108,19 @@ class Engine {
     return moduleRouteIds;
   }
 
-  updateNameModule(id: string, name: string) {
+  updateModule(params: UpdateModuleProps) {
+    const {
+      id,
+      changes: { name, numberOfVoices, props = {} },
+    } = params;
     const audioModule = this.findById(id);
-    audioModule.name = name;
+
+    audioModule.props = props;
+    if (name) audioModule.name = name;
+    if (audioModule instanceof PolyModule && numberOfVoices)
+      audioModule.numberOfVoices = numberOfVoices;
+
+    //if (numberOfVoices) this.updateRoutes();
 
     return audioModule.serialize();
   }
@@ -103,16 +131,6 @@ class Engine {
 
   _triggerPropsUpdate(id: string, props: AnyObject) {
     this.propsUpdateCallbacks.forEach((callback) => callback(id, props));
-  }
-
-  updatePropsModule(id: string, props: AnyObject) {
-    const audioModule = this.findById(id);
-
-    const applyRoutesRequired = this.applyRoutesRequired(audioModule, props);
-    audioModule.props = props;
-    if (applyRoutesRequired) this.updateRoutes();
-
-    return audioModule.serialize();
   }
 
   addRoute(props: Optional<RouteInterface, "id">) {
@@ -196,13 +214,6 @@ class Engine {
 
   updateRoutes() {
     applyRoutes(Object.values(this.routes));
-  }
-
-  private applyRoutesRequired(audioModule: AudioModule, props: AnyObject) {
-    if (!props.polyNumber) return false;
-    if (!(audioModule instanceof VoiceScheduler)) return false;
-
-    return props.polyNumber !== audioModule.polyNumber;
   }
 
   private moduleRouteIds(id: string) {
