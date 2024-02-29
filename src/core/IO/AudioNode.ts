@@ -68,7 +68,11 @@ export class AudioOutput extends IONode implements IAudioOutput {
     super.unPlug(io, plugOther);
     if (io instanceof ForwardInput) return;
 
-    this.internalModule.disconnect(io.internalModule);
+    try {
+      this.internalModule.disconnect(io.internalModule);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   unPlugAll() {
