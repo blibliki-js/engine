@@ -84,8 +84,8 @@ const volume = Engine.addModule({
 
 ```JavaScript
 // Update props
-Engine.updatePropsModule(volume.id, { volume: -20 });
-Engine.updatePropsModule(osc.id, { wave: "square", fine: -10 });
+Engine.updateModule({ id: volume.id, changes: { props: { volume: -20 } } });
+Engine.updateModule({ id: osc.id, changes: { props: { wave: "square", fine: -10 } } });
 ```
 
 ##### Remove audio module
