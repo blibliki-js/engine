@@ -1,4 +1,3 @@
-import { camelCase, upperFirst } from "lodash";
 import { Envelope, AmpEnvelope, FreqEnvelope } from "./Envelope";
 import Oscillator from "./Oscillator";
 import Filter from "./Filter";
@@ -12,6 +11,7 @@ import Delay from "./Delay";
 import Distortion from "./Distortion";
 import BitCrusher from "./BitCrusher";
 import Sequencer from "./Sequencer";
+import LFO from "./LFO";
 import { AudioModule } from "../core/Module";
 
 export { default as Master } from "./Master";
@@ -45,8 +45,6 @@ export function createModule(params: ICreateModule): AudioModule {
 }
 
 function moduleClassFromType(type: string) {
-  type = upperFirst(camelCase(type));
-
   switch (type) {
     case Oscillator.moduleName:
       return Oscillator;
@@ -78,6 +76,8 @@ function moduleClassFromType(type: string) {
       return BitCrusher;
     case Sequencer.moduleName:
       return Sequencer;
+    case LFO.moduleName:
+      return LFO;
     default:
       throw Error(`Unknown module type ${type}`);
   }
