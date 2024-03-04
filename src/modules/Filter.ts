@@ -34,7 +34,7 @@ class MonoFilter extends Module<InternalFilter, FilterInterface> {
       props: { ...InitialProps, ...props },
     });
 
-    this._cutoff = new Add(this.cutoff);
+    this._cutoff = new Add();
     this._cutoff.connect(this.internalModule.frequency);
 
     this._amount = new Multiply();
