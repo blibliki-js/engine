@@ -4,11 +4,13 @@ import Engine from "../Engine";
 import Note from "../core/Note";
 import Module, { PolyModule, Startable } from "../core/Module";
 
+export type TWave = "sine" | "triangle" | "square" | "sawtooth";
+
 export interface OscillatorInterface {
   noteName: string;
   fine: number;
   coarse: number;
-  wave: string;
+  wave: TWave;
   volume: number;
   range: number;
 }
@@ -92,7 +94,7 @@ class MonoOscillator
     return this._props["wave"];
   }
 
-  set wave(value: string) {
+  set wave(value: TWave) {
     this._props = { ...this.props, wave: value };
     this.internalModule.type = this.wave as ToneOscillatorType;
   }
