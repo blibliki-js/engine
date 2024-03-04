@@ -1,4 +1,4 @@
-import { now, Oscillator as Osc, ToneOscillatorType } from "tone";
+import { Multiply, now, Oscillator as Osc, ToneOscillatorType } from "tone";
 import Engine from "../Engine";
 
 import Note from "../core/Note";
@@ -29,6 +29,7 @@ class MonoOscillator
   implements Startable
 {
   private _note: Note;
+  private _fineSignal: Multiply;
 
   constructor(params: {
     id?: string;
@@ -43,8 +44,8 @@ class MonoOscillator
       props: { ...InitialProps, ...props },
     });
 
+    this.registerInputs();
     this.registerBasicOutputs();
-    this.registerDefaultMidiInput();
     this.start(now());
   }
 
@@ -71,13 +72,23 @@ class MonoOscillator
     this.note = new Note(this.noteName);
   }
 
+  get fineSingal() {
+    if (this._fineSignal) return this._fineSignal;
+
+    this._fineSignal = new Multiply(100);
+    this._fineSignal.connect(this.internalModule.detune);
+
+    return this._fineSignal;
+  }
+
   get fine() {
     return this._props["fine"];
   }
 
   set fine(value: number) {
-    this._props = { ...this.props, fine: Math.floor(value) };
-    this.internalModule.detune.value = this.fine;
+    this._props = { ...this.props, fine: value };
+
+    this.fineSingal.value = this.fine;
   }
 
   get coarse() {
@@ -158,6 +169,14 @@ class MonoOscillator
   private getNote(note: Note | string): Note {
     return note instanceof Note ? note : new Note(note);
   }
+
+  private registerInputs() {
+    this.registerDefaultMidiInput();
+    this.registerAudioInput({
+      name: "fine",
+      internalModule: this.fineSingal,
+    });
+  }
 }
 
 export default class Oscillator extends PolyModule<
@@ -182,6 +201,7 @@ export default class Oscillator extends PolyModule<
 
     this.registerBasicOutputs();
     this.registerInput({ name: "midi in" });
+    this.registerInput({ name: "fine" });
   }
 
   start(time: number) {
