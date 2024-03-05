@@ -14,9 +14,9 @@ describe("IO", () => {
   let forwardMidiIn: ForwardInput, forwardMidiOut: ForwardOutput;
 
   beforeEach(() => {
-    monoModule1 = new MonoMocking("module1", {});
-    monoModule2 = new MonoMocking("module2", {});
-    polyModule = new PolyMocking("polyModule", {});
+    monoModule1 = new MonoMocking({ name: "module1", props: {} });
+    monoModule2 = new MonoMocking({ name: "module2", props: {} });
+    polyModule = new PolyMocking({ name: "polyModule", props: {} });
 
     midiIn = monoModule1.inputs.findByName("midi in") as MidiInput;
     midiOut = monoModule2.outputs.findByName("midi out") as MidiOutput;

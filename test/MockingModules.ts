@@ -3,7 +3,8 @@ import Module, { DummnyInternalModule, PolyModule } from "../src/core/Module";
 interface IMonoMocking {}
 
 export class MonoMocking extends Module<DummnyInternalModule, IMonoMocking> {
-  constructor(name: string, props: Partial<IMonoMocking>) {
+  constructor(params: { name: string; props: Partial<IMonoMocking> }) {
+    const { name, props } = params;
     super(new DummnyInternalModule(), {
       name,
       props,
@@ -14,7 +15,8 @@ export class MonoMocking extends Module<DummnyInternalModule, IMonoMocking> {
 }
 
 export class PolyMocking extends PolyModule<MonoMocking, IMonoMocking> {
-  constructor(name: string, props: Partial<IMonoMocking>) {
+  constructor(params: { name: string; props: Partial<IMonoMocking> }) {
+    const { name, props } = params;
     super({
       name,
       child: MonoMocking,
