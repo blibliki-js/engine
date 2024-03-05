@@ -42,7 +42,8 @@ export class ForwardInput extends IONode implements IForwardInput {
   }
 
   subModule(voiceNo: number) {
-    const mod = this.subModules.find((m) => m.voiceNo === voiceNo);
+    const adjustedVoiceNo = voiceNo % this.subModules.length;
+    const mod = this.subModules.find((m) => m.voiceNo === adjustedVoiceNo);
     if (!mod) throw Error(`Submodule with voiceNo ${voiceNo} not found`);
 
     return mod;
@@ -129,7 +130,8 @@ export class ForwardOutput extends IONode implements IForwardOutput {
   }
 
   subModule(voiceNo: number) {
-    const mod = this.subModules.find((m) => m.voiceNo === voiceNo);
+    const adjustedVoiceNo = voiceNo % this.subModules.length;
+    const mod = this.subModules.find((m) => m.voiceNo === adjustedVoiceNo);
     if (!mod) throw Error(`Submodule with voiceNo ${voiceNo} not found`);
 
     return mod;
