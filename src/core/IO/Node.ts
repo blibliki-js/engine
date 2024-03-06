@@ -54,6 +54,8 @@ export function plugCompatibleIO(input: AnyInput, output: AnyOuput) {
 }
 
 export function unPlugCompatibleIO(input: AnyInput, output: AnyOuput) {
+  if (!input.connections.some((io) => io.id === output.id)) return;
+
   if (input instanceof AudioInput && output instanceof AudioOutput) {
     input.unPlug(output);
   } else if (input instanceof MidiInput && output instanceof MidiOutput) {
