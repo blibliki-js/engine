@@ -134,6 +134,7 @@ class Engine {
   }
 
   addRoute(props: Optional<RouteInterface, "id">) {
+    if (!this.validRoute(props)) throw Error("Invalid route, incompatible IOs");
     const route = createRoute(props);
     const newRoutes = { ...this.routes, [route.id]: route };
 
@@ -141,6 +142,18 @@ class Engine {
     this.updateRoutes();
 
     return route;
+  }
+
+  validRoute(props: Optional<RouteInterface, "id">): boolean {
+    const { sourceId, sourceIOId, destinationId, destinationIOId } = props;
+
+    const output = this.findById(sourceId).outputs.find(sourceIOId);
+    const input = this.findById(destinationId).inputs.find(destinationIOId);
+
+    return (
+      !!(output?.isMidi && input?.isMidi) ||
+      !!(output?.isAudio && input?.isAudio)
+    );
   }
 
   removeRoute(id: string) {

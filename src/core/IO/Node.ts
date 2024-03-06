@@ -24,6 +24,15 @@ export enum IOType {
   ForwardAudioOutput = "forwardAudioOutput",
 }
 
+const AudioIO = [
+  IOType.AudioInput,
+  IOType.AudioOutput,
+  IOType.ForwardAudioInput,
+  IOType.ForwardAudioOutput,
+];
+
+const MidiIO = [IOType.MidiInput, IOType.MidiOutput];
+
 const IOInputs = [
   IOType.AudioInput,
   IOType.MidiInput,
@@ -85,6 +94,14 @@ export default abstract class IONode implements IIONode {
 
   get isOutput() {
     return IOOutputs.indexOf(this.ioType) > -1;
+  }
+
+  get isAudio() {
+    return AudioIO.indexOf(this.ioType) > -1;
+  }
+
+  get isMidi() {
+    return MidiIO.indexOf(this.ioType) > -1;
   }
 
   abstract unPlugAll(): void;
