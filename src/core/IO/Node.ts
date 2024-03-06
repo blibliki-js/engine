@@ -1,15 +1,5 @@
 import { AudioModule } from "../Module";
-import {
-  AnyIO,
-  AnyInput,
-  AnyOuput,
-  AudioInput,
-  AudioOutput,
-  ForwardInput,
-  ForwardOutput,
-  MidiInput,
-  MidiOutput,
-} from ".";
+import { AnyIO } from ".";
 import { deterministicId } from "../../utils";
 
 export interface IIONode {
@@ -38,12 +28,16 @@ const IOInputs = [IOType.AudioInput, IOType.MidiInput, IOType.ForwardInput];
 const IOOutputs = [IOType.AudioOutput, IOType.MidiOutput, IOType.ForwardOutput];
 
 export function plugCompatibleIO(io1: AnyIO, io2: AnyIO): void {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   io1.plug(io2);
 }
 
 export function unPlugCompatibleIO(io1: AnyIO, io2: AnyIO) {
   if (!io1.connections.some((io) => io.id === io2.id)) return;
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   io1.unPlug(io2);
 }
 
