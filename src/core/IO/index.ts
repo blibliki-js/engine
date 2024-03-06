@@ -16,9 +16,10 @@ import {
 
 type AnyInput = AudioInput | MidiInput | ForwardInput;
 type AnyOuput = AudioOutput | MidiOutput | ForwardOutput;
+type AnyIO = AnyInput | AnyOuput;
 type IAnyInput = IAudioInput | IMidiInput | IForwardInput;
 type IAnyOutput = IAudioOutput | IMidiOutput | IForwardOutput;
-type IAnyIO = IAnyInput | IAnyOutput | IForwardOutput;
+type IAnyIO = IAnyInput | IAnyOutput;
 
 export {
   IOCollection,
@@ -44,4 +45,5 @@ export type {
   IIOSerialize,
   AnyInput,
   AnyOuput,
+  AnyIO,
 };

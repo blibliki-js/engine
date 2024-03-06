@@ -1,5 +1,6 @@
 import { AudioModule } from "../Module";
 import {
+  AnyIO,
   AnyInput,
   AnyOuput,
   AudioInput,
@@ -33,46 +34,17 @@ export enum IOType {
   ForwardOutput = "forwardOutput",
 }
 
-export function plugCompatibleIO(input: AnyInput, output: AnyOuput) {
-  if (input instanceof AudioInput && output instanceof AudioOutput) {
-    input.plug(output);
-  } else if (input instanceof MidiInput && output instanceof MidiOutput) {
-    input.plug(output);
-  } else if (input instanceof ForwardInput && output instanceof ForwardOutput) {
-    input.plug(output);
-  } else if (input instanceof ForwardInput && output instanceof MidiOutput) {
-    input.plug(output);
-  } else if (input instanceof ForwardInput && output instanceof AudioOutput) {
-    input.plug(output);
-  } else if (input instanceof AudioInput && output instanceof ForwardOutput) {
-    input.plug(output);
-  } else if (input instanceof MidiInput && output instanceof ForwardOutput) {
-    input.plug(output);
-  } else {
-    throw Error("Input and output type is not compatible");
-  }
+const IOInputs = [IOType.AudioInput, IOType.MidiInput, IOType.ForwardInput];
+const IOOutputs = [IOType.AudioOutput, IOType.MidiOutput, IOType.ForwardOutput];
+
+export function plugCompatibleIO(io1: AnyIO, io2: AnyIO): void {
+  io1.plug(io2);
 }
 
-export function unPlugCompatibleIO(input: AnyInput, output: AnyOuput) {
-  if (!input.connections.some((io) => io.id === output.id)) return;
+export function unPlugCompatibleIO(io1: AnyIO, io2: AnyIO) {
+  if (!io1.connections.some((io) => io.id === io2.id)) return;
 
-  if (input instanceof AudioInput && output instanceof AudioOutput) {
-    input.unPlug(output);
-  } else if (input instanceof MidiInput && output instanceof MidiOutput) {
-    input.unPlug(output);
-  } else if (input instanceof ForwardInput && output instanceof ForwardOutput) {
-    input.unPlug(output);
-  } else if (input instanceof ForwardInput && output instanceof MidiOutput) {
-    input.unPlug(output);
-  } else if (input instanceof ForwardInput && output instanceof AudioOutput) {
-    input.unPlug(output);
-  } else if (input instanceof AudioInput && output instanceof ForwardOutput) {
-    input.unPlug(output);
-  } else if (input instanceof MidiInput && output instanceof ForwardOutput) {
-    input.unPlug(output);
-  } else {
-    throw Error("Input and output type is not compatible");
-  }
+  io1.unPlug(io2);
 }
 
 export default abstract class IONode implements IIONode {
@@ -103,6 +75,14 @@ export default abstract class IONode implements IIONode {
       (currentIO) => currentIO.id !== io.id
     );
     if (plugOther) io.unPlug(this, false);
+  }
+
+  get isInput() {
+    return IOInputs.indexOf(this.ioType) > -1;
+  }
+
+  get isOutput() {
+    return IOOutputs.indexOf(this.ioType) > -1;
   }
 
   abstract unPlugAll(): void;
