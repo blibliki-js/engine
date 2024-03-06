@@ -120,7 +120,7 @@ class Engine {
     if (audioModule instanceof PolyModule && numberOfVoices)
       audioModule.numberOfVoices = numberOfVoices;
 
-    //if (numberOfVoices) this.updateRoutes();
+    if (numberOfVoices) this.updateRoutes();
 
     return audioModule.serialize();
   }
