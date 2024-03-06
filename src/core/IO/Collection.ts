@@ -3,7 +3,7 @@ import IO, { IOType } from "./Node";
 import { AudioInput, AudioOutput } from "./AudioNode";
 import { MidiInput, MidiOutput } from "./MidiNode";
 import { IAnyIO } from ".";
-import { ForwardInput, ForwardOutput } from "./ForwardNode";
+import { ForwardAudioInput, ForwardAudioOutput } from "./ForwardNode";
 
 export default class IOCollection<AnyIO extends IO> {
   plugableModule: AudioModule;
@@ -30,25 +30,25 @@ export default class IOCollection<AnyIO extends IO> {
 
         io = new AudioOutput(this.plugableModule, props);
         break;
-      case IOType.ForwardInput:
-        if (this.plugableModule instanceof MonoModule) {
-          throw Error("MonoModule is not supported");
-        }
-
-        io = new ForwardInput(this.plugableModule, props);
-        break;
-      case IOType.ForwardOutput:
-        if (this.plugableModule instanceof MonoModule) {
-          throw Error("MonoModule is not supported");
-        }
-
-        io = new ForwardOutput(this.plugableModule, props);
-        break;
       case IOType.MidiInput:
         io = new MidiInput(this.plugableModule, props);
         break;
       case IOType.MidiOutput:
         io = new MidiOutput(this.plugableModule, props);
+        break;
+      case IOType.ForwardAudioInput:
+        if (this.plugableModule instanceof MonoModule) {
+          throw Error("MonoModule is not supported");
+        }
+
+        io = new ForwardAudioInput(this.plugableModule, props);
+        break;
+      case IOType.ForwardAudioOutput:
+        if (this.plugableModule instanceof MonoModule) {
+          throw Error("MonoModule is not supported");
+        }
+
+        io = new ForwardAudioOutput(this.plugableModule, props);
         break;
       default:
         throw Error("Unknown IOType");

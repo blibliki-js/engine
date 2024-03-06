@@ -2,7 +2,7 @@ import IONode, { IIONode, plugCompatibleIO, unPlugCompatibleIO } from "../Node";
 
 import Module, { Connectable, PolyModule } from "../../Module";
 import { AnyObject } from "../../../types";
-import { AnyIO, ForwardInput, ForwardOutput } from "..";
+import { AnyIO, ForwardAudioInput, ForwardAudioOutput } from "..";
 
 export default class ForwardBaseNode extends IONode {
   declare plugableModule: PolyModule<Module<Connectable, AnyObject>, AnyObject>;
@@ -68,13 +68,13 @@ export default class ForwardBaseNode extends IONode {
     isPlug ? super.plug(io, plugOther) : super.unPlug(io, plugOther);
     if (
       !plugOther &&
-      (io instanceof ForwardOutput || io instanceof ForwardInput)
+      (io instanceof ForwardAudioOutput || io instanceof ForwardAudioInput)
     )
       return;
 
     const plugCallback = isPlug ? plugCompatibleIO : unPlugCompatibleIO;
 
-    if (io instanceof ForwardOutput || io instanceof ForwardInput) {
+    if (io instanceof ForwardAudioOutput || io instanceof ForwardAudioInput) {
       const maxVoices = Math.max(this.voices, io.voices);
 
       for (let voice = 0; voice < maxVoices; voice++) {

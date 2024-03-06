@@ -20,12 +20,20 @@ export enum IOType {
   AudioOutput = "audioOutput",
   MidiInput = "midiInput",
   MidiOutput = "midiOutput",
-  ForwardInput = "forwardInput",
-  ForwardOutput = "forwardOutput",
+  ForwardAudioInput = "forwardAudioInput",
+  ForwardAudioOutput = "forwardAudioOutput",
 }
 
-const IOInputs = [IOType.AudioInput, IOType.MidiInput, IOType.ForwardInput];
-const IOOutputs = [IOType.AudioOutput, IOType.MidiOutput, IOType.ForwardOutput];
+const IOInputs = [
+  IOType.AudioInput,
+  IOType.MidiInput,
+  IOType.ForwardAudioInput,
+];
+const IOOutputs = [
+  IOType.AudioOutput,
+  IOType.MidiOutput,
+  IOType.ForwardAudioOutput,
+];
 
 export function plugCompatibleIO(io1: AnyIO, io2: AnyIO): void {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

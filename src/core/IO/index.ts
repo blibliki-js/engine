@@ -8,17 +8,26 @@ import {
 } from "./AudioNode";
 import { IMidiInput, IMidiOutput, MidiInput, MidiOutput } from "./MidiNode";
 import {
-  ForwardInput,
-  ForwardOutput,
-  IForwardInput,
-  IForwardOutput,
+  ForwardAudioInput,
+  ForwardAudioOutput,
+  IForwardAudioInput,
+  IForwardAudioOutput,
 } from "./ForwardNode";
 
-type AnyInput = AudioInput | MidiInput | ForwardInput;
-type AnyOuput = AudioOutput | MidiOutput | ForwardOutput;
+type AnyAudioInput = AudioInput | ForwardAudioInput;
+type AnyMidiInput = MidiInput;
+type AnyAudioOuput = AudioOutput | ForwardAudioOutput;
+type AnyMidiOuput = MidiOutput;
+type AnyInput = AnyAudioInput | AnyMidiInput;
+type AnyOuput = AnyAudioOuput | AnyMidiOuput;
 type AnyIO = AnyInput | AnyOuput;
-type IAnyInput = IAudioInput | IMidiInput | IForwardInput;
-type IAnyOutput = IAudioOutput | IMidiOutput | IForwardOutput;
+
+type IAnyAudioInput = IAudioInput | IForwardAudioInput;
+type IAnyMidiInput = IMidiInput;
+type IAnyAudioOuput = IAudioOutput | IForwardAudioOutput;
+type IAnyMidiOuput = IMidiOutput;
+type IAnyInput = IAnyAudioInput | IAnyMidiInput;
+type IAnyOutput = IAnyAudioOuput | IAnyMidiOuput;
 type IAnyIO = IAnyInput | IAnyOutput;
 
 export {
@@ -28,8 +37,8 @@ export {
   AudioOutput,
   MidiInput,
   MidiOutput,
-  ForwardInput,
-  ForwardOutput,
+  ForwardAudioInput,
+  ForwardAudioOutput,
 };
 export type {
   IAnyIO,
@@ -38,11 +47,15 @@ export type {
   IAudioOutput,
   IMidiInput,
   IMidiOutput,
-  IForwardInput,
-  IForwardOutput,
+  IForwardAudioInput,
+  IForwardAudioOutput,
   IAnyInput,
   IAnyOutput,
   IIOSerialize,
+  AnyAudioInput,
+  AnyMidiInput,
+  AnyAudioOuput,
+  AnyMidiOuput,
   AnyInput,
   AnyOuput,
   AnyIO,

@@ -1,6 +1,6 @@
+import { AnyMidiInput, AnyMidiOuput } from ".";
 import { AudioModule } from "../Module";
 import { MidiEvent } from "../midi";
-import { ForwardInput, ForwardOutput } from "./ForwardNode";
 import IONode, { IOType, IIONode } from "./Node";
 
 export interface IMidiInput extends IIONode {
@@ -22,11 +22,11 @@ export class MidiInput extends IONode implements IMidiInput {
     this.onMidiEvent = props.onMidiEvent;
   }
 
-  plug(io: MidiOutput | ForwardOutput, plugOther: boolean = true) {
+  plug(io: AnyMidiOuput, plugOther: boolean = true) {
     super.plug(io, plugOther);
   }
 
-  unPlug(io: MidiOutput | ForwardOutput, plugOther: boolean = true) {
+  unPlug(io: AnyMidiOuput, plugOther: boolean = true) {
     super.unPlug(io, plugOther);
   }
 
@@ -43,11 +43,11 @@ export class MidiOutput extends IONode implements IMidiOutput {
     super(plugableModule, props);
   }
 
-  plug(io: MidiInput | ForwardInput, plugOther: boolean = true) {
+  plug(io: AnyMidiInput, plugOther: boolean = true) {
     super.plug(io, plugOther);
   }
 
-  unPlug(io: MidiInput | ForwardOutput, plugOther: boolean = true) {
+  unPlug(io: AnyMidiInput, plugOther: boolean = true) {
     super.unPlug(io, plugOther);
   }
 

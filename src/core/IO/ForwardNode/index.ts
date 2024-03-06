@@ -1,24 +1,27 @@
 import { IOType, IIONode } from "../Node";
 import Module, { Connectable, PolyModule } from "../../Module";
 import { AnyObject } from "../../../types";
-import { AnyInput, AnyOuput } from "..";
+import { AnyAudioInput, AnyAudioOuput, AnyInput, AnyOuput } from "..";
 import ForwardBaseNode from "./Base";
 
-export interface IForwardInput extends IIONode {
-  ioType: IOType.ForwardInput;
+export interface IForwardAudioInput extends IIONode {
+  ioType: IOType.ForwardAudioInput;
 }
-export interface IForwardOutput extends IIONode {
-  ioType: IOType.ForwardOutput;
+export interface IForwardAudioOutput extends IIONode {
+  ioType: IOType.ForwardAudioOutput;
 }
 
-export class ForwardInput extends ForwardBaseNode implements IForwardInput {
+export class ForwardAudioInput
+  extends ForwardBaseNode
+  implements IForwardAudioInput
+{
   declare plugableModule: PolyModule<Module<Connectable, AnyObject>, AnyObject>;
-  declare ioType: IOType.ForwardInput;
-  declare connections: ForwardOutput[];
+  declare ioType: IOType.ForwardAudioInput;
+  declare connections: AnyAudioOuput[];
 
   constructor(
     plugableModule: PolyModule<Module<Connectable, AnyObject>, AnyObject>,
-    props: IForwardInput
+    props: IForwardAudioInput
   ) {
     super(plugableModule, props);
   }
@@ -32,14 +35,17 @@ export class ForwardInput extends ForwardBaseNode implements IForwardInput {
   }
 }
 
-export class ForwardOutput extends ForwardBaseNode implements IForwardOutput {
+export class ForwardAudioOutput
+  extends ForwardBaseNode
+  implements IForwardAudioOutput
+{
   declare plugableModule: PolyModule<Module<Connectable, AnyObject>, AnyObject>;
-  declare ioType: IOType.ForwardOutput;
-  declare connections: ForwardInput[];
+  declare ioType: IOType.ForwardAudioOutput;
+  declare connections: AnyAudioInput[];
 
   constructor(
     plugableModule: PolyModule<Module<Connectable, AnyObject>, AnyObject>,
-    props: IForwardOutput
+    props: IForwardAudioOutput
   ) {
     super(plugableModule, props);
   }

@@ -171,7 +171,6 @@ class MonoOscillator
   }
 
   private registerInputs() {
-    this.registerDefaultMidiInput();
     this.registerAudioInput({
       name: "fine",
       internalModule: this.fineSingal,
@@ -200,8 +199,8 @@ export default class Oscillator extends PolyModule<
     });
 
     this.registerBasicOutputs();
-    this.registerInput({ name: "midi in" });
-    this.registerInput({ name: "fine" });
+    this.registerMidiIn();
+    this.registerForwardAudioInput({ name: "fine" });
   }
 
   start(time: number) {
