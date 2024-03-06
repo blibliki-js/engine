@@ -110,7 +110,6 @@ class MonoLFO extends Module<LFOInternal, LFOInterface> implements Startable {
   };
 
   private registerInputs() {
-    this.registerDefaultMidiInput();
     this.registerAudioInput({
       name: "amount",
       internalModule: this.internalModule.amplitude,
@@ -136,8 +135,8 @@ export default class LFO extends PolyModule<MonoLFO, LFOInterface> {
     });
 
     this.registerBasicOutputs();
-    this.registerInput({ name: "midi in" });
-    this.registerInput({ name: "amount" });
+    this.registerMidiIn();
+    this.registerForwardAudioInput({ name: "amount" });
   }
 
   start(time: number) {

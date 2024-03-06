@@ -2,7 +2,8 @@ import { InputNode } from "tone";
 import IONode, { IOType, IIONode } from "./Node";
 import MonoModule, { Connectable } from "../Module/index";
 import { AnyObject } from "../../types";
-import { ForwardInput, ForwardOutput } from "./ForwardNode";
+import { ForwardAudioInput } from "./ForwardNode";
+import { AnyAudioInput, AnyAudioOuput } from ".";
 
 export type AudioIO = AudioInput | AudioOutput;
 
@@ -31,11 +32,11 @@ export class AudioInput extends IONode implements IAudioInput {
     this.internalModule = props.internalModule;
   }
 
-  plug(io: AudioOutput | ForwardOutput, plugOther: boolean = true) {
+  plug(io: AnyAudioOuput, plugOther: boolean = true) {
     super.plug(io, plugOther);
   }
 
-  unPlug(io: AudioOutput | ForwardOutput, plugOther: boolean = true) {
+  unPlug(io: AnyAudioOuput, plugOther: boolean = true) {
     super.unPlug(io, plugOther);
   }
 
@@ -57,16 +58,16 @@ export class AudioOutput extends IONode implements IAudioOutput {
     this.internalModule = props.internalModule;
   }
 
-  plug(io: AudioInput | ForwardInput, plugOther: boolean = true) {
+  plug(io: AnyAudioInput, plugOther: boolean = true) {
     super.plug(io, plugOther);
-    if (io instanceof ForwardInput) return;
+    if (io instanceof ForwardAudioInput) return;
 
     this.internalModule.connect(io.internalModule);
   }
 
-  unPlug(io: AudioInput | ForwardInput, plugOther: boolean = true) {
+  unPlug(io: AnyAudioInput, plugOther: boolean = true) {
     super.unPlug(io, plugOther);
-    if (io instanceof ForwardInput) return;
+    if (io instanceof ForwardAudioInput) return;
 
     try {
       this.internalModule.disconnect(io.internalModule);

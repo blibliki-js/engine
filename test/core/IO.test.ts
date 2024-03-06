@@ -97,8 +97,7 @@ describe("IO", () => {
       it("unplugged midi in from midi out", () => {
         expect(forwardMidiIn.connections.length).toBe(0);
         expect(
-          forwardMidiIn.subInputs.map((input) => input.connections).flat()
-            .length
+          forwardMidiIn.subIOs.map((io) => io.connections).flat().length
         ).toBe(0);
       });
 
@@ -126,8 +125,7 @@ describe("IO", () => {
       it("unplugged midi in from midi out", () => {
         expect(forwardMidiOut.connections.length).toBe(0);
         expect(
-          forwardMidiOut.subOutputs.map((input) => input.connections).flat()
-            .length
+          forwardMidiOut.subIOs.map((io) => io.connections).flat().length
         ).toBe(0);
       });
 
@@ -155,16 +153,14 @@ describe("IO", () => {
       it("unplugged midi in from midi out", () => {
         expect(forwardMidiOut.connections.length).toBe(0);
         expect(
-          forwardMidiOut.subOutputs.map((input) => input.connections).flat()
-            .length
+          forwardMidiOut.subIOs.map((io) => io.connections).flat().length
         ).toBe(0);
       });
 
       it("unplugged midi out from midi in", () => {
         expect(forwardMidiIn.connections.length).toBe(0);
         expect(
-          forwardMidiIn.subInputs.map((input) => input.connections).flat()
-            .length
+          forwardMidiIn.subIOs.map((io) => io.connections).flat().length
         ).toBe(0);
       });
     });

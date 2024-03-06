@@ -143,6 +143,6 @@ export default class Filter extends PolyModule<MonoFilter, FilterInterface> {
 
   private registerOutputs() {
     this.registerBasicOutputs();
-    this.registerInput({ name: "cutoff" });
+    this.registerForwardAudioInput({ name: "cutoff" });
   }
 }

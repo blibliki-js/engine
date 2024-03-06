@@ -3,19 +3,23 @@ import { v4 as uuidv4 } from "uuid";
 import Module, { Connectable } from "./MonoModule";
 import {
   IOCollection,
-  ForwardInput,
-  ForwardOutput,
   IOType,
   IMidiInput,
   IMidiOutput,
-  IForwardInput,
-  IForwardOutput,
   MidiOutput,
   MidiInput,
+  AnyInput,
+  AnyOuput,
+  ForwardAudioInput,
 } from "../IO";
 import { AudioModule } from "./index";
 import { plugCompatibleIO } from "../IO/Node";
 import { deterministicId } from "../../utils";
+import {
+  ForwardAudioOutput,
+  IForwardAudioInput,
+  IForwardAudioOutput,
+} from "../IO/ForwardNode";
 
 interface PolyModuleInterface<MonoAudioModule, PropsInterface> {
   id?: string;
@@ -43,8 +47,8 @@ export default abstract class PolyModule<
   }) => MonoAudioModule;
   _name: string;
   audioModules: MonoAudioModule[];
-  inputs: IOCollection<ForwardInput | MidiInput>;
-  outputs: IOCollection<ForwardOutput | MidiOutput>;
+  inputs: IOCollection<AnyInput>;
+  outputs: IOCollection<AnyOuput>;
   private _numberOfVoices: number;
 
   constructor(params: PolyModuleInterface<MonoAudioModule, PropsInterface>) {
@@ -58,8 +62,8 @@ export default abstract class PolyModule<
     Object.assign(this, basicProps);
 
     this.numberOfVoices = params.numberOfVoices || 1;
-    this.inputs = new IOCollection<ForwardInput>(this);
-    this.outputs = new IOCollection<ForwardOutput>(this);
+    this.inputs = new IOCollection<AnyInput>(this);
+    this.outputs = new IOCollection<AnyOuput>(this);
 
     Object.assign(this, { props: extraProps });
   }
@@ -147,14 +151,16 @@ export default abstract class PolyModule<
     return this.audioModules.find((m) => m.voiceNo === voiceNo);
   }
 
-  protected registerInput(props: Omit<IForwardInput, "ioType">): ForwardInput {
-    return this.inputs.add({ ...props, ioType: IOType.ForwardInput });
+  protected registerForwardAudioInput(
+    props: Omit<IForwardAudioInput, "ioType">
+  ): ForwardAudioInput {
+    return this.inputs.add({ ...props, ioType: IOType.ForwardAudioInput });
   }
 
-  protected registerOutput(
-    props: Omit<IForwardOutput, "ioType">
-  ): ForwardOutput {
-    return this.outputs.add({ ...props, ioType: IOType.ForwardOutput });
+  protected registerForwardAudioOutput(
+    props: Omit<IForwardAudioOutput, "ioType">
+  ): ForwardAudioOutput {
+    return this.outputs.add({ ...props, ioType: IOType.ForwardAudioOutput });
   }
 
   protected registerMidiInput(props: Omit<IMidiInput, "ioType">): MidiInput {
@@ -166,11 +172,15 @@ export default abstract class PolyModule<
   }
 
   protected registerBasicOutputs() {
-    this.registerOutput({ name: "output" });
+    this.registerForwardAudioOutput({ name: "output" });
   }
 
   protected registerBasicInputs() {
-    this.registerInput({ name: "input" });
+    this.registerForwardAudioInput({ name: "input" });
+    this.registerMidiIn();
+  }
+
+  protected registerMidiIn() {
     this.registerMidiInput({
       name: "midi in",
       onMidiEvent: this.onMidiEvent,
