@@ -1,5 +1,5 @@
 import { Envelope, AmpEnvelope, FreqEnvelope } from "./Envelope";
-import Oscillator from "./Oscillator";
+import Oscillator, { MonoOscillator } from "./Oscillator";
 import Filter from "./Filter";
 import Master from "./Master";
 import VoiceScheduler from "./VoiceScheduler";
@@ -16,7 +16,7 @@ import { AudioModule } from "../core/Module";
 
 export { default as Master } from "./Master";
 export { default as Filter } from "./Filter";
-export { default as Oscillator } from "./Oscillator";
+export { default as Oscillator, MonoOscillator } from "./Oscillator";
 export { default as VirtualMidi } from "./VirtualMidi";
 export { default as VoiceScheduler } from "./VoiceScheduler";
 export { default as Sequencer } from "./Sequencer";

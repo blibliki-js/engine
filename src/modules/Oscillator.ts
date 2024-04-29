@@ -1,4 +1,10 @@
-import { Multiply, now, Oscillator as Osc, ToneOscillatorType } from "tone";
+import {
+  Multiply,
+  now,
+  Oscillator as Osc,
+  Signal,
+  ToneOscillatorType,
+} from "tone";
 import Engine from "../Engine";
 
 import Note from "../core/Note";
@@ -24,12 +30,13 @@ const InitialProps: OscillatorInterface = {
   volume: 0,
 };
 
-class MonoOscillator
+export class MonoOscillator
   extends Module<Osc, OscillatorInterface>
   implements Startable
 {
   private _note: Note;
-  private _fineSignal: Multiply;
+  private _fineMulti: Multiply;
+  private _fineSignal: Signal;
 
   constructor(params: {
     id?: string;
@@ -75,8 +82,10 @@ class MonoOscillator
   get fineSingal() {
     if (this._fineSignal) return this._fineSignal;
 
-    this._fineSignal = new Multiply(100);
-    this._fineSignal.connect(this.internalModule.detune);
+    this._fineSignal = new Signal();
+    this._fineMulti = new Multiply(100);
+    this._fineSignal.connect(this._fineMulti);
+    this._fineMulti.connect(this.internalModule.detune);
 
     return this._fineSignal;
   }
