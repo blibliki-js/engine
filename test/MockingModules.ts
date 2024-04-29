@@ -1,16 +1,23 @@
-import Module, { DummnyInternalModule, PolyModule } from "../src/core/Module";
+import Module, { PolyModule } from "../src/core/Module";
 
 interface IMonoMocking {}
 
-export class MonoMocking extends Module<DummnyInternalModule, IMonoMocking> {
+export class MockInternalModule {
+  connect() {}
+  disconnect() {}
+  dispose() {}
+}
+
+export class MonoMocking extends Module<MockInternalModule, IMonoMocking> {
   constructor(params: { name: string; props: Partial<IMonoMocking> }) {
     const { name, props } = params;
-    super(new DummnyInternalModule(), {
+    super(new MockInternalModule(), {
       name,
       props,
     });
-    this.registerDefaultMidiInput();
-    this.registerMidiOutput({ name: "midi out" });
+
+    this.registerBasicInputs();
+    this.registerBasicOutputs();
   }
 }
 
@@ -23,7 +30,7 @@ export class PolyMocking extends PolyModule<MonoMocking, IMonoMocking> {
       props,
     });
 
-    this.registerInput({ name: "midi in" });
-    this.registerOutput({ name: "midi out" });
+    this.registerBasicInputs();
+    this.registerBasicOutputs();
   }
 }
