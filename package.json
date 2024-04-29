@@ -31,8 +31,13 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
+    "@vitest/browser": "^1.5.2",
     "eslint": "^8.52.0",
     "prettier": "^2.7.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vite": "^5.2.10",
+    "vite-plugin-dts": "^3.9.0",
+    "vitest": "^1.5.2",
+    "webdriverio": "^8.36.1"
   }
 }
