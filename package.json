@@ -1,10 +1,11 @@
 {
   "name": "@blibliki/engine",
   "version": "0.1.26",
+  "type": "module",
   "source": "src/index.ts",
-  "main": "dist/main.cjs.js",
-  "module": "dist/main.esm.js",
-  "types": "dist/build/index.d.ts",
+  "main": "dist/index.umd.cjs",
+  "module": "dist/index.js",
+  "types": "dist/src/index.d.ts",
   "files": [
     "README.md",
     "src",
@@ -17,11 +18,12 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "start": "tsc -w -p tsconfig.json",
-    "build": "rollup -c",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
     "lint": "eslint src",
     "tsc": "tsc --noEmit",
-    "test": "jest"
+    "test": "vitest"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",

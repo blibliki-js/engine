@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach } from "@jest/globals";
+import { describe, it, expect, beforeEach } from "vitest";
 import { MonoMocking, PolyMocking } from "../MockingModules";
 import {
   AudioInput,
