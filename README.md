@@ -1,5 +1,8 @@
 # Blibliki Engine
 
+> **⚠️ This repository is archived**  
+> This project has moved to: https://github.com/mikezaby/blibliki
+
 Blibliki Engine is a data-driven, non-UI JavaScript library written in TypeScript that serves as a framework for building synthesizers.
 Built on top of ToneJS, it aims to provide a streamlined interface for creating custom synthesizers.
 
